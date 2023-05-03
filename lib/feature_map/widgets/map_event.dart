@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors
-
+import 'package:so_frontend/feature_user/services/externalService.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +8,7 @@ import 'package:so_frontend/utils/api_controller.dart';
 import 'dart:convert';
 import 'package:so_frontend/utils/share.dart';
 import 'package:so_frontend/utils/like_button.dart';
+import 'package:skeletons/skeletons.dart';
 
 class EventWidget extends StatefulWidget {
   final Map<String, dynamic> event;
@@ -70,6 +71,8 @@ class _EventWidgetState extends State<EventWidget> {
     return response;
   }
 
+  final ExternServicePhoto es = ExternServicePhoto();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -131,7 +134,7 @@ class _EventWidgetState extends State<EventWidget> {
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FutureBuilder(
               future: http.get(Uri.parse(
-                  'https://socialout-develop.herokuapp.com/v1/users/' +
+                  'https://socialout-production.herokuapp.com/v1/users/' +
                       widget.event["user_creator"])),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
@@ -145,8 +148,27 @@ class _EventWidgetState extends State<EventWidget> {
                   return const CircularProgressIndicator();
                 }
               }),
-          CircleAvatar(
-            backgroundImage: AssetImage(creatorPhoto),
+          FutureBuilder(
+            future: es.getAPhoto(widget.event["user_creator"]),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                var photoUrl = snapshot.data;
+                return CircleAvatar(
+                  backgroundImage: photoUrl != '' ? NetworkImage(photoUrl) as ImageProvider : AssetImage('assets/noProfileImage.jpg'),
+                );
+              }
+              else {
+                return const Center(
+                  child: SkeletonItem(
+                      child: SkeletonAvatar(
+                    style: SkeletonAvatarStyle(
+                        shape: BoxShape.circle,
+                        width: 36,
+                        height: 36),
+                  )),
+                );
+              }
+            } 
           )
         ]),
         const Divider(
@@ -170,7 +192,7 @@ class _EventWidgetState extends State<EventWidget> {
               icon: const Icon(Icons.share,
                   size: 30.0, color: Color.fromARGB(255, 110, 108, 108)),
               onPressed: () => showShareMenu(
-                  'https://socialout-develop.herokuapp.com/v3/events/' +
+                  'https://socialout-production.herokuapp.com/v3/events/' +
                       widget.event["id"],
                   context)),
           const Divider(endIndent: 30),
