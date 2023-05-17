@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:skeletons/skeletons.dart';
 import 'package:so_frontend/utils/air_tag.dart';
 import 'package:so_frontend/utils/api_controller.dart';
+import 'package:so_frontend/utils/globals.dart';
 import 'package:so_frontend/utils/like_button.dart';
 import 'package:so_frontend/feature_event/screens/event_screen.dart';
 import 'package:so_frontend/utils/share.dart';
@@ -148,7 +149,8 @@ class _JoinedListState extends State<JoinedList> {
                                           .onSurface,
                                       icon: const Icon(Icons.share),
                                       onPressed: () => showShareMenu(
-                                          'https://socialout-production.herokuapp.com/v3/events/' +
+                                          baseLocalUrl +
+                                              '/v3/events/' +
                                               _joined[index]["id"],
                                           context)),
                                   const SizedBox(width: 10),

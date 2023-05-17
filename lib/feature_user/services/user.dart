@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../utils/globals.dart';
+
 class UserAPI {
   final String url = "";
 
@@ -29,7 +31,7 @@ class UserAPI {
   }*/
 }
 
-final String url = "https://socialout-production.herokuapp.com/v1/users/";
+final String url = baseLocalUrl + "/v1/users/";
 
 //API_URL/v1/users/:id/pw
 Future<http.Response> putPassword(

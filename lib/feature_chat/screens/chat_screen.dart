@@ -12,6 +12,8 @@ import 'package:so_frontend/feature_user/services/login_signUp.dart';
 import 'package:so_frontend/utils/api_controller.dart';
 import 'package:so_frontend/feature_user/services/externalService.dart';
 
+import '../../utils/globals.dart';
+
 class ChatScreen extends StatefulWidget {
   final String eventId;
   final String participanId;
@@ -88,8 +90,7 @@ class _ChatScreen extends State<ChatScreen> {
   }
 
   Future<List> getUser() async {
-    final response = await http
-        .get(Uri.parse("https://socialout-production.herokuapp.com/v1/users/"));
+    final response = await http.get(Uri.parse(baseLocalUrl + "/v1/users/"));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     }
@@ -103,8 +104,7 @@ class _ChatScreen extends State<ChatScreen> {
   }
 
   Future<List> getShownUsername() async {
-    final response = await http
-        .get(Uri.parse("https://socialout-production.herokuapp.com/v1/users/"));
+    final response = await http.get(Uri.parse(baseLocalUrl + "/v1/users/"));
     if (response.statusCode == 200) {
       return json.decode(response.body);
     }

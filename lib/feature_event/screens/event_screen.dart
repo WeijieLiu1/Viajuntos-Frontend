@@ -6,6 +6,7 @@ import 'package:so_frontend/feature_chat/screens/chat_screen.dart';
 import 'package:so_frontend/feature_chat/screens/listChat_screen.dart';
 import 'package:so_frontend/feature_event/widgets/event.dart';
 import 'package:so_frontend/utils/api_controller.dart';
+import 'package:so_frontend/utils/globals.dart';
 import 'package:so_frontend/utils/share.dart';
 import 'package:so_frontend/utils/like_button.dart';
 import 'package:http/http.dart' as http;
@@ -57,9 +58,7 @@ class _EventScreenState extends State<EventScreen> {
                   color: Theme.of(context).colorScheme.onSurface,
                   icon: const Icon(Icons.share),
                   onPressed: () => showShareMenu(
-                      'https://socialout-production.herokuapp.com/v3/events/' +
-                          widget.id,
-                      context)),
+                      baseLocalUrl + '/v3/events/' + widget.id, context)),
               LikeButton(id: widget.id),
               IconButton(
                 iconSize: 24,

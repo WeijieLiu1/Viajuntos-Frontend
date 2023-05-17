@@ -65,10 +65,10 @@ class LinkScreenState extends State<LinkScreen> {
               ),
             ),
             const SizedBox(height: 50),
-            if (widget.type == 'socialout') codiVerification(),
+            if (widget.type == 'viajuntos') codiVerification(),
             //else if(widget.type == 'google'){},
-            if (widget.type == 'socialout')
-              linkButton("socialout")
+            if (widget.type == 'viajuntos')
+              linkButton("viajuntos")
             else if (widget.type == 'google')
               linkButton("google")
             else if (widget.type == 'facebook')
@@ -168,9 +168,9 @@ class LinkScreenState extends State<LinkScreen> {
             ),
             minimumSize: const Size(200, 40)),
         onPressed: () {
-          Navigator.pushNamed(context, '/login', arguments: GoTo(
-            () => Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false)
-          ));
+          Navigator.pushNamed(context, '/login',
+              arguments: GoTo(() => Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/home', (route) => false)));
         },
         child: Text(
           'Cancel',

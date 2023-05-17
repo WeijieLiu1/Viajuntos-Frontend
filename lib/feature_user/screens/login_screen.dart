@@ -167,9 +167,9 @@ class LoginScreenState extends State<LoginScreen> {
                         formKey.currentState!.save();
                         formKey3.currentState!.save();
                         Map<String, dynamic> ap =
-                            await uapi.checkloginSocialOut(email);
+                            await uapi.checkloginViajuntos(email);
                         if (ap["action"] == "continue") {
-                          int aux = await uapi.loginSocialOut(email, password);
+                          int aux = await uapi.loginViajuntos(email, password);
                           if (aux == 200) {
                             goto.action();
                           } else if (aux == 400) {
@@ -183,7 +183,7 @@ class LoginScreenState extends State<LoginScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => LinkScreen(
-                                      email, password, "socialout", "")),
+                                      email, password, "viajuntos", "")),
                               (route) => false);
                         } else {
                           showDialog(

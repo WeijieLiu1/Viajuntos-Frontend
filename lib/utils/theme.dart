@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 
-class SocialOutTheme {
-
-  static final SocialOutTheme _instance = SocialOutTheme._internal();
-
+class ViajuntosTheme {
+  static final ViajuntosTheme _instance = ViajuntosTheme._internal();
 
   /* Typography */
   static double xxl = 32;
@@ -19,7 +17,7 @@ class SocialOutTheme {
   static const FontWeight regular = FontWeight.w400;
   static const FontWeight medium = FontWeight.w500;
   static const FontWeight bold = FontWeight.w700;
-  static const FontWeight extrabold = FontWeight.w900;  
+  static const FontWeight extrabold = FontWeight.w900;
 
   /* COLOR SCHEME */
   static Color primary = HexColor('22577A');
@@ -33,9 +31,9 @@ class SocialOutTheme {
   static Color surface = Colors.black;
   static Color onSurface = Colors.white;
 
-  factory SocialOutTheme() {
+  factory ViajuntosTheme() {
     return _instance;
   }
 
-  SocialOutTheme._internal();
+  ViajuntosTheme._internal();
 }

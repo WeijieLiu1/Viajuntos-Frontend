@@ -27,7 +27,7 @@ class PolicyWidget extends StatelessWidget {
                   final Uri uri = Uri(
                       scheme: 'https',
                       host: 'pages.flycricket.io',
-                      path: 'socialout-0/terms');
+                      path: 'viajuntos-0/terms');
                   await launchUrl(uri);
                 }),
           TextSpan(
@@ -45,7 +45,7 @@ class PolicyWidget extends StatelessWidget {
                   final Uri uri = Uri(
                       scheme: 'https',
                       host: 'pages.flycricket.io',
-                      path: 'socialout/privacy');
+                      path: 'viajuntos/privacy');
                   await launchUrl(uri);
                 }),
           TextSpan(
@@ -63,7 +63,7 @@ class PolicyWidget extends StatelessWidget {
                   final Uri uri = Uri(
                       scheme: 'https',
                       host: 'pages.flycricket.io',
-                      path: 'socialout/privacy');
+                      path: 'viajuntos/privacy');
                   await launchUrl(uri);
                 }),
           TextSpan(

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:so_frontend/feature_map/services/stations.dart';
 import 'dart:convert';
 
+import '../../utils/globals.dart';
+
 class StationWidget extends StatefulWidget {
   final String id;
   const StationWidget({Key? key, required this.id}) : super(key: key);
@@ -17,10 +19,8 @@ class _StationWidgetState extends State<StationWidget> {
   StationsAPI sj = StationsAPI();
   Map station = {};
   List pollutants = [];
-  
 
-  final String url2 =
-      "https://socialout-production.herokuapp.com/v1/air/stations/";
+  final String url2 = baseLocalUrl + "/v1/air/stations/";
 
   var eventStyle = const TextStyle(
       color: Colors.black,
@@ -60,150 +60,150 @@ class _StationWidgetState extends State<StationWidget> {
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                  Row(children: [
-                    Text(
-                      "${station["name"]}" + "station".tr(),
-                      style: eventStyle,
-                      textAlign: TextAlign.center,
-                    ),
-
-                  ]),
-                  const Divider(
-                      color: Color.fromARGB(255, 53, 52, 52),
-                      height: 30,
-                      indent: 30,
-                      endIndent: 30),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            "Hereinfostation",
-                            style: explainStyle,
-                            textAlign: TextAlign.center,
-                          ).tr(),
-                        )
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(children: [
+                        Text(
+                          "${station["name"]}" + "station".tr(),
+                          style: eventStyle,
+                          textAlign: TextAlign.center,
+                        ),
                       ]),
-                  const Divider(indent: 50, endIndent: 50),
-                  Row(children: [
-                    (station["pollution"] < 0.15)
-                        ? Text(
-                            "ContLOW",
-                            style: explainStyle,
-                            textAlign: TextAlign.left,
-                          ).tr()
-                        : (station["pollution"] > 0.3)
+                      const Divider(
+                          color: Color.fromARGB(255, 53, 52, 52),
+                          height: 30,
+                          indent: 30,
+                          endIndent: 30),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Hereinfostation",
+                                style: explainStyle,
+                                textAlign: TextAlign.center,
+                              ).tr(),
+                            )
+                          ]),
+                      const Divider(indent: 50, endIndent: 50),
+                      Row(children: [
+                        (station["pollution"] < 0.15)
                             ? Text(
-                                "ContHIGH",
+                                "ContLOW",
                                 style: explainStyle,
                                 textAlign: TextAlign.left,
                               ).tr()
-                            : Text(
-                                "ContMODERATE",
-                                style: explainStyle,
-                                textAlign: TextAlign.left,
-                              ).tr(),
-                    const SizedBox(width: 5),
-                    Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Color.lerp(
-                              Colors.green,
-                              Color.lerp(
-                                  Colors.yellow,
-                                  Colors.red,
-                              station['pollution'] < 0.15
-                                  ? 0
-                                  : (station['pollution'] >
-                                          0.3
-                                      ? 1
-                                      : (station['pollution'] -
-                                              0.15) /
-                                          0.15)), station['pollution'] > 0.15
-                                      ? 1
-                                      : station['pollution'] /
-                                          0.15)
-                      )
-                    ),
-                  ]),
-                  const Divider(indent: 50, endIndent: 50),
-                  Text(
+                            : (station["pollution"] > 0.3)
+                                ? Text(
+                                    "ContHIGH",
+                                    style: explainStyle,
+                                    textAlign: TextAlign.left,
+                                  ).tr()
+                                : Text(
+                                    "ContMODERATE",
+                                    style: explainStyle,
+                                    textAlign: TextAlign.left,
+                                  ).tr(),
+                        const SizedBox(width: 5),
+                        Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: Color.lerp(
+                                    Colors.green,
+                                    Color.lerp(
+                                        Colors.yellow,
+                                        Colors.red,
+                                        station['pollution'] < 0.15
+                                            ? 0
+                                            : (station['pollution'] > 0.3
+                                                ? 1
+                                                : (station['pollution'] -
+                                                        0.15) /
+                                                    0.15)),
+                                    station['pollution'] > 0.15
+                                        ? 1
+                                        : station['pollution'] / 0.15))),
+                      ]),
+                      const Divider(indent: 50, endIndent: 50),
+                      Text(
                         "Pollutants",
                         style: explainStyle,
                         textAlign: TextAlign.left,
                       ).tr(),
-                  const SizedBox(height: 10),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        children: [
-                          for (var i = 0; i < pollutants.length; i++)
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width/10,
-                                ),
-                                Text(
-                                  "${pollutants[i]["pollutant_composition"]}",
-                                  style: explainStyle,
-                                  textAlign: TextAlign.left,
-                                ),
-                                const Expanded(child: SizedBox()),
-                                Text(
-                                  "${pollutants[i]["value"]} µg/m3",
-                                  style: explainStyle,
-                                  textAlign: TextAlign.left,
-                                ),
-                                const SizedBox(width: 5),
-                                Container(
-                                  height: 25,
-                                  width: 25,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    color: Color.lerp(
-                                          Colors.green,
-                                          Color.lerp(
-                                              Colors.yellow,
-                                              Colors.red,
-                                          pollutants[i]['contaminant_scale'] < 0.15
-                                              ? 0
-                                              : (pollutants[i]['contaminant_scale'] >
-                                                      0.3
+                      const SizedBox(height: 10),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(children: [
+                            for (var i = 0; i < pollutants.length; i++)
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 10,
+                                  ),
+                                  Text(
+                                    "${pollutants[i]["pollutant_composition"]}",
+                                    style: explainStyle,
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  const Expanded(child: SizedBox()),
+                                  Text(
+                                    "${pollutants[i]["value"]} µg/m3",
+                                    style: explainStyle,
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Container(
+                                      height: 25,
+                                      width: 25,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          color: Color.lerp(
+                                              Colors.green,
+                                              Color.lerp(
+                                                  Colors.yellow,
+                                                  Colors.red,
+                                                  pollutants[i]['contaminant_scale'] <
+                                                          0.15
+                                                      ? 0
+                                                      : (pollutants[i]['contaminant_scale'] >
+                                                              0.3
+                                                          ? 1
+                                                          : (pollutants[i][
+                                                                      'contaminant_scale'] -
+                                                                  0.15) /
+                                                              0.15)),
+                                              pollutants[i]['contaminant_scale'] >
+                                                      0.15
                                                   ? 1
-                                                  : (pollutants[i]['contaminant_scale'] -
-                                                          0.15) /
-                                                      0.15)), pollutants[i]['contaminant_scale'] > 0.15
-                                                  ? 1
-                                                  : pollutants[i]['contaminant_scale'] /
-                                                      0.15)
-                                  )
-                                ),
-                                SizedBox(
-                                  width: MediaQuery.of(context).size.width/10,
-                                ),
-                              ],
-                            )
-                          ]
+                                                  : pollutants[i]
+                                                          ['contaminant_scale'] /
+                                                      0.15))),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width / 10,
+                                  ),
+                                ],
+                              )
+                          ]),
+                        ),
                       ),
-                    ),
-                  ),
-                  const Divider(indent: 50, endIndent: 50),
-                  Row(children: [
-                    Expanded(
-                      child: Text(
-                        "Calculatedat".tr() +
-                            "${station["last_calculated_at"]}",
-                        style: explainStyle,
-                        textAlign: TextAlign.left,
-                      ),
-                    )
-                  ]),
-                ]),
+                      const Divider(indent: 50, endIndent: 50),
+                      Row(children: [
+                        Expanded(
+                          child: Text(
+                            "Calculatedat".tr() +
+                                "${station["last_calculated_at"]}",
+                            style: explainStyle,
+                            textAlign: TextAlign.left,
+                          ),
+                        )
+                      ]),
+                    ]),
               ),
             );
           } else {

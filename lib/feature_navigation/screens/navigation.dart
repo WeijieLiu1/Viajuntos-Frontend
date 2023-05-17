@@ -56,8 +56,8 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
       // Parse the link and warn the user, if it is not correct
 
       if (link != null) {
-        // https://socialout-production.herokuapp.com/v2/events/i
-        // https://socialout-production.herokuapp.com/v2/users/new_friend?code=xxx
+        // baseLocalUrl+/v2/events/i
+        // baseLocalUrl+/v2/users/new_friend?code=xxx
         var uri = Uri.parse(link);
         var type = uri.pathSegments[1];
         switch (type) {
@@ -65,10 +65,8 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
             var id = uri.pathSegments[2];
             if (id != '') {
               Navigator.of(context).pushNamed('/home');
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EventScreen(id: id)));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => EventScreen(id: id)));
             }
             break;
           case "users":
@@ -77,11 +75,11 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
                 [],
                 {"code": uri.queryParameters["code"]!});
             Navigator.of(context).pushNamed('/home');
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          ProfileScreen(id: json.decode(response.body)["id"])));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProfileScreen(id: json.decode(response.body)["id"])));
             break;
           default:
         }
@@ -121,7 +119,7 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
                     child: Image.asset('assets/logo.png'), fit: BoxFit.fill),
               ),
               const SizedBox(width: 5),
-              Text('SocialOut',
+              Text('Viajuntos',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.secondary,

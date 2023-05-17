@@ -63,7 +63,7 @@ class _SettingsState extends State<Settings> {
                       showShareMenuFriend(url['invite_link'], context);
                     },
                   ),
-                  (user["auth_methods"].contains("socialout"))
+                  (user["auth_methods"].contains("viajuntos"))
                       ? ListTile(
                           leading: const Icon(Icons.verified_user),
                           title: Text('Changepassword').tr(),
