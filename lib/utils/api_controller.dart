@@ -93,7 +93,11 @@ class APICalls {
 
   Future<dynamic> getCollection(String endpoint, List<String> pathParams,
       Map<String, String>? queryParams) async {
+    print("uri96: ");
     final uri = buildUri(endpoint, pathParams, queryParams);
+    // print("uri98: " + uri.toString());
+    // print("uri: " + uri.toString());
+    print("uri2: ");
     final response = await http.get(uri, headers: {
       'Authorization': 'Bearer $_ACCESS_TOKEN',
       'Content-Type': 'application/json'
@@ -102,6 +106,8 @@ class APICalls {
       return _refresh(() => getCollection(endpoint, pathParams, queryParams),
           () => _redirectToLogin());
     }
+    print("response: " + response.toString());
+    print("response: " + response.body.toString());
     return response;
   }
 
@@ -135,7 +141,7 @@ class APICalls {
 
   Future<dynamic> deleteItem(String endpoint, List<String> pathParams) async {
     final uri = buildUri(endpoint, pathParams, null);
-    print(uri);
+    print("uri: " + uri.toString());
     final response = await http.delete(uri, headers: {
       'Authorization': 'Bearer $_ACCESS_TOKEN',
       'Content-Type': 'application/json'
@@ -190,21 +196,66 @@ class APICalls {
   Uri buildUri(String endpoint, List<String> pathParams,
       Map<String, String>? queryParams) {
     String formattedEndpoint = endpoint;
+
     pathParams.forEachIndexed((idx, param) =>
         formattedEndpoint = formattedEndpoint.replaceAll(":$idx", param));
-    return Uri.https(API_URL, formattedEndpoint, queryParams);
+
+    String pathParams2 = "";
+
+    if (queryParams != null) {
+      bool first = true;
+      queryParams.entries.forEach((element) {
+        if (first) {
+          first = false;
+        } else {
+          pathParams2 += "&";
+        }
+        pathParams2 += element.key + "=" + element.value;
+      });
+      // print("queryParams != null: " + queryParams.toString());
+      // pathParams2 += "?";
+
+      // for (int i = 0; i < queryParams.length; i++) {
+      //   if (first) {
+      //     first = false;
+      //   } else {
+      //     pathParams2 += "&";
+      //   }
+      //   print("queryParams print: " + queryParams[i].toString());
+      //   // pathParams2 += queryParams[i].toString() + "=" + queryParams[i];
+      // }
+    }
+    print("object: " + pathParams2);
+    print("formattedEndpoint: " + formattedEndpoint);
+    print("queryParams: " + queryParams.toString());
+    Uri newUri;
+    // newUri =
+    //     Uri.parse(API_URL + formattedEndpoint + "?" + queryParams.toString());
+    newUri = Uri(
+        scheme: 'http',
+        host: "10.0.2.2",
+        port: 5000,
+        path: formattedEndpoint,
+        queryParameters: queryParams?.cast<String, dynamic>());
+    // newUri = Uri.http(API_URL, formattedEndpoint, queryParams);
+    print("object21");
+    return newUri;
   }
 
   void _redirectToLogin() {
     // ignore: todo
     // TODO: Navegar a la login screen
-    // navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
+    navigatorKey.currentState!.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+        (route) => false);
   }
 
   void _redirectToHomeScreen() {
     // ignore: todo
     // TODO: Navegar a la home screen
-    // navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const NavigationBottomBar()), (route) => false);
+    navigatorKey.currentState!.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const NavigationBottomBar()),
+        (route) => false);
   }
 
   factory APICalls() {

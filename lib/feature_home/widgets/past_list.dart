@@ -27,8 +27,12 @@ class _PastEventsListState extends State<PastEventsList> {
           future: api.getCollection('/v3/events/:0', ['pastevents'],
               {"userid": api.getCurrentUser()}),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
+            print("PastEventsList");
             if (snapshot.connectionState == ConnectionState.done) {
+              print("snapshot.toString(): ");
+              // print("snapshot.toString(): " + snapshot.toString());
               var _joined = json.decode(snapshot.data.body);
+              // print("joined: " + _joined);
               if (_joined.isEmpty) {
                 return Center(child: Text('reviewedevent').tr());
               }
