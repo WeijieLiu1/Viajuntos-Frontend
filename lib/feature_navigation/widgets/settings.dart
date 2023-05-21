@@ -96,6 +96,28 @@ class _SettingsState extends State<Settings> {
                         {Navigator.of(context).pushNamed('/languages')},
                   ),
                   ListTile(
+                      leading: const Icon(Icons.delete),
+                      title: Text('DeleteAccount').tr(),
+                      onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                  title: Text('DeleteAccount').tr(),
+                                  content: Text('SureDeleteAccount').tr(),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Cancel').tr(),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                    TextButton(
+                                        child: Text('Yes').tr(),
+                                        onPressed: () {
+                                          APICalls().deleteItem(
+                                              "/v1/users/:0/delete",
+                                              [APICalls().getCurrentUser()]);
+                                          APICalls().logOut();
+                                        })
+                                  ]))),
+                  ListTile(
                     leading: const Icon(Icons.exit_to_app),
                     title: Text('Logout').tr(),
                     onTap: () => {

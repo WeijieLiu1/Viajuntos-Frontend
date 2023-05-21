@@ -102,6 +102,8 @@
     "Passchangedcorrect": "Contraseña cambiada correctamente",
     "Entercurrentpassword": "introduce tu contraseña actual",
     "Settings": "Ajustes",
+    "SureDeleteAccount": "¿Estás seguro de que quieres eliminar tu cuenta?",
+    "DeleteAccount": "Eliminar cuenta",
     "Languages": "Idiomas",
     "notchangepassword": "No puede cambiar su contraseña \nsi no tiene una cuenta de Viajuntos",
     "Logout": "Cerrar sesión",

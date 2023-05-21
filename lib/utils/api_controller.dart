@@ -93,11 +93,11 @@ class APICalls {
 
   Future<dynamic> getCollection(String endpoint, List<String> pathParams,
       Map<String, String>? queryParams) async {
-    print("uri96: ");
+    // print("uri96: ");
     final uri = buildUri(endpoint, pathParams, queryParams);
     // print("uri98: " + uri.toString());
     // print("uri: " + uri.toString());
-    print("uri2: ");
+    // print("uri2: ");
     final response = await http.get(uri, headers: {
       'Authorization': 'Bearer $_ACCESS_TOKEN',
       'Content-Type': 'application/json'
@@ -150,6 +150,7 @@ class APICalls {
       return _refresh(
           () => deleteItem(endpoint, pathParams), () => _redirectToLogin());
     }
+    print(response.body.toString());
     return response;
   }
 
@@ -200,46 +201,12 @@ class APICalls {
     pathParams.forEachIndexed((idx, param) =>
         formattedEndpoint = formattedEndpoint.replaceAll(":$idx", param));
 
-    String pathParams2 = "";
-
-    if (queryParams != null) {
-      bool first = true;
-      queryParams.entries.forEach((element) {
-        if (first) {
-          first = false;
-        } else {
-          pathParams2 += "&";
-        }
-        pathParams2 += element.key + "=" + element.value;
-      });
-      // print("queryParams != null: " + queryParams.toString());
-      // pathParams2 += "?";
-
-      // for (int i = 0; i < queryParams.length; i++) {
-      //   if (first) {
-      //     first = false;
-      //   } else {
-      //     pathParams2 += "&";
-      //   }
-      //   print("queryParams print: " + queryParams[i].toString());
-      //   // pathParams2 += queryParams[i].toString() + "=" + queryParams[i];
-      // }
-    }
-    print("object: " + pathParams2);
-    print("formattedEndpoint: " + formattedEndpoint);
-    print("queryParams: " + queryParams.toString());
-    Uri newUri;
-    // newUri =
-    //     Uri.parse(API_URL + formattedEndpoint + "?" + queryParams.toString());
-    newUri = Uri(
+    return Uri(
         scheme: 'http',
         host: "10.0.2.2",
         port: 5000,
         path: formattedEndpoint,
         queryParameters: queryParams?.cast<String, dynamic>());
-    // newUri = Uri.http(API_URL, formattedEndpoint, queryParams);
-    print("object21");
-    return newUri;
   }
 
   void _redirectToLogin() {

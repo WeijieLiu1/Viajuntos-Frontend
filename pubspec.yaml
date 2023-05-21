@@ -63,7 +63,9 @@ dependencies:
   socket_io_client: ^2.0.2
   flutter_local_notifications: ^12.0.4
   add_2_calendar: ^2.1.2
-
+  image_picker: ^0.8.5
+  video_player: ^2.5.1
+  #google_maps_flutter: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

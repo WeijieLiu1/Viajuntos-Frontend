@@ -102,6 +102,8 @@
     "Passchangedcorrect": "密码已修改",
     "Entercurrentpassword": "输入您当前的密码",
     "Settings": "设置",
+    "SureDeleteAccount": "您确定想要删除您的账号吗?",
+    "DeleteAccount": "删除账号",
     "Languages": "语言",
     "notchangepassword": "您不能修改密码,因为这不是一个Viajuntos账号",
     "Logout": "登出",

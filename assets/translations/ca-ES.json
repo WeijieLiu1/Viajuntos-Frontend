@@ -102,6 +102,8 @@
     "Passchangedcorrect": "La contrasenya ha canviat correctament",
     "Entercurrentpassword": "Introduïu la vostra contrasenya actual",
     "Settings": "Configuració",
+    "SureDeleteAccount": "Esteu segur que voleu eliminar el compte?",
+    "DeleteAccount": "Eliminar compte",
     "Languages": "Idiomes",
     "notchangepassword": "No pots canviar la teva contrasenya \nsi no tens un compte de Viajuntos",
     "Logout": "Tancar sessió",

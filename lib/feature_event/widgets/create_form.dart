@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:typed_data';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:so_frontend/feature_event/screens/creation_sucess.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:so_frontend/utils/api_controller.dart';
@@ -37,6 +40,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
   final TextEditingController _max_participants =
       TextEditingController(text: '');
   final TextEditingController _image = TextEditingController(text: '');
+  late Uint8List _imageContent;
 
   void _selectTime() async {
     TimeOfDay? newTime = await showTimePicker(
@@ -49,6 +53,16 @@ class _CreateEventFormState extends State<CreateEventForm> {
         _endtime = newTime;
       });
     }
+  }
+
+  Future getImage() async {
+    // // var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    // XFile? image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    // setState(() {
+    //   _imageContent = image as Uint8List;
+    //   print(_imageContent);
+    // });
+    // // uploadImage();
   }
 
   void _selectEndTime() async {
@@ -262,9 +276,14 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           fontWeight: FontWeight.w600,
                           fontSize: 16))
                   .tr(),
-              TextFormField(
-                controller: _image,
-                decoration: InputDecoration(hintText: 'Addimageevent'.tr()),
+              // TextFormField(
+              //   controller: _image,
+              //   decoration: InputDecoration(hintText: 'Addimageevent'.tr()),
+              // ),
+              FloatingActionButton(
+                onPressed: getImage,
+                tooltip: 'Pick Image',
+                child: Icon(Icons.add_a_photo),
               ),
               const SizedBox(height: 20),
             ],
@@ -277,7 +296,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
           padding:
               const EdgeInsets.only(top: 16, bottom: 16, left: 100, right: 100),
           primary: Colors.white,
-          backgroundColor: HexColor('57CC99'),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         onPressed: () async {
@@ -308,7 +327,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
             "longitud": double.parse(_longitude.text),
             "latitude": double.parse(_latitude.text),
             "max_participants": int.parse(_max_participants.text),
-            "event_image_uri": _image.text
+            "event_image_uri": _imageContent
           };
 
           var response = await api.postItem('/v3/events/', [], body);
@@ -321,7 +340,9 @@ class _CreateEventFormState extends State<CreateEventForm> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => CreationSucess(image: _image.text)));
+                    builder: (context) =>
+                        //todo: editar aqui
+                        CreationSucess(image: _imageContent.toString())));
           } else if (response.statusCode == 400) {
             snackBar = SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,

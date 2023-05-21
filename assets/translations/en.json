@@ -102,6 +102,8 @@
     "Passchangedcorrect": "Password changed correctly",
     "Entercurrentpassword": "Enter your current password",
     "Settings": "Settings",
+    "SureDeleteAccount": "Are you sure you want to delete your account?",
+    "DeleteAccount": "Delete Account",
     "Languages": "Languages",
     "notchangepassword": "You can not change your password \nif you do not have a Viajuntos account",
     "Logout": "Logout",
