@@ -230,7 +230,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                                             MaterialPageRoute(
                                                 builder: (context) =>
                                                     LinkScreen(email, password,
-                                                        "socialout", "")),
+                                                        "viajuntos", "")),
                                             (route) => false)
                                       },
                                   //Navigator.of(context).pushNamed('/welcome'),

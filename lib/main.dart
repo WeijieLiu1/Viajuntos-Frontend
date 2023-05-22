@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:so_frontend/feature_chat/screens/chat_screen.dart';
 import 'package:so_frontend/feature_chat/screens/listChat_screen.dart';
+import 'package:so_frontend/feature_chat/screens/test_screen.dart';
 import 'package:so_frontend/feature_map/screens/map.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:so_frontend/feature_navigation/screens/navigation.dart';
@@ -10,7 +11,7 @@ import 'package:so_frontend/feature_navigation/screens/profile.dart';
 import 'package:so_frontend/feature_user/screens/edit_profile.dart';
 import 'package:so_frontend/feature_user/screens/loading_page.dart';
 import 'package:so_frontend/feature_user/screens/login_screen.dart';
-import 'package:so_frontend/feature_user/screens/register_socialOut.dart';
+import 'package:so_frontend/feature_user/screens/register_viajuntos.dart';
 import 'package:so_frontend/feature_user/screens/welcome_screen.dart';
 import 'package:so_frontend/feature_user/screens/signup_screen.dart';
 import 'package:so_frontend/feature_user/screens/change_password.dart';
@@ -25,7 +26,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   //final prefs = await SharedPreferences.getInstance();
-  
+
   runApp(
     EasyLocalization(
       supportedLocales: [
@@ -51,13 +52,13 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     APICalls().tryInitializeFromPreferences();
-    
+
     return MaterialApp(
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
       navigatorKey: navigatorKey,
-      title: 'SocialOut',
+      title: 'Viajuntos',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           cardColor: Colors.white,
@@ -101,7 +102,176 @@ class MyApp extends StatelessWidget {
         '/edit_profile': (_) => const EditarProfile(),
         '/change_password': (_) => const ChangePassword(),
         '/languages': (_) => const LanguagesOptions(),
+        '/testScreen': (_) => const TestScreen(),
       },
     );
   }
 }
+
+
+// // socket.io example
+// import 'package:flutter/material.dart';
+// import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+// void main() => runApp(MyApp());
+
+// class MyApp extends StatefulWidget {
+//   @override
+//   _MyAppState createState() => _MyAppState();
+// }
+
+// class _MyAppState extends State<MyApp> {
+//   late IO.Socket socket;
+//   List<String> messages = [];
+//   TextEditingController messageController = TextEditingController();
+//   late String currentName = "Tommy";
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     socket = IO.io('http://127.0.0.1:5000');
+//     socket.on('message', (data) {
+//       setState(() {
+//         messages.add(data['message']);
+//       });
+//     });
+//     socket.on('name', (data) {
+//       setState(() {
+//         currentName = data['name'];
+//       });
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         home: Scaffold(
+//             appBar: AppBar(title: Text('Chat')),
+//             body: Column(children: [
+//               Text('Hello $currentName!'),
+//               Expanded(
+//                   child: ListView.builder(
+//                       itemCount: messages.length,
+//                       itemBuilder: (context, index) => ListTile(
+//                             title: Text('${messages[index]}'),
+//                             subtitle: Text(index == 0 ? 'You' : currentName),
+//                           ))),
+//               Row(children: [
+//                 Expanded(child: TextField(controller: messageController)),
+//                 ElevatedButton(
+//                     onPressed: () {
+//                       socket.emit('message',
+//                           {'message': messageController.text, 'name': 'You'});
+//                       setState(() {
+//                         messageController.clear();
+//                       });
+//                     },
+//                     child: Text('Send'))
+//               ])
+//             ])));
+//   }
+// }
+
+
+
+// // add event to system calendar example
+// import 'package:flutter/material.dart';
+
+// import 'package:add_2_calendar/add_2_calendar.dart';
+
+// void main() => runApp(MyApp());
+
+// class MyApp extends StatelessWidget {
+//   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+//       GlobalKey<ScaffoldMessengerState>();
+
+//   Event buildEvent({Recurrence? recurrence}) {
+//     return Event(
+//       title: 'Test eventeee',
+//       description: 'example',
+//       location: 'Flutter app',
+//       startDate: DateTime.now(),
+//       endDate: DateTime.now().add(Duration(minutes: 30)),
+//       allDay: false,
+//       iosParams: IOSParams(
+//           // reminder: Duration(minutes: 40),
+//           // url: "http://example.com",
+//           ),
+//       androidParams: AndroidParams(
+//         emailInvites: ["test@example.com"],
+//       ),
+//       recurrence: recurrence,
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       scaffoldMessengerKey: scaffoldMessengerKey,
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: const Text('Add event to calendar example'),
+//         ),
+//         body: ListView(
+//           // mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             ListTile(
+//               title: Text('Add normal event'),
+//               trailing: Icon(Icons.calendar_today),
+//               onTap: () {
+//                 Add2Calendar.addEvent2Cal(
+//                   buildEvent(),
+//                 );
+//               },
+//             ),
+//             Divider(),
+//             ListTile(
+//               title: const Text('Add event with recurrence 1'),
+//               subtitle: const Text("weekly for 3 months"),
+//               trailing: Icon(Icons.calendar_today),
+//               onTap: () {
+//                 Add2Calendar.addEvent2Cal(buildEvent(
+//                   recurrence: Recurrence(
+//                     frequency: Frequency.weekly,
+//                     endDate: DateTime.now().add(Duration(days: 60)),
+//                   ),
+//                 ));
+//               },
+//             ),
+//             Divider(),
+//             ListTile(
+//               title: const Text('Add event with recurrence 2'),
+//               subtitle: const Text("every 2 months for 6 times (1 year)"),
+//               trailing: Icon(Icons.calendar_today),
+//               onTap: () {
+//                 Add2Calendar.addEvent2Cal(buildEvent(
+//                   recurrence: Recurrence(
+//                     frequency: Frequency.monthly,
+//                     interval: 2,
+//                     ocurrences: 6,
+//                   ),
+//                 ));
+//               },
+//             ),
+//             Divider(),
+//             ListTile(
+//               title: const Text('Add event with recurrence 3'),
+//               subtitle:
+//                   const Text("RRULE (android only) every year for 10 years"),
+//               trailing: Icon(Icons.calendar_today),
+//               onTap: () {
+//                 Add2Calendar.addEvent2Cal(buildEvent(
+//                   recurrence: Recurrence(
+//                     frequency: Frequency.yearly,
+//                     rRule: 'FREQ=YEARLY;COUNT=10;WKST=SU',
+//                   ),
+//                 ));
+//               },
+//             ),
+//             Divider(),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

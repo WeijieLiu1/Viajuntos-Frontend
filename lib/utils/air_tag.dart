@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:so_frontend/utils/globals.dart';
 import 'package:so_frontend/utils/ml_predictions.dart';
 import 'package:skeletons/skeletons.dart';
 
@@ -24,16 +25,17 @@ class _AirTagState extends State<AirTag> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: http.get(Uri.parse(
-            'https://socialout-production.herokuapp.com/v1/air/location?long=' +
-                widget.longitud +
-                '&lat=' +
-                widget.latitude)),
+        future: http.get(Uri.parse(baseLocalUrl +
+            '/v1/air/location?long=' +
+            widget.longitud +
+            '&lat=' +
+            widget.latitude)),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             var _airQuality = [json.decode(snapshot.data.body)];
             return InkWell(
-              onTap: () => showMLPredictions(context, widget.id, widget.longitud, widget.latitude),
+              onTap: () => showMLPredictions(
+                  context, widget.id, widget.longitud, widget.latitude),
               child: Container(
                 decoration: BoxDecoration(
                     color: _airQuality[0]["pollution"] < 0.15

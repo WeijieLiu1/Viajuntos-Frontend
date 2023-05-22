@@ -8,14 +8,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:so_frontend/feature_navigation/screens/navigation.dart';
 import 'package:so_frontend/feature_user/screens/welcome_screen.dart';
 import 'package:so_frontend/main.dart';
+import 'package:so_frontend/utils/globals.dart';
 
 class APICalls {
   static final APICalls _instance = APICalls._internal();
 
   // Seguramente se pueda usar patrón singleton.
-  final String _REFRESH_TOKEN_PREFS = 'socialout_refresh_token';
+  final String _REFRESH_TOKEN_PREFS = 'viajuntos_refresh_token';
 
-  final String API_URL = 'socialout-production.herokuapp.com';
+  // final String API_URL = 'viajuntos-production.herokuapp.com';
+  final String API_URL = baseLocalUrl;
   final String _REFRESH_ENDPOINT = '/v1/users/refresh';
   final int _UNAUTHORIZED = 401;
 
@@ -50,10 +52,10 @@ class APICalls {
 
   void tryInitializeFromPreferences() async {
     // Esta función se llama al iniciar la aplicación. Determina si el usuario debe hacer login o si ya "se acuerda".
-    // Leer las preferences, buscar "socialout_refresh". Si no existe redirecciona a la screen de logIn
-    final bool couldReadRefreshFromPreferences = await getRefreshFromPreferences();
+    // Leer las preferences, buscar "viajuntos_refresh". Si no existe redirecciona a la screen de logIn
+    final bool couldReadRefreshFromPreferences =
+        await getRefreshFromPreferences();
     if (couldReadRefreshFromPreferences) {
-  
       _refresh(() => _redirectToHomeScreen(), () => _redirectToLogin());
     } else {
       _redirectToLogin();
@@ -91,7 +93,11 @@ class APICalls {
 
   Future<dynamic> getCollection(String endpoint, List<String> pathParams,
       Map<String, String>? queryParams) async {
+    // print("uri96: ");
     final uri = buildUri(endpoint, pathParams, queryParams);
+    // print("uri98: " + uri.toString());
+    // print("uri: " + uri.toString());
+    // print("uri2: ");
     final response = await http.get(uri, headers: {
       'Authorization': 'Bearer $_ACCESS_TOKEN',
       'Content-Type': 'application/json'
@@ -100,6 +106,8 @@ class APICalls {
       return _refresh(() => getCollection(endpoint, pathParams, queryParams),
           () => _redirectToLogin());
     }
+    print("response: " + response.toString());
+    print("response: " + response.body.toString());
     return response;
   }
 
@@ -125,24 +133,24 @@ class APICalls {
       'Content-Type': 'application/json'
     });
     if (response.statusCode == _UNAUTHORIZED) {
-      return _refresh(
-          () => putItem(endpoint, pathParams, bodyData),
+      return _refresh(() => putItem(endpoint, pathParams, bodyData),
           () => _redirectToLogin());
-    } 
+    }
     return response;
   }
 
   Future<dynamic> deleteItem(String endpoint, List<String> pathParams) async {
     final uri = buildUri(endpoint, pathParams, null);
-    print(uri);
+    print("uri: " + uri.toString());
     final response = await http.delete(uri, headers: {
       'Authorization': 'Bearer $_ACCESS_TOKEN',
       'Content-Type': 'application/json'
     });
     if (response.statusCode == _UNAUTHORIZED) {
-      return _refresh(() => deleteItem(endpoint, pathParams),
-          () => _redirectToLogin());
-    } 
+      return _refresh(
+          () => deleteItem(endpoint, pathParams), () => _redirectToLogin());
+    }
+    print(response.body.toString());
     return response;
   }
 
@@ -189,21 +197,32 @@ class APICalls {
   Uri buildUri(String endpoint, List<String> pathParams,
       Map<String, String>? queryParams) {
     String formattedEndpoint = endpoint;
+
     pathParams.forEachIndexed((idx, param) =>
         formattedEndpoint = formattedEndpoint.replaceAll(":$idx", param));
-    return Uri.https(API_URL, formattedEndpoint, queryParams);
+
+    return Uri(
+        scheme: 'http',
+        host: "10.0.2.2",
+        port: 5000,
+        path: formattedEndpoint,
+        queryParameters: queryParams?.cast<String, dynamic>());
   }
 
   void _redirectToLogin() {
     // ignore: todo
     // TODO: Navegar a la login screen
-    navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
+    navigatorKey.currentState!.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+        (route) => false);
   }
 
   void _redirectToHomeScreen() {
     // ignore: todo
     // TODO: Navegar a la home screen
-    navigatorKey.currentState!.pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const NavigationBottomBar()), (route) => false);
+    navigatorKey.currentState!.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const NavigationBottomBar()),
+        (route) => false);
   }
 
   factory APICalls() {

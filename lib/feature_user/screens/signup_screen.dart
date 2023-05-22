@@ -163,8 +163,8 @@ class SignUpScreen extends StatelessWidget {
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
-            title: Text("UserexistsSocialOut").tr(),
-            content: Text("LinkSocialOut").tr(),
+            title: Text("UserexistsViajuntos").tr(),
+            content: Text("LinkViajuntos").tr(),
             actions: <Widget>[
               TextButton(
                   onPressed: () => {
@@ -192,7 +192,7 @@ class SignUpScreen extends StatelessWidget {
           barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: Text("methodnotavailableemail").tr(),
-            content: Text("LinkSocialOut").tr(),
+            content: Text("LinkViajuntos").tr(),
             actions: <Widget>[
               TextButton(
                   onPressed: () => Navigator.pushAndRemoveUntil(
@@ -258,8 +258,8 @@ class SignUpScreen extends StatelessWidget {
           context: context,
           barrierDismissible: false,
           builder: (context) => AlertDialog(
-            title: Text("UserexistsSocialOut").tr(),
-            content: Text("LinkSocialOut").tr(),
+            title: Text("UserexistsViajuntos").tr(),
+            content: Text("LinkViajuntos").tr(),
             actions: <Widget>[
               TextButton(
                   onPressed: () => {
@@ -287,7 +287,7 @@ class SignUpScreen extends StatelessWidget {
           barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: Text("methodnotavailableemail").tr(),
-            content: Text("LinkSocialOut").tr(),
+            content: Text("LinkViajuntos").tr(),
             actions: <Widget>[
               TextButton(
                   onPressed: () => Navigator.pushAndRemoveUntil(

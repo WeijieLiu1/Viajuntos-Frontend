@@ -3,6 +3,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:so_frontend/utils/api_controller.dart';
+import 'package:so_frontend/utils/globals.dart';
 import 'package:so_frontend/utils/like_button.dart';
 import 'dart:convert';
 import 'package:so_frontend/feature_event/screens/event_screen.dart';
@@ -147,7 +148,8 @@ class _LikedListState extends State<LikedList> {
                                           .onSurface,
                                       icon: const Icon(Icons.share),
                                       onPressed: () => showShareMenu(
-                                          'https://socialout-production.herokuapp.com/v3/events/' +
+                                          baseLocalUrl +
+                                              '/v3/events/' +
                                               _joined[index]["id"],
                                           context)),
                                   const SizedBox(width: 10),

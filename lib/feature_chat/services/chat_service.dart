@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:so_frontend/utils/api_controller.dart';
 
+import '../../utils/globals.dart';
+
 class chatAPI {
-  final String basicUrl = "https://socialout-production.herokuapp.com/";
+  final String basicUrl = baseLocalUrl + "/";
 
   /* Crear el chat */
   Future<http.Response> createChat(
@@ -51,7 +53,7 @@ class chatAPI {
     String participantId,
   ) async {
     String _path = '/v1/chat/Message/';
-    String aux = "socialout-production.herokuapp.com";
+    String aux = baseLocalUrl;
 
     final queryParameters = {
       'participant_id': participantId,

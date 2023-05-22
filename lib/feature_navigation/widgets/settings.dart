@@ -63,7 +63,7 @@ class _SettingsState extends State<Settings> {
                       showShareMenuFriend(url['invite_link'], context);
                     },
                   ),
-                  (user["auth_methods"].contains("socialout"))
+                  (user["auth_methods"].contains("viajuntos"))
                       ? ListTile(
                           leading: const Icon(Icons.verified_user),
                           title: Text('Changepassword').tr(),
@@ -95,6 +95,28 @@ class _SettingsState extends State<Settings> {
                     onTap: () =>
                         {Navigator.of(context).pushNamed('/languages')},
                   ),
+                  ListTile(
+                      leading: const Icon(Icons.delete),
+                      title: Text('DeleteAccount').tr(),
+                      onTap: () => showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                  title: Text('DeleteAccount').tr(),
+                                  content: Text('SureDeleteAccount').tr(),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Cancel').tr(),
+                                      onPressed: () => Navigator.pop(context),
+                                    ),
+                                    TextButton(
+                                        child: Text('Yes').tr(),
+                                        onPressed: () {
+                                          APICalls().deleteItem(
+                                              "/v1/users/:0/delete",
+                                              [APICalls().getCurrentUser()]);
+                                          APICalls().logOut();
+                                        })
+                                  ]))),
                   ListTile(
                     leading: const Icon(Icons.exit_to_app),
                     title: Text('Logout').tr(),

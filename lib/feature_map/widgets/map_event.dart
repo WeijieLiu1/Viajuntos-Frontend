@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:so_frontend/utils/air_tag.dart';
 import 'package:so_frontend/utils/api_controller.dart';
+import 'package:so_frontend/utils/globals.dart';
 import 'dart:convert';
 import 'package:so_frontend/utils/share.dart';
 import 'package:so_frontend/utils/like_button.dart';
@@ -134,8 +135,7 @@ class _EventWidgetState extends State<EventWidget> {
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FutureBuilder(
               future: http.get(Uri.parse(
-                  'https://socialout-production.herokuapp.com/v1/users/' +
-                      widget.event["user_creator"])),
+                  baseLocalUrl + '/v1/users/' + widget.event["user_creator"])),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   var user = json.decode(snapshot.data.body);
@@ -149,27 +149,25 @@ class _EventWidgetState extends State<EventWidget> {
                 }
               }),
           FutureBuilder(
-            future: es.getAPhoto(widget.event["user_creator"]),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                var photoUrl = snapshot.data;
-                return CircleAvatar(
-                  backgroundImage: photoUrl != '' ? NetworkImage(photoUrl) as ImageProvider : AssetImage('assets/noProfileImage.jpg'),
-                );
-              }
-              else {
-                return const Center(
-                  child: SkeletonItem(
-                      child: SkeletonAvatar(
-                    style: SkeletonAvatarStyle(
-                        shape: BoxShape.circle,
-                        width: 36,
-                        height: 36),
-                  )),
-                );
-              }
-            } 
-          )
+              future: es.getAPhoto(widget.event["user_creator"]),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  var photoUrl = snapshot.data;
+                  return CircleAvatar(
+                    backgroundImage: photoUrl != ''
+                        ? NetworkImage(photoUrl) as ImageProvider
+                        : AssetImage('assets/noProfileImage.jpg'),
+                  );
+                } else {
+                  return const Center(
+                    child: SkeletonItem(
+                        child: SkeletonAvatar(
+                      style: SkeletonAvatarStyle(
+                          shape: BoxShape.circle, width: 36, height: 36),
+                    )),
+                  );
+                }
+              })
         ]),
         const Divider(
             color: Color.fromARGB(255, 53, 52, 52),
@@ -192,9 +190,7 @@ class _EventWidgetState extends State<EventWidget> {
               icon: const Icon(Icons.share,
                   size: 30.0, color: Color.fromARGB(255, 110, 108, 108)),
               onPressed: () => showShareMenu(
-                  'https://socialout-production.herokuapp.com/v3/events/' +
-                      widget.event["id"],
-                  context)),
+                  baseLocalUrl + '/v3/events/' + widget.event["id"], context)),
           const Divider(endIndent: 30),
           FutureBuilder(
               future: api.getCollection('/v2/events/participants', [],

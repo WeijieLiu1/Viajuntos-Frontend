@@ -4,13 +4,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:so_frontend/utils/api_controller.dart';
 
-class userAPI {
-  final String basicUrl = "https://socialout-production.herokuapp.com/v1/users/";
-  final String basicUrl2 = "https://socialout-production.herokuapp.com/v2/users/";
+import '../../utils/globals.dart';
 
-  /* Comprobar que un email socialout existe o no en la BD */
+class userAPI {
+  final String basicUrl = baseLocalUrl + "/v1/users/";
+  final String basicUrl2 = baseLocalUrl + "/v2/users/";
+
+  /* Comprobar que un email viajuntos existe o no en la BD */
   Future<Map<String, dynamic>> checkUserEmail(email) async {
-    String _path = 'register/check?type=socialout&email=';
+    String _path = 'register/check?type=viajuntos&email=';
 
     String finalUri = basicUrl + _path + email;
     final response = await http.get(Uri.parse(finalUri));
@@ -21,11 +23,13 @@ class userAPI {
   Future<Map<String, dynamic>> checkEmailForNewPassword(email) async {
     String _path = 'forgot_pw?email=';
     String finalUri = basicUrl2 + _path + email;
+    print("finalUri" + finalUri);
     final response = await http.get(Uri.parse(finalUri));
+    print("response" + response.toString());
     return json.decode(response.body);
   }
 
-  /* Comprobar que un Google socialout existe o no en la BD */
+  /* Comprobar que un Google viajuntos existe o no en la BD */
   Future<http.Response> checkUserGoogle(gtoken) async {
     String _path = 'register/check?type=google&token=';
     print(gtoken);
@@ -37,7 +41,7 @@ class userAPI {
     return response;
   }
 
-  /* Comprobar que un Facebook socialout existe o no en la BD */
+  /* Comprobar que un Facebook viajuntos existe o no en la BD */
   Future<http.Response> checkUserFacebook(ftoken) async {
     String _path = 'register/check?type=facebook&token=';
 
@@ -71,7 +75,7 @@ class userAPI {
       List languages,
       String hobbies,
       String codiVeri) async {
-    String _path = 'register/socialout';
+    String _path = 'register/viajuntos';
     String finalUri = basicUrl + _path;
     var str = {
       "email": email,
@@ -97,9 +101,9 @@ class userAPI {
     return response.statusCode;
   }
 
-  /* check email para Login con cuenta SocialOut */
-  Future<Map<String, dynamic>> checkloginSocialOut(String email) async {
-    String _path = 'login/check?type=socialout&email=';
+  /* check email para Login con cuenta Viajuntos */
+  Future<Map<String, dynamic>> checkloginViajuntos(String email) async {
+    String _path = 'login/check?type=viajuntos&email=';
 
     String finalUri = basicUrl + _path + email;
     final response = await http.get(Uri.parse(finalUri));
@@ -128,9 +132,9 @@ class userAPI {
     return response.statusCode;
   }
 
-  /* login con cuenta socialOut*/
-  Future<int> loginSocialOut(String email, String password) async {
-    String _path = 'login/socialout';
+  /* login con cuenta viajuntos*/
+  Future<int> loginViajuntos(String email, String password) async {
+    String _path = 'login/viajuntos';
     String finalUri = basicUrl + _path;
     var str = {"email": email, "password": password};
     final response = await http.post(Uri.parse(finalUri),
@@ -148,7 +152,7 @@ class userAPI {
     return response.statusCode;
   }
 
-  /*paso de para link SocialOut y cuenta social*/
+  /*paso de para link Viajuntos y cuenta social*/
   Future<int> linkRegistrerAndLogin(String email, String passw, String codiVeri,
       String type, String token) async {
     String _path = 'auth_method';
@@ -156,7 +160,7 @@ class userAPI {
 
     var str = {};
 
-    if (type == "socialout") {
+    if (type == "viajuntos") {
       str = {
         "type": type,
         "credentials": {

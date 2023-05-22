@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../../utils/globals.dart';
+
 class StationsAPI {
-  final String url = "https://socialout-production.herokuapp.com/v1/air/stations";
+  final String url = baseLocalUrl + "/v1/air/stations";
 
   Future<List> getAllStations() async {
     final response = await http.get(Uri.parse(url));
