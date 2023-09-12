@@ -2,7 +2,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_map/services/stations.dart';
+import 'package:viajuntos/feature_map/services/stations.dart';
 import 'dart:convert';
 
 import '../../utils/globals.dart';

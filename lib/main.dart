@@ -1,21 +1,21 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_chat/screens/chat_screen.dart';
-import 'package:so_frontend/feature_chat/screens/listChat_screen.dart';
-import 'package:so_frontend/feature_chat/screens/test_screen.dart';
-import 'package:so_frontend/feature_map/screens/map.dart';
+import 'package:viajuntos/feature_chat/screens/chat_screen.dart';
+import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
+import 'package:viajuntos/feature_chat/screens/test_screen.dart';
+import 'package:viajuntos/feature_map/screens/map.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:so_frontend/feature_navigation/screens/navigation.dart';
-import 'package:so_frontend/feature_navigation/screens/profile.dart';
-import 'package:so_frontend/feature_user/screens/edit_profile.dart';
-import 'package:so_frontend/feature_user/screens/loading_page.dart';
-import 'package:so_frontend/feature_user/screens/login_screen.dart';
-import 'package:so_frontend/feature_user/screens/register_viajuntos.dart';
-import 'package:so_frontend/feature_user/screens/welcome_screen.dart';
-import 'package:so_frontend/feature_user/screens/signup_screen.dart';
-import 'package:so_frontend/feature_user/screens/change_password.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/feature_navigation/screens/navigation.dart';
+import 'package:viajuntos/feature_navigation/screens/profile.dart';
+import 'package:viajuntos/feature_user/screens/edit_profile.dart';
+import 'package:viajuntos/feature_user/screens/loading_page.dart';
+import 'package:viajuntos/feature_user/screens/login_screen.dart';
+import 'package:viajuntos/feature_user/screens/register_viajuntos.dart';
+import 'package:viajuntos/feature_user/screens/welcome_screen.dart';
+import 'package:viajuntos/feature_user/screens/signup_screen.dart';
+import 'package:viajuntos/feature_user/screens/change_password.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'feature_user/screens/languages.dart';

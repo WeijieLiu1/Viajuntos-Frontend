@@ -2,8 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:so_frontend/utils/globals.dart';
-import 'package:so_frontend/utils/ml_predictions.dart';
+import 'package:viajuntos/utils/globals.dart';
+import 'package:viajuntos/utils/ml_predictions.dart';
 import 'package:skeletons/skeletons.dart';
 
 class AirTag extends StatefulWidget {

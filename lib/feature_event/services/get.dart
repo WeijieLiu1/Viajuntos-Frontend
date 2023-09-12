@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:so_frontend/utils/globals.dart';
+import 'package:viajuntos/utils/globals.dart';
 
 class GetEventsAPI {
   final String url = baseLocalUrl + '/v2/events/';

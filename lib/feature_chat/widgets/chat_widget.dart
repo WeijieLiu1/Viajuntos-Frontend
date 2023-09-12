@@ -4,8 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:so_frontend/feature_chat/services/chat_service.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/feature_chat/services/chat_service.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SendWidget extends StatelessWidget {

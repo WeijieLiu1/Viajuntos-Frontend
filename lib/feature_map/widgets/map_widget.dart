@@ -3,11 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/plugin_api.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:so_frontend/feature_map/widgets/map_event.dart';
-import 'package:so_frontend/feature_map/widgets/map_station.dart';
+import 'package:viajuntos/feature_map/widgets/map_event.dart';
+import 'package:viajuntos/feature_map/widgets/map_station.dart';
 import 'dart:convert';
-import 'package:so_frontend/feature_map/services/stations.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/feature_map/services/stations.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'package:http/http.dart' as http;
 
 import '../../utils/globals.dart';

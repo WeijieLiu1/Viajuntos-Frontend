@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:so_frontend/utils/share_menu.dart';
-import 'package:so_frontend/utils/share_menu_friend.dart';
+import 'package:viajuntos/utils/share_menu.dart';
+import 'package:viajuntos/utils/share_menu_friend.dart';
 
 showShareMenu(String url, BuildContext context) {
   showModalBottomSheet(

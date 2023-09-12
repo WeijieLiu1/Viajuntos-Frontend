@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_home/widgets/user_events.dart';
-import 'package:so_frontend/feature_home/widgets/events_tab_menu.dart';
+import 'package:viajuntos/feature_home/widgets/user_events.dart';
+import 'package:viajuntos/feature_home/widgets/events_tab_menu.dart';
 
 class MainHomeScreen extends StatelessWidget {
   const MainHomeScreen({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 {
-    "name": "so_frontend",
-    "short_name": "so_frontend",
+    "name": "viajuntos",
+    "short_name": "viajuntos",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

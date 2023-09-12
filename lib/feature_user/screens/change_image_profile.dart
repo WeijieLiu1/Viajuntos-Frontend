@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_user/screens/select_image_profile.dart';
-import 'package:so_frontend/feature_user/services/externalService.dart';
+import 'package:viajuntos/feature_user/screens/select_image_profile.dart';
+import 'package:viajuntos/feature_user/services/externalService.dart';
 
 class PerfilImage extends StatefulWidget {
   final String idUser;

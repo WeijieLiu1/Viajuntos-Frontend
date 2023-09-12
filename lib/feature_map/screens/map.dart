@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_map/widgets/map_widget.dart';
-import 'package:so_frontend/feature_map/services/geolocation.dart';
+import 'package:viajuntos/feature_map/widgets/map_widget.dart';
+import 'package:viajuntos/feature_map/services/geolocation.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({Key? key}) : super(key: key);
@@ -33,38 +33,35 @@ class MapScreenState extends State<MapScreen> {
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: FutureBuilder(
-          future: gs.getLocation(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              var lat = snapshot.data[0];
-              var long = snapshot.data[1];
-              return Stack(children: [
-                lat == 0 && long == 0
-                    ? Container(decoration: const BoxDecoration(color: Colors.grey))
-                    : MapWidget(lat: lat, long: long, isEvent: false),
-                Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 16),
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Theme.of(context).colorScheme.background,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back_ios_new_rounded,
-                          size: 22,
-                          color: Theme.of(context).colorScheme.onBackground),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+            future: gs.getLocation(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                var lat = snapshot.data[0];
+                var long = snapshot.data[1];
+                return Stack(children: [
+                  lat == 0 && long == 0
+                      ? Container(
+                          decoration: const BoxDecoration(color: Colors.grey))
+                      : MapWidget(lat: lat, long: long, isEvent: false),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40, left: 16),
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Theme.of(context).colorScheme.background,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back_ios_new_rounded,
+                            size: 22,
+                            color: Theme.of(context).colorScheme.onBackground),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
                     ),
-                  ),
-                )
-              ]);
-            }
-            else {
-              return const Center(
-                child: CircularProgressIndicator()
-              );
-            }
-          } 
-        ));
+                  )
+                ]);
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            }));
   }
 }

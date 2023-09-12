@@ -2,11 +2,11 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_event/widgets/event_map.dart';
-import 'package:so_frontend/feature_navigation/screens/profile.dart';
-import 'package:so_frontend/feature_user/services/externalService.dart';
-import 'package:so_frontend/utils/air_tag.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/feature_event/widgets/event_map.dart';
+import 'package:viajuntos/feature_navigation/screens/profile.dart';
+import 'package:viajuntos/feature_user/services/externalService.dart';
+import 'package:viajuntos/utils/air_tag.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 import 'package:skeletons/skeletons.dart';
 
@@ -42,7 +42,7 @@ class _EventState extends State<Event> {
         .getCollection('/v2/events/participants', [], {"eventid": idEvent});
     var attendes = json.decode(response.body);
     List aux = [];
-   
+
     for (var v in attendes) {
       final response2 = await es.getAPhoto(v);
       if (response2 != 'Fail') {
@@ -51,12 +51,11 @@ class _EventState extends State<Event> {
         aux.add({"user_id": v, "image": ''});
       }
     }
-    
+
     print(attendes);
     print(attendesEvent);
     return aux;
-  } 
-
+  }
 
   // Future<String> getProfilePhoto(String idUsuar) async {
   //   final response = await es.getAPhoto(idUsuar);
@@ -68,7 +67,6 @@ class _EventState extends State<Event> {
   //   }
   //   return urlProfilePhoto;
   // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -196,37 +194,51 @@ class _EventState extends State<Event> {
                                                       .pushNamed('/profile');
                                                 },
                                                 child: FutureBuilder(
-                                                  future: es.getAPhoto(_event[0]["user_creator"]),
-                                                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                                                    if (snapshot.connectionState == ConnectionState.done) {
-                                                      var photoUrl = snapshot.data;
-                                                      return SizedBox(
-                                                        width: 36,
-                                                        height: 36,
-                                                        child: ClipRRect(
-                                                            child: FittedBox(
-                                                                child: photoUrl != '' ? Image.network(photoUrl) : Image.asset(
-                                                                    'assets/noProfileImage.jpg'),
-                                                                fit:
-                                                                    BoxFit.fitHeight),
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                    100)),
-                                                      );
-                                                    }
-                                                    else {
-                                                      return const Center(
-                                                        child: SkeletonItem(
-                                                            child: SkeletonAvatar(
-                                                          style: SkeletonAvatarStyle(
-                                                              shape: BoxShape.circle,
-                                                              width: 36,
-                                                              height: 36),
-                                                        )),
-                                                      );
-                                                    }
-                                                  } 
-                                                ),
+                                                    future: es.getAPhoto(
+                                                        _event[0]
+                                                            ["user_creator"]),
+                                                    builder:
+                                                        (BuildContext context,
+                                                            AsyncSnapshot
+                                                                snapshot) {
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .done) {
+                                                        var photoUrl =
+                                                            snapshot.data;
+                                                        return SizedBox(
+                                                          width: 36,
+                                                          height: 36,
+                                                          child: ClipRRect(
+                                                              child: FittedBox(
+                                                                  child: photoUrl !=
+                                                                          ''
+                                                                      ? Image.network(
+                                                                          photoUrl)
+                                                                      : Image.asset(
+                                                                          'assets/noProfileImage.jpg'),
+                                                                  fit: BoxFit
+                                                                      .fitHeight),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          100)),
+                                                        );
+                                                      } else {
+                                                        return const Center(
+                                                          child: SkeletonItem(
+                                                              child:
+                                                                  SkeletonAvatar(
+                                                            style: SkeletonAvatarStyle(
+                                                                shape: BoxShape
+                                                                    .circle,
+                                                                width: 36,
+                                                                height: 36),
+                                                          )),
+                                                        );
+                                                      }
+                                                    }),
                                               ),
                                             ],
                                           ),
@@ -324,10 +336,19 @@ class _EventState extends State<Event> {
                                                               .size
                                                               .width,
                                                       child: FutureBuilder(
-                                                          future: getAllPhotosInEvent(widget.id),
-                                                          builder: (BuildContext context, AsyncSnapshot snapshot) {
-                                                            if (snapshot.connectionState == ConnectionState.done) {
-                                                              var attendees = snapshot.data;
+                                                          future:
+                                                              getAllPhotosInEvent(
+                                                                  widget.id),
+                                                          builder: (BuildContext
+                                                                  context,
+                                                              AsyncSnapshot
+                                                                  snapshot) {
+                                                            if (snapshot
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .done) {
+                                                              var attendees =
+                                                                  snapshot.data;
                                                               print(attendees);
                                                               return ListView
                                                                   .separated(
@@ -358,10 +379,9 @@ class _EventState extends State<Event> {
                                                                             radius:
                                                                                 40,
                                                                             // ignore: unrelated_type_equality_checks
-                                                                            backgroundImage:  attendees[index]["image"] == ''
-                                                                                ?  
-                                                                                AssetImage('assets/noProfileImage.png')
-                                                                              : NetworkImage(attendees[index]["image"]) as ImageProvider, 
+                                                                            backgroundImage: attendees[index]["image"] == ''
+                                                                                ? AssetImage('assets/noProfileImage.png')
+                                                                                : NetworkImage(attendees[index]["image"]) as ImageProvider,
                                                                           ),
                                                                         );
                                                                       });

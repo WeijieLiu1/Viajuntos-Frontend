@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(so_frontend LANGUAGES CXX)
+project(viajuntos LANGUAGES CXX)
 
-set(BINARY_NAME "so_frontend")
+set(BINARY_NAME "viajuntos")
 
 cmake_policy(SET CMP0063 NEW)
 

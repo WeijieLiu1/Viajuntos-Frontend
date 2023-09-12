@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:so_frontend/utils/globals.dart';
+import 'package:viajuntos/utils/globals.dart';
 
 class DeleteEventAPI {
   final String url = baseLocalUrl + '/v3/events/';

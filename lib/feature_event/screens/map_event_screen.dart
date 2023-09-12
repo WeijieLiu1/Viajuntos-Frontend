@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_map/widgets/map_widget.dart';
+import 'package:viajuntos/feature_map/widgets/map_widget.dart';
 
 class MapEventScreen extends StatelessWidget {
   final double lat, lng;
-  const MapEventScreen({ Key? key, required this.lat, required this.lng }) : super(key: key);
+  const MapEventScreen({Key? key, required this.lat, required this.lng})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: Stack(
-        children: [
+        backgroundColor: Theme.of(context).colorScheme.background,
+        body: Stack(children: [
           lat == 0 && lng == 0
               ? Container(decoration: const BoxDecoration(color: Colors.grey))
               : MapWidget(lat: lat, long: lng, isEvent: false),
@@ -29,8 +29,6 @@ class MapEventScreen extends StatelessWidget {
               ),
             ),
           )
-        ]
-      )
-    );
+        ]));
   }
 }

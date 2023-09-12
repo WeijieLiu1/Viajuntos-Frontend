@@ -7,36 +7,28 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:so_frontend/feature_explore/screens/home.dart';
-import 'package:so_frontend/feature_map/screens/map.dart';
+import 'package:viajuntos/feature_explore/screens/home.dart';
+import 'package:viajuntos/feature_map/screens/map.dart';
 
 import 'package:mockito/mockito.dart';
+
 class MockNavigatorObserver extends Mock implements NavigatorObserver {}
 
-
 void main() {
-
-  testWidgets('Encontrar botón del mapa y navegar hacia el mapa', (WidgetTester tester) async {
-    
+  testWidgets('Encontrar botón del mapa y navegar hacia el mapa',
+      (WidgetTester tester) async {
     final mockObserver = MockNavigatorObserver();
     await tester.pumpWidget(
-      MaterialApp(
-        home: const HomeScreen(),
-        routes: {
-          '/map_screen': (_) => const MapScreen(),
-        },
-        navigatorObservers: [mockObserver]
-      ),
+      MaterialApp(home: const HomeScreen(), routes: {
+        '/map_screen': (_) => const MapScreen(),
+      }, navigatorObservers: [
+        mockObserver
+      ]),
     );
-
-    
 
     expect(find.byType(InkWell), findsOneWidget);
     await tester.tap(find.byType(InkWell));
     await tester.pumpAndSettle();
     expect(find.byType(MapScreen), findsOneWidget);
   });
-
-
 }
-
