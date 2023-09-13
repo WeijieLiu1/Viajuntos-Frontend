@@ -102,7 +102,7 @@ class MyApp extends StatelessWidget {
         '/edit_profile': (_) => const EditarProfile(),
         '/change_password': (_) => const ChangePassword(),
         '/languages': (_) => const LanguagesOptions(),
-        '/testScreen': (_) => const TestScreen(),
+        // '/testScreen': (_) => const TestScreen(),
       },
     );
   }

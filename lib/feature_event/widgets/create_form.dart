@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:viajuntos/feature_event/screens/creation_sucess.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+// import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 
@@ -148,16 +148,16 @@ class _CreateEventFormState extends State<CreateEventForm> {
               Row(children: [
                 TextButton(
                     onPressed: () {
-                      DatePicker.showDatePicker(context,
-                          showTitleActions: true,
-                          maxTime: DateTime(2100, 1, 1),
-                          minTime: DateTime.now(),
-                          onChanged: (date) {}, onConfirm: (date) {
-                        setState(() {
-                          _selectedStartedTime = date;
-                          _selectedEndTime = date;
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      // DatePicker.showDatePicker(context,
+                      //     showTitleActions: true,
+                      //     maxTime: DateTime(2100, 1, 1),
+                      //     minTime: DateTime.now(),
+                      //     onChanged: (date) {}, onConfirm: (date) {
+                      //   setState(() {
+                      //     _selectedStartedTime = date;
+                      //     _selectedEndTime = date;
+                      //   });
+                      // }, currentTime: DateTime.now(), locale: LocaleType.en);
                     },
                     child: Text(
                       ('' +
@@ -190,18 +190,18 @@ class _CreateEventFormState extends State<CreateEventForm> {
               Row(children: [
                 TextButton(
                     onPressed: () {
-                      DatePicker.showDatePicker(context,
-                          showTitleActions: true,
-                          maxTime: DateTime(2100, 1, 1),
-                          minTime: DateTime.now(),
-                          onChanged: (date) {}, onConfirm: (date) {
-                        setState(() {
-                          if (_selectedEndTime.isBefore(_selectedStartedTime)) {
-                            _selectedStartedTime = date;
-                          }
-                          _selectedEndTime = date;
-                        });
-                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      // DatePicker.showDatePicker(context,
+                      //     showTitleActions: true,
+                      //     maxTime: DateTime(2100, 1, 1),
+                      //     minTime: DateTime.now(),
+                      //     onChanged: (date) {}, onConfirm: (date) {
+                      //   setState(() {
+                      //     if (_selectedEndTime.isBefore(_selectedStartedTime)) {
+                      //       _selectedStartedTime = date;
+                      //     }
+                      //     _selectedEndTime = date;
+                      //   });
+                      // }, currentTime: DateTime.now(), locale: LocaleType.en);
                     },
                     child: Text(
                       ('' +
