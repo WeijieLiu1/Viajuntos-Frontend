@@ -45,7 +45,7 @@ class _TestScreen extends State<TestScreen> {
                           ))),
               Row(children: [
                 Expanded(child: TextField(controller: messageController)),
-                RaisedButton(
+                ElevatedButton(
                     onPressed: () {
                       socket.emit('message',
                           {'message': messageController.text, 'name': 'You'});

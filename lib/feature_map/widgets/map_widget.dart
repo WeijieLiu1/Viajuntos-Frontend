@@ -81,13 +81,13 @@ class _MapWidgetState extends State<MapWidget> {
                         center: LatLng(widget.lat, widget.long),
                         zoom: 15,
                       ),
-                      layers: [
-                        TileLayerOptions(
+                      children: [
+                        TileLayer(
                           urlTemplate:
                               "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                          subdomains: ['a', 'b', 'c'],
+                          subdomains: const ['a', 'b', 'c'],
                         ),
-                        MarkerLayerOptions(
+                        MarkerLayer(
                           markers: [
                             !widget.isEvent
                                 ? Marker(
