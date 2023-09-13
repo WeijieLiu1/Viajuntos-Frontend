@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:viajuntos/feature_chat/screens/chat_screen.dart';
 import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
@@ -15,6 +16,7 @@ import 'package:viajuntos/feature_user/screens/register_viajuntos.dart';
 import 'package:viajuntos/feature_user/screens/welcome_screen.dart';
 import 'package:viajuntos/feature_user/screens/signup_screen.dart';
 import 'package:viajuntos/feature_user/screens/change_password.dart';
+import 'package:viajuntos/firebase_options.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -22,8 +24,13 @@ import 'feature_user/screens/languages.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   await EasyLocalization.ensureInitialized();
   //final prefs = await SharedPreferences.getInstance();
 
