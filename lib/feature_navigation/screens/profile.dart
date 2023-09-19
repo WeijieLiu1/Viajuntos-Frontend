@@ -2,10 +2,10 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
-import 'package:so_frontend/feature_navigation/widgets/settings.dart';
-import 'package:so_frontend/feature_user/services/externalService.dart';
+import 'package:viajuntos/feature_navigation/widgets/settings.dart';
+import 'package:viajuntos/feature_user/services/externalService.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String id;
@@ -107,100 +107,94 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Text("${user["username"]}",
                                         style: creatorStyle),
                                     const Divider(indent: 5, endIndent: 5),
-                                    
                                   ],
                                 ),
                                 const Divider(),
-                                Row(
-                                  children: [
-                                    Container(
-                                        height: 23.0,
-                                        width: 25.0,
-                                        decoration:
-                                            (ac.getCurrentUser() == idProfile)
-                                                ? BoxDecoration(
-                                                    image: (user["auth_methods"]
-                                                            .contains("logo"))
-                                                        ? const DecorationImage(
-                                                            image: AssetImage(
-                                                                'assets/logo.png'),
-                                                            fit: BoxFit.fill,
-                                                          )
-                                                        : const DecorationImage(
-                                                            image: AssetImage(
-                                                                'assets/logo.png'),
-                                                            fit: BoxFit.fill,
-                                                            colorFilter:
-                                                                ColorFilter.mode(
-                                                                    Color.fromARGB(
-                                                                        255,
-                                                                        143,
-                                                                        141,
-                                                                        141),
-                                                                    BlendMode
-                                                                        .color)),
-                                                  )
-                                                : null),
-                                    const Divider(indent: 5, endIndent: 5),
-                                    Container(
-                                        height: 23.0,
-                                        width: 25.0,
-                                        decoration:
-                                            (ac.getCurrentUser() == idProfile)
-                                                ? BoxDecoration(
-                                                    image: (user["auth_methods"]
-                                                            .contains("google"))
-                                                        ? const DecorationImage(
-                                                            image: AssetImage(
-                                                                'assets/google.png'),
-                                                            fit: BoxFit.fill,
-                                                          )
-                                                        : const DecorationImage(
-                                                            image: AssetImage(
-                                                                'assets/google.png'),
-                                                            fit: BoxFit.fill,
-                                                            colorFilter:
-                                                                ColorFilter.mode(
-                                                                    Color.fromARGB(
-                                                                        255,
-                                                                        143,
-                                                                        141,
-                                                                        141),
-                                                                    BlendMode
-                                                                        .color)),
-                                                  )
-                                                : null),
-                                    const Divider(indent: 5, endIndent: 5),
-                                    Container(
-                                        height: 23.0,
-                                        width: 25.0,
-                                        decoration: (ac.getCurrentUser() ==
-                                                idProfile)
-                                            ? BoxDecoration(
-                                                image: (user["auth_methods"]
-                                                        .contains("facebook"))
-                                                    ? const DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/facebook.png'),
-                                                        fit: BoxFit.fill,
-                                                      )
-                                                    : const DecorationImage(
-                                                        image: AssetImage(
-                                                            'assets/facebook.png'),
-                                                        fit: BoxFit.fill,
-                                                        colorFilter:
-                                                            ColorFilter.mode(
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    143,
-                                                                    141,
-                                                                    141),
-                                                                BlendMode
-                                                                    .color)),
-                                              )
-                                            : null),
-                                  ]
-                                ),
+                                Row(children: [
+                                  Container(
+                                      height: 23.0,
+                                      width: 25.0,
+                                      decoration: (ac.getCurrentUser() ==
+                                              idProfile)
+                                          ? BoxDecoration(
+                                              image: (user["auth_methods"]
+                                                      .contains("logo"))
+                                                  ? const DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/Logo.png'),
+                                                      fit: BoxFit.fill,
+                                                    )
+                                                  : const DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/Logo.png'),
+                                                      fit: BoxFit.fill,
+                                                      colorFilter:
+                                                          ColorFilter.mode(
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  143,
+                                                                  141,
+                                                                  141),
+                                                              BlendMode.color)),
+                                            )
+                                          : null),
+                                  const Divider(indent: 5, endIndent: 5),
+                                  Container(
+                                      height: 23.0,
+                                      width: 25.0,
+                                      decoration: (ac.getCurrentUser() ==
+                                              idProfile)
+                                          ? BoxDecoration(
+                                              image: (user["auth_methods"]
+                                                      .contains("google"))
+                                                  ? const DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/google.png'),
+                                                      fit: BoxFit.fill,
+                                                    )
+                                                  : const DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/google.png'),
+                                                      fit: BoxFit.fill,
+                                                      colorFilter:
+                                                          ColorFilter.mode(
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  143,
+                                                                  141,
+                                                                  141),
+                                                              BlendMode.color)),
+                                            )
+                                          : null),
+                                  const Divider(indent: 5, endIndent: 5),
+                                  Container(
+                                      height: 23.0,
+                                      width: 25.0,
+                                      decoration: (ac.getCurrentUser() ==
+                                              idProfile)
+                                          ? BoxDecoration(
+                                              image: (user["auth_methods"]
+                                                      .contains("facebook"))
+                                                  ? const DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/facebook.png'),
+                                                      fit: BoxFit.fill,
+                                                    )
+                                                  : const DecorationImage(
+                                                      image: AssetImage(
+                                                          'assets/facebook.png'),
+                                                      fit: BoxFit.fill,
+                                                      colorFilter:
+                                                          ColorFilter.mode(
+                                                              Color.fromARGB(
+                                                                  255,
+                                                                  143,
+                                                                  141,
+                                                                  141),
+                                                              BlendMode.color)),
+                                            )
+                                          : null),
+                                ]),
                                 const Divider(indent: 5, endIndent: 5),
                                 Row(children: [
                                   Container(

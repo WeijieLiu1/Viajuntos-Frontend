@@ -6,9 +6,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:so_frontend/feature_event/screens/creation_sucess.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/feature_event/screens/creation_sucess.dart';
+// import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
+    as picker;
+import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 
 class CreateEventForm extends StatefulWidget {
@@ -148,7 +150,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
               Row(children: [
                 TextButton(
                     onPressed: () {
-                      DatePicker.showDatePicker(context,
+                      picker.DatePicker.showDatePicker(context,
                           showTitleActions: true,
                           maxTime: DateTime(2100, 1, 1),
                           minTime: DateTime.now(),
@@ -157,7 +159,9 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           _selectedStartedTime = date;
                           _selectedEndTime = date;
                         });
-                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      },
+                          currentTime: DateTime.now(),
+                          locale: picker.LocaleType.en);
                     },
                     child: Text(
                       ('' +
@@ -190,7 +194,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
               Row(children: [
                 TextButton(
                     onPressed: () {
-                      DatePicker.showDatePicker(context,
+                      picker.DatePicker.showDatePicker(context,
                           showTitleActions: true,
                           maxTime: DateTime(2100, 1, 1),
                           minTime: DateTime.now(),
@@ -201,7 +205,9 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           }
                           _selectedEndTime = date;
                         });
-                      }, currentTime: DateTime.now(), locale: LocaleType.en);
+                      },
+                          currentTime: DateTime.now(),
+                          locale: picker.LocaleType.en);
                     },
                     child: Text(
                       ('' +
@@ -276,16 +282,16 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           fontWeight: FontWeight.w600,
                           fontSize: 16))
                   .tr(),
-              // TextFormField(
-              //   controller: _image,
-              //   decoration: InputDecoration(hintText: 'Addimageevent'.tr()),
-              // ),
-              FloatingActionButton(
-                onPressed: getImage,
-                tooltip: 'Pick Image',
-                child: Icon(Icons.add_a_photo),
+              TextFormField(
+                controller: _image,
+                decoration: InputDecoration(hintText: 'Addimageevent'.tr()),
               ),
-              const SizedBox(height: 20),
+              // FloatingActionButton(
+              //   onPressed: getImage,
+              //   tooltip: 'Pick Image',
+              //   child: Icon(Icons.add_a_photo),
+              // ),
+              // const SizedBox(height: 20),
             ],
           ),
         ),
@@ -327,7 +333,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
             "longitud": double.parse(_longitude.text),
             "latitude": double.parse(_latitude.text),
             "max_participants": int.parse(_max_participants.text),
-            "event_image_uri": _imageContent
+            "event_image_uri": _image.text
           };
 
           var response = await api.postItem('/v3/events/', [], body);
@@ -342,7 +348,8 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 MaterialPageRoute(
                     builder: (context) =>
                         //todo: editar aqui
-                        CreationSucess(image: _imageContent.toString())));
+                        // CreationSucess(image: _imageContent.toString())));
+                        CreationSucess(image: _image.text)));
           } else if (response.statusCode == 400) {
             snackBar = SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,

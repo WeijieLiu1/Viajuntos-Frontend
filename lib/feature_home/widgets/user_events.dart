@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
-import 'package:so_frontend/feature_event/screens/user_event_screen.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/feature_event/screens/user_event_screen.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 
 class UserEventsList extends StatefulWidget {

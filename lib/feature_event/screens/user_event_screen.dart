@@ -1,8 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_chat/screens/listChat_screen.dart';
-import 'package:so_frontend/feature_event/widgets/user_event.dart';
-import 'package:so_frontend/feature_event/screens/edit_event_screen.dart';
+import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
+import 'package:viajuntos/feature_event/widgets/user_event.dart';
+import 'package:viajuntos/feature_event/screens/edit_event_screen.dart';
 
 class UserEventScreen extends StatelessWidget {
   final String id;

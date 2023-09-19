@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_event/widgets/edit_event_form.dart';
+import 'package:viajuntos/feature_event/widgets/edit_event_form.dart';
 
 class EditEventScreen extends StatelessWidget {
   final String id;

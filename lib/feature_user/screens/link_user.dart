@@ -2,8 +2,8 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_user/services/login_signUp.dart';
-import 'package:so_frontend/utils/go_to.dart';
+import 'package:viajuntos/feature_user/services/login_signUp.dart';
+import 'package:viajuntos/utils/go_to.dart';
 
 class LinkScreen extends StatefulWidget {
   final String email;

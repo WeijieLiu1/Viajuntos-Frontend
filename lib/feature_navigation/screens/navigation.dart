@@ -1,15 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_event/screens/create_event.dart';
-import 'package:so_frontend/feature_explore/screens/home.dart';
-import 'package:so_frontend/feature_home/screens/home.dart';
-import 'package:so_frontend/feature_navigation/screens/profile.dart';
-import 'package:so_frontend/feature_user/services/externalService.dart';
-import 'package:so_frontend/utils/go_to.dart';
+import 'package:viajuntos/feature_event/screens/create_event.dart';
+import 'package:viajuntos/feature_explore/screens/home.dart';
+import 'package:viajuntos/feature_home/screens/home.dart';
+import 'package:viajuntos/feature_navigation/screens/profile.dart';
+import 'package:viajuntos/feature_user/services/externalService.dart';
+import 'package:viajuntos/utils/go_to.dart';
 import 'package:uni_links/uni_links.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:async';
-import 'package:so_frontend/feature_event/screens/event_screen.dart';
+import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'dart:convert';
 
 class NavigationBottomBar extends StatefulWidget {
@@ -116,7 +116,7 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
                 width: 35,
                 height: 35,
                 child: FittedBox(
-                    child: Image.asset('assets/logo.png'), fit: BoxFit.fill),
+                    child: Image.asset('assets/Logo.png'), fit: BoxFit.fill),
               ),
               const SizedBox(width: 5),
               Text('Viajuntos',

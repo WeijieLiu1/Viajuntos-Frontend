@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 
 import '../../utils/globals.dart';
 

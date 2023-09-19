@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/utils/go_to.dart';
+import 'package:viajuntos/utils/go_to.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -40,7 +40,8 @@ class WelcomeScreen extends StatelessWidget {
           Scaffold(
               backgroundColor: Colors.transparent,
               body: Center(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     //mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 80),

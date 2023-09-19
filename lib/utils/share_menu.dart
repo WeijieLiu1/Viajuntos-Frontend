@@ -31,7 +31,7 @@ class _ShareMenuState extends State<ShareMenu> {
                         color: Theme.of(context).colorScheme.secondary))
                 .tr(),
             const SizedBox(height: 20),
-            QrImage(
+            QrImageView(
               data: widget.url,
               version: QrVersions.auto,
               size: MediaQuery.of(context).size.height / 4.5,

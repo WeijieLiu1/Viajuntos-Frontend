@@ -5,12 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart';
-import 'package:so_frontend/feature_chat/models/message_model.dart';
-import 'package:so_frontend/feature_chat/services/chat_service.dart';
-import 'package:so_frontend/feature_chat/widgets/chat_widget.dart';
-import 'package:so_frontend/feature_user/services/login_signUp.dart';
-import 'package:so_frontend/utils/api_controller.dart';
-import 'package:so_frontend/feature_user/services/externalService.dart';
+import 'package:viajuntos/feature_chat/models/message_model.dart';
+import 'package:viajuntos/feature_chat/services/chat_service.dart';
+import 'package:viajuntos/feature_chat/widgets/chat_widget.dart';
+import 'package:viajuntos/feature_user/services/login_signUp.dart';
+import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/feature_user/services/externalService.dart';
 
 import '../../utils/globals.dart';
 

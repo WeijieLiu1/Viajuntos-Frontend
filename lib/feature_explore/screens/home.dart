@@ -2,9 +2,9 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_explore/widgets/map_button.dart';
-import 'package:so_frontend/feature_explore/widgets/recommended_list.dart';
-import 'package:so_frontend/feature_explore/widgets/recently_added.dart';
+import 'package:viajuntos/feature_explore/widgets/map_button.dart';
+import 'package:viajuntos/feature_explore/widgets/recommended_list.dart';
+import 'package:viajuntos/feature_explore/widgets/recently_added.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);

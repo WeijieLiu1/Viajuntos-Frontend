@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:collection/collection.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:so_frontend/feature_navigation/screens/navigation.dart';
-import 'package:so_frontend/feature_user/screens/welcome_screen.dart';
-import 'package:so_frontend/main.dart';
-import 'package:so_frontend/utils/globals.dart';
+import 'package:viajuntos/feature_navigation/screens/navigation.dart';
+import 'package:viajuntos/feature_user/screens/welcome_screen.dart';
+import 'package:viajuntos/main.dart';
+import 'package:viajuntos/utils/globals.dart';
 
 class APICalls {
   static final APICalls _instance = APICalls._internal();

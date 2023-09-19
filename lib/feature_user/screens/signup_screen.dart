@@ -3,18 +3,19 @@
 import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart';
-import 'package:so_frontend/feature_user/screens/link_user.dart';
-import 'package:so_frontend/feature_user/services/signIn_facebook.dart';
-import 'package:so_frontend/feature_user/services/signIn_google.dart';
-import 'package:so_frontend/feature_user/widgets/policy.dart';
+import 'package:viajuntos/feature_user/screens/link_user.dart';
+import 'package:viajuntos/feature_user/services/signIn_facebook.dart';
+import 'package:viajuntos/feature_user/services/signIn_google.dart';
+import 'package:viajuntos/feature_user/widgets/policy.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:so_frontend/feature_user/services/login_signUp.dart';
-import 'package:so_frontend/utils/go_to.dart';
+import 'package:viajuntos/feature_user/services/login_signUp.dart';
+import 'package:viajuntos/utils/go_to.dart';
 
 import 'form_register_CS.dart';
 
@@ -53,6 +54,8 @@ class SignUpScreen extends StatelessWidget {
                     text: "ContinuewithGoogle".tr(),
                     onPressed: () => _handleSignInGoogle(
                         context), //{print("object"); FacebookSignInApi.logout2();}
+                    // onPressed: () =>
+                    //     signInWithGoogle(), //{print("object"); FacebookSignInApi.logout2();}
                   ),
                 ),
                 Container(
@@ -129,6 +132,7 @@ class SignUpScreen extends StatelessWidget {
     String auxToken = googleSignInAuthentication.accessToken.toString();
     if (response.statusCode == 200) {
       Map<String, dynamic> ap = json.decode(response.body);
+      print(ap);
       //Map<String, dynamic> ap = await uapi.checkUserGoogle(googleSignInAuthentication.accessToken);
       if (ap["action"] == "continue") {
         Navigator.pushAndRemoveUntil(
@@ -313,11 +317,34 @@ class SignUpScreen extends StatelessWidget {
     }
   }
 
+  Future<UserCredential> signInWithGoogle() async {
+    print("signInWithGoogle1");
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    print("signInWithGoogle2");
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+    print("signInWithGoogle3");
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
   Future<void> _handleSignInGoogle(BuildContext context) async {
     try {
-      final user = await GoogleSignInApi.login();
+      print("signInWithGoogle1");
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      if (user == null) {
+      // final user = await GoogleSignInApi.login();
+      // print("_handleSignInGoogle2");
+      if (googleUser == null) {
         showDialog(
           context: context,
           barrierDismissible: false,
@@ -332,18 +359,30 @@ class SignUpScreen extends StatelessWidget {
           ),
         );
       } else {
-        GoogleSignInAuthentication googleSignInAuthentication =
-            await user.authentication;
+        print("signInWithGoogle2");
+        // Obtain the auth details from the request
+        final GoogleSignInAuthentication? googleAuth =
+            await googleUser?.authentication;
+        print("signInWithGoogle3");
+        // Create a new credential
+        // final credential = GoogleAuthProvider.credential(
+        //   accessToken: googleAuth?.accessToken,
+        //   idToken: googleAuth?.idToken,
+        // );
+
+        if (googleAuth != null) {
+          Response response =
+              await uapi.checkUserGoogle(googleAuth.accessToken);
+          _handleSignUpGoogle(context, response, googleAuth);
+        }
+        // GoogleSignInAuthentication googleSignInAuthentication =
+        //     await googleUser.authentication;
 
         //https://www.googleapis.com/oauth2/v3/userinfo?access_token=googleSignInAuthentication.accessToken
         //https://www.googleapis.com/oauth2/v3/userinfo?access_token=ya29.A0ARrdaM-Uo5BGubza4xGpXK0JuFiAATuEHI_5UXjx-CWGtddi0Q_Qg6HxX-mRoNzKeQTc1ZyNs4JdwacIzGdSNQnzUlSyCfP3AVpK2OMaQcbqPcT3eM_4wSZSyKaYwIxhCZhI5zkLAtpCgHZj-XQ1vKUaOTrh
 
         //we can decode with this idtoken
         //print(googleSignInAuthentication.idToken);
-
-        Response response =
-            await uapi.checkUserGoogle(googleSignInAuthentication.accessToken);
-        _handleSignUpGoogle(context, response, googleSignInAuthentication);
 
         /*
         Navigator.of(context).pushReplacement(MaterialPageRoute(

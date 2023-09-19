@@ -2,8 +2,8 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/utils/api_controller.dart';
-import 'package:so_frontend/utils/share.dart';
+import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/utils/share.dart';
 import 'dart:convert';
 
 class Settings extends StatefulWidget {
@@ -111,10 +111,12 @@ class _SettingsState extends State<Settings> {
                                     TextButton(
                                         child: Text('Yes').tr(),
                                         onPressed: () {
-                                          APICalls().deleteItem(
-                                              "/v1/users/:0/delete",
-                                              [APICalls().getCurrentUser()]);
-                                          APICalls().logOut();
+                                          DeleteUser();
+                                          // final response = await APICalls().deleteItem(
+                                          //     "/v1/users/:0/delete",
+                                          //     [APICalls().getCurrentUser()]);
+                                          // if(response.statusCode != 400)
+                                          // APICalls().logOut();
                                         })
                                   ]))),
                   ListTile(
@@ -146,5 +148,12 @@ class _SettingsState extends State<Settings> {
             );
           }
         });
+  }
+
+  void DeleteUser() async {
+    final response = await APICalls()
+        .deleteItem("/v1/users/:0/delete", [APICalls().getCurrentUser()]);
+    print(response.statusCode + json.decode(response.body)['error_message']);
+    if (response.statusCode == 200) APICalls().logOut();
   }
 }

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_user/screens/welcome_screen.dart';
+import 'package:viajuntos/feature_user/screens/welcome_screen.dart';
 
 class LoadingScreen extends StatelessWidget {
   const LoadingScreen({Key? key}) : super(key: key);
@@ -23,7 +23,8 @@ class LoadingScreen extends StatelessWidget {
       Scaffold(
           backgroundColor: Colors.transparent,
           body: Center(
-              child: Column(crossAxisAlignment: CrossAxisAlignment.center,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   //mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                 const SizedBox(height: 80),

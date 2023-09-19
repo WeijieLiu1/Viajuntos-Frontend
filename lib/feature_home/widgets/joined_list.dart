@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:skeletons/skeletons.dart';
-import 'package:so_frontend/utils/air_tag.dart';
-import 'package:so_frontend/utils/api_controller.dart';
-import 'package:so_frontend/utils/globals.dart';
-import 'package:so_frontend/utils/like_button.dart';
-import 'package:so_frontend/feature_event/screens/event_screen.dart';
-import 'package:so_frontend/utils/share.dart';
+import 'package:viajuntos/utils/air_tag.dart';
+import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/utils/globals.dart';
+import 'package:viajuntos/utils/like_button.dart';
+import 'package:viajuntos/feature_event/screens/event_screen.dart';
+import 'package:viajuntos/utils/share.dart';
 
 class JoinedList extends StatefulWidget {
   const JoinedList({Key? key}) : super(key: key);
@@ -117,12 +117,12 @@ class _JoinedListState extends State<JoinedList> {
                                         }
                                       }),
                                   const SizedBox(width: 20),
-                                  AirTag(
-                                      id: _joined[index]["id"],
-                                      latitude:
-                                          _joined[index]["latitude"].toString(),
-                                      longitud: _joined[index]["longitud"]
-                                          .toString()),
+                                  // AirTag(
+                                  //     id: _joined[index]["id"],
+                                  //     latitude:
+                                  //         _joined[index]["latitude"].toString(),
+                                  //     longitud: _joined[index]["longitud"]
+                                  //         .toString()),
                                 ])
                               ]),
                         ),

@@ -1,14 +1,14 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:so_frontend/feature_user/services/externalService.dart';
+import 'package:viajuntos/feature_user/services/externalService.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:so_frontend/utils/air_tag.dart';
-import 'package:so_frontend/utils/api_controller.dart';
-import 'package:so_frontend/utils/globals.dart';
+import 'package:viajuntos/utils/air_tag.dart';
+import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/utils/globals.dart';
 import 'dart:convert';
-import 'package:so_frontend/utils/share.dart';
-import 'package:so_frontend/utils/like_button.dart';
+import 'package:viajuntos/utils/share.dart';
+import 'package:viajuntos/utils/like_button.dart';
 import 'package:skeletons/skeletons.dart';
 
 class EventWidget extends StatefulWidget {

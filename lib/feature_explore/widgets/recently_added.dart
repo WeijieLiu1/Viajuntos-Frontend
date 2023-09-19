@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:so_frontend/utils/air_tag.dart';
-import 'package:so_frontend/utils/api_controller.dart';
-import 'package:so_frontend/feature_event/screens/event_screen.dart';
-import 'package:so_frontend/utils/globals.dart';
-import 'package:so_frontend/utils/like_button.dart';
-import 'package:so_frontend/utils/share.dart';
+import 'package:viajuntos/utils/air_tag.dart';
+import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/feature_event/screens/event_screen.dart';
+import 'package:viajuntos/utils/globals.dart';
+import 'package:viajuntos/utils/like_button.dart';
+import 'package:viajuntos/utils/share.dart';
 import 'package:skeletons/skeletons.dart';
 
 class RecentlyAdded extends StatefulWidget {

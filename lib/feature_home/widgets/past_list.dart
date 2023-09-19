@@ -2,10 +2,10 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
-import 'package:so_frontend/feature_event/screens/event_screen.dart';
-import 'package:so_frontend/utils/review.dart';
+import 'package:viajuntos/feature_event/screens/event_screen.dart';
+import 'package:viajuntos/utils/review.dart';
 import 'package:skeletons/skeletons.dart';
 
 class PastEventsList extends StatefulWidget {

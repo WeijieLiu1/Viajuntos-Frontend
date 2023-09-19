@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:skeletons/skeletons.dart';
-import 'package:so_frontend/utils/api_controller.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 import 'package:http/http.dart' as http;
 import '../../utils/globals.dart';
 

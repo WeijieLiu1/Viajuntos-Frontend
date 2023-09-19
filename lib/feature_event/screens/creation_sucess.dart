@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_event/widgets/create_confirmation.dart';
+import 'package:viajuntos/feature_event/widgets/create_confirmation.dart';
 
 class CreationSucess extends StatelessWidget {
   final String image;

@@ -3,10 +3,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:so_frontend/feature_user/screens/link_user.dart';
-import 'package:so_frontend/feature_user/services/login_signUp.dart';
-import 'package:so_frontend/feature_user/widgets/policy.dart';
-import 'package:so_frontend/utils/go_to.dart';
+import 'package:viajuntos/feature_user/screens/link_user.dart';
+import 'package:viajuntos/feature_user/services/login_signUp.dart';
+import 'package:viajuntos/feature_user/widgets/policy.dart';
+import 'package:viajuntos/utils/go_to.dart';
 
 import 'form_register.dart';
 
