@@ -66,6 +66,9 @@ dependencies:
   flutter_plugin_android_lifecycle: ^2.0.16
   firebase_core: ^2.15.1
   firebase_auth: ^4.9.0
+  flutter_screenutil: ^5.9.0
+  flutter_datetime_picker_plus: ^2.1.0
+  firebase_storage: ^11.2.6
   #google_maps_flutter: ^2.0.0
 dev_dependencies:
   flutter_test:
@@ -82,7 +85,7 @@ dev_dependencies:
 flutter_icons:
   android: "true"
   ios: true
-  image_path: "assets/logo.png"
+  image_path: "assets/Logo.png"
 
 flutter_native_splash:
   color: "#f8f3f5"

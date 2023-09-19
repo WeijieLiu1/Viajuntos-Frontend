@@ -116,7 +116,7 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
                 width: 35,
                 height: 35,
                 child: FittedBox(
-                    child: Image.asset('assets/logo.png'), fit: BoxFit.fill),
+                    child: Image.asset('assets/Logo.png'), fit: BoxFit.fill),
               ),
               const SizedBox(width: 5),
               Text('Viajuntos',

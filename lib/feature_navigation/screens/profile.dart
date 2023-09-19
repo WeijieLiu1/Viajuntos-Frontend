@@ -121,12 +121,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                       .contains("logo"))
                                                   ? const DecorationImage(
                                                       image: AssetImage(
-                                                          'assets/logo.png'),
+                                                          'assets/Logo.png'),
                                                       fit: BoxFit.fill,
                                                     )
                                                   : const DecorationImage(
                                                       image: AssetImage(
-                                                          'assets/logo.png'),
+                                                          'assets/Logo.png'),
                                                       fit: BoxFit.fill,
                                                       colorFilter:
                                                           ColorFilter.mode(
