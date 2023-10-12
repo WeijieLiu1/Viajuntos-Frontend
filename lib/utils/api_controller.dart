@@ -172,7 +172,7 @@ class APICalls {
   Future<dynamic> _refresh(Function onSuccess, Function onError) async {
     // Llama a refresh, si es correcto setea las variables y llama a onSuccess. Si no llama a onError
     final response = await http
-        .get(Uri.parse('https://' + API_URL + _REFRESH_ENDPOINT), headers: {
+        .get(Uri.parse( API_URL + _REFRESH_ENDPOINT), headers: {
       'Authorization': 'Bearer $_REFRESH_TOKEN',
       'Content-Type': 'application/json'
     });
@@ -203,7 +203,7 @@ class APICalls {
 
     return Uri(
         scheme: 'http',
-        host: "10.0.2.2",
+        host: hostUrl,
         port: 5000,
         path: formattedEndpoint,
         queryParameters: queryParams?.cast<String, dynamic>());
@@ -212,17 +212,30 @@ class APICalls {
   void _redirectToLogin() {
     // ignore: todo
     // TODO: Navegar a la login screen
-    navigatorKey.currentState!.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-        (route) => false);
+    
+    navigatorKey.currentState!.pushReplacement(MaterialPageRoute(
+        builder: (context) => WelcomeScreen(),
+      ));
+    // Navigator.pushAndRemoveUntil(
+    //     MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+    //     (route) => false);
   }
 
   void _redirectToHomeScreen() {
     // ignore: todo
     // TODO: Navegar a la home screen
-    navigatorKey.currentState!.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const NavigationBottomBar()),
-        (route) => false);
+    navigatorKey.currentState!.pushReplacement(MaterialPageRoute(
+        builder: (context) => NavigationBottomBar(),
+      ));
+    // navigatorKey.currentState!.pushAndRemoveUntil(
+    //     MaterialPageRoute(builder: (context) => const NavigationBottomBar()),
+    //     (route) => false);
+        
+    // Navigator.pushAndRemoveUntil(
+    //     context,
+    //     MaterialPageRoute(
+    //         builder: (context) => NavigationBottomBar()),
+    //     (route) => false);
   }
 
   factory APICalls() {
