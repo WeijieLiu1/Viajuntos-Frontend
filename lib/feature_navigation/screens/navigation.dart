@@ -11,6 +11,9 @@ import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:async';
 import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'dart:convert';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import '../../utils/globals.dart';
 
 class NavigationBottomBar extends StatefulWidget {
   const NavigationBottomBar({Key? key}) : super(key: key);
@@ -20,6 +23,7 @@ class NavigationBottomBar extends StatefulWidget {
 }
 
 class _NavigationBottomBarState extends State<NavigationBottomBar> {
+  late IO.Socket _socket;
   int _index = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
@@ -97,11 +101,40 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
     });
   }
 
+  _connectSocket() {
+    print('_connectSocket1');
+    _socket.onConnect((data) => {
+          print('Socket.io Connection established'),
+          _socket.emit('msg', "msgtest"),
+          print('Socket.io Connection established2'),
+        });
+    print('_connectSocket2');
+    _socket.onConnectError((data) => print('Socket.io Connect Error: $data'));
+    print('_connectSocket3');
+    _socket.onDisconnect((data) => print('Socket.io server disconnected'));
+    print('_connectSocket4');
+    _socket.on('msg', (data) => print(data));
+    print('_connectSocket5');
+    _socket.emit('msg', 'msgtest');
+    print('_connectSocket6');
+    _socket.connect();
+    print('_connectSocket7');
+  }
+
   @override
   void initState() {
     super.initState();
     initUniLinks();
     getProfilePhoto();
+    print('initState1');
+    _socket = IO.io(
+      baseLocalUrl,
+      IO.OptionBuilder().setTransports(['websocket'])
+          // .disableAutoConnect()
+          .build(),
+    );
+    _connectSocket();
+    print('initState2');
   }
 
   @override
@@ -135,13 +168,15 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfileScreen(
-                          id: getCurrentUser(),
-                        ),
-                      ));
+                  print('click');
+                  _socket.emit('connect', 'msgtest');
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => ProfileScreen(
+                  //         id: getCurrentUser(),
+                  //       ),
+                  //     ));
                 },
                 child: SizedBox(
                   width: 36,

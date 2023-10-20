@@ -39,12 +39,15 @@ class _SettingsState extends State<Settings> {
                 padding: EdgeInsets.zero,
                 children: <Widget>[
                   DrawerHeader(
-                    child: Text('Settings',
-                            style: TextStyle(color: Colors.white, fontSize: 28),
-                            textAlign: TextAlign.center)
-                        .tr(),
                     decoration: BoxDecoration(
                       color: Color.fromARGB(255, 102, 150, 171),
+                    ),
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Settings',
+                        style: TextStyle(color: Colors.white, fontSize: 28),
+                      ).tr(),
                     ),
                   ),
                   ListTile(

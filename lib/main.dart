@@ -48,10 +48,9 @@ Future<void> main() async {
       saveLocale: true,
       child: MyApp(),
     ),
-    
   );
-   // 确保 navigatorKey.currentState 不为 null
-  WidgetsBinding.instance!.addPostFrameCallback((_) {
+  // 确保 navigatorKey.currentState 不为 null
+  WidgetsBinding.instance.addPostFrameCallback((_) {
     APICalls().tryInitializeFromPreferences();
   });
 }
@@ -64,6 +63,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    // hide status bar
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     return ScreenUtilInit(
         designSize: const Size(1080, 2220),
         minTextAdapt: true,

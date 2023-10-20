@@ -69,6 +69,7 @@ dependencies:
   flutter_screenutil: ^5.9.0
   flutter_datetime_picker_plus: ^2.1.0
   firebase_storage: ^11.2.6
+  socket_io_client: ^2.0.3+1
   #google_maps_flutter: ^2.0.0
 dev_dependencies:
   flutter_test:
