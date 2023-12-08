@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:viajuntos/feature_event/screens/create_event.dart';
 import 'package:viajuntos/feature_explore/screens/home.dart';
 import 'package:viajuntos/feature_home/screens/home.dart';
@@ -11,8 +12,8 @@ import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:async';
 import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'dart:convert';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import '../../feature_chat/screens/listChat_screen.dart';
 import '../../utils/globals.dart';
 
 class NavigationBottomBar extends StatefulWidget {
@@ -23,12 +24,12 @@ class NavigationBottomBar extends StatefulWidget {
 }
 
 class _NavigationBottomBarState extends State<NavigationBottomBar> {
-  late IO.Socket _socket;
   int _index = 0;
-
+  String _scanResult = 'Unknown';
   static const List<Widget> _widgetOptions = <Widget>[
     MainHomeScreen(),
     HomeScreen(),
+    ListChatScreen(),
     CreateEventScreen()
   ];
 
@@ -50,7 +51,54 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
     }
   }
 
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      print(barcodeScanRes);
+      CallLink(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _scanResult = barcodeScanRes;
+    });
+  }
+
   StreamSubscription? _sub;
+
+  void CallLink(String link) async {
+    var uri = Uri.parse(link);
+    var type = uri.pathSegments[1];
+    switch (type) {
+      case "events":
+        var id = uri.pathSegments[2];
+        if (id != '') {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => EventScreen(id: id)));
+        }
+        break;
+      case "users":
+        var response = await APICalls().getCollection(
+            '/v2/users/new_friend', [], {"code": uri.queryParameters["code"]!});
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ProfileScreen(id: json.decode(response.body)["id"])));
+        break;
+      default:
+      // http://localhost:5000/v2/users/new_friend?code=bmWecsrvil7UTVT
+    }
+  }
 
   Future<void> initUniLinks() async {
     // ... check initialLink
@@ -101,41 +149,34 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
     });
   }
 
-  _connectSocket() {
-    print('_connectSocket1');
-    _socket.onConnect((data) => {
-          print('Socket.io Connection established'),
-          _socket.emit('msg', "msgtest"),
-          print('Socket.io Connection established2'),
-        });
-    print('_connectSocket2');
-    _socket.onConnectError((data) => print('Socket.io Connect Error: $data'));
-    print('_connectSocket3');
-    _socket.onDisconnect((data) => print('Socket.io server disconnected'));
-    print('_connectSocket4');
-    _socket.on('msg', (data) => print(data));
-    print('_connectSocket5');
-    _socket.emit('msg', 'msgtest');
-    print('_connectSocket6');
-    _socket.connect();
-    print('_connectSocket7');
-  }
-
   @override
   void initState() {
     super.initState();
     initUniLinks();
     getProfilePhoto();
-    print('initState1');
-    _socket = IO.io(
-      baseLocalUrl,
-      IO.OptionBuilder().setTransports(['websocket'])
-          // .disableAutoConnect()
-          .build(),
-    );
-    _connectSocket();
-    print('initState2');
+    // print('initState1');
+    // _socket = IO.io(
+    //   baseLocalUrl,
+    //   IO.OptionBuilder().setTransports(['websocket'])
+    //       // .disableAutoConnect()
+    //       .build(),
+    // );
+    // _connectSocket();
+    // print('initState2');
   }
+
+  // Future<void> _scanQR() async {
+  //   try {
+  //     var result = await BarcodeScanner.scan();
+  //     setState(() {
+  //       _scanResult = result.rawContent;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _scanResult = 'Error: $e';
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -168,15 +209,35 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
                 onTap: () {
-                  print('click');
-                  _socket.emit('connect', 'msgtest');
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => ProfileScreen(
-                  //         id: getCurrentUser(),
-                  //       ),
-                  //     ));
+                  // print('click');
+                  // _socket.emit('connect', 'msgtest');
+                  scanQR();
+                },
+                child: SizedBox(
+                  width: 36,
+                  height: 36,
+                  child: ClipRRect(
+                      child: FittedBox(
+                          child: Icon(Icons.qr_code_scanner,
+                              color: Theme.of(context).colorScheme.secondary),
+                          fit: BoxFit.fitHeight),
+                      borderRadius: BorderRadius.circular(100)),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () {
+                  // print('click');
+                  // _socket.emit('connect', 'msgtest');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileScreen(
+                          id: getCurrentUser(),
+                        ),
+                      ));
                 },
                 child: SizedBox(
                   width: 36,
@@ -198,15 +259,19 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
             BottomNavigationBarItem(
                 icon: const Icon(Icons.home),
                 label: 'Home'.tr(),
-                backgroundColor: Theme.of(context).colorScheme.primary),
+                backgroundColor: Theme.of(context).colorScheme.onPrimary),
             BottomNavigationBarItem(
                 icon: const Icon(Icons.search_rounded),
                 label: 'Explore'.tr(),
-                backgroundColor: Theme.of(context).colorScheme.primary),
+                backgroundColor: Theme.of(context).colorScheme.onPrimary),
+            BottomNavigationBarItem(
+                icon: const Icon(Icons.chat),
+                label: 'Chat'.tr(),
+                backgroundColor: Theme.of(context).colorScheme.onPrimary),
             BottomNavigationBarItem(
                 icon: const Icon(Icons.add),
                 label: 'Create'.tr(),
-                backgroundColor: Theme.of(context).colorScheme.primary),
+                backgroundColor: Theme.of(context).colorScheme.onPrimary),
           ],
           currentIndex: _index,
           selectedItemColor: Theme.of(context).colorScheme.secondary,

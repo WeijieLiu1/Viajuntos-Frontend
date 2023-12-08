@@ -116,12 +116,12 @@ class _LikedListState extends State<LikedList> {
                                         }
                                       }),
                                   const SizedBox(width: 20),
-                                  AirTag(
-                                      id: _joined[index]["id"],
-                                      latitude:
-                                          _joined[index]["latitude"].toString(),
-                                      longitud: _joined[index]["longitud"]
-                                          .toString()),
+                                  // AirTag(
+                                  //     id: _joined[index]["id"],
+                                  //     latitude:
+                                  //         _joined[index]["latitude"].toString(),
+                                  //     longitud: _joined[index]["longitud"]
+                                  //         .toString()),
                                 ])
                               ]),
                         ),

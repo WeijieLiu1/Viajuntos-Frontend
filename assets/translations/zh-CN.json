@@ -202,5 +202,9 @@
     "NameofEvent": "活动名称",
     "Members": "#成员",
     "Writemessag": "写信息...",
-    "airDescription": "在这里 我们对空气质量的预测是以2天为单位的。"
+    "airDescription": "在这里 我们对空气质量的预测是以2天为单位的。",
+    "Chat": "Chat",
+    "NoMoreMessages": "没有更多消息",
+    "NoChatYet": "你还没有聊天室",
+    "StartConversation": "和你的朋友们开始对话吧!"
 }

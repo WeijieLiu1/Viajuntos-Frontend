@@ -202,5 +202,9 @@
     "NameofEvent": "Nombre del evento",
     "Members": "#Miembros",
     "Writemessag": "Escribe un mensaje...",
-    "airDescription": "Aquí tienes las predicciones de la calidad del aire para los dos próximos días"
+    "airDescription": "Aquí tienes las predicciones de la calidad del aire para los dos próximos días",
+    "Chat": "Chat",
+    "NoMoreMessages": "No hay más mensajes",
+    "NoChatYet": "No hay mensajes todavía",
+    "StartConversation": "¡Empieza una conversación con tus amigos!"
 }

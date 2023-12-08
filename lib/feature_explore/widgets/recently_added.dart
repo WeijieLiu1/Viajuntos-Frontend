@@ -186,17 +186,17 @@ class _RecentlyAddedState extends State<RecentlyAdded> {
                                                           FontWeight.bold)),
                                               Row(
                                                 children: [
-                                                  AirTag(
-                                                      id: recommendations[index]
-                                                          ["id"],
-                                                      latitude:
-                                                          recommendations[index]
-                                                                  ["latitude"]
-                                                              .toString(),
-                                                      longitud:
-                                                          recommendations[index]
-                                                                  ["longitud"]
-                                                              .toString()),
+                                                  // AirTag(
+                                                  //     id: recommendations[index]
+                                                  //         ["id"],
+                                                  //     latitude:
+                                                  //         recommendations[index]
+                                                  //                 ["latitude"]
+                                                  //             .toString(),
+                                                  //     longitud:
+                                                  //         recommendations[index]
+                                                  //                 ["longitud"]
+                                                  //             .toString()),
                                                   const Expanded(
                                                       child: SizedBox()),
                                                   IconButton(

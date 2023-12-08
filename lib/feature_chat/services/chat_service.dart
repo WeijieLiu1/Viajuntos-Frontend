@@ -48,16 +48,14 @@ class chatAPI {
   }
 
   /* get all messages from a chat */
-  Future<dynamic> openSession(
-    String eventId,
-    String participantId,
+  Future<dynamic> GetChatMessages(
+    String chat_id,
   ) async {
     String _path = '/v1/chat/Message/';
     String aux = baseLocalUrl;
 
     final queryParameters = {
-      'participant_id': participantId,
-      'event_id': eventId,
+      'chat_id': chat_id,
     };
 
     final uri = Uri.https(aux, _path, queryParameters);
@@ -70,15 +68,14 @@ class chatAPI {
 
   /* Crear el mensage */
   Future<http.Response> createMessage(
-    String senderId,
-    String eventId,
+    String chatId,
     String text,
   ) async {
-    String _path = '/v1/chat/Message';
+    String _path = '/v1/chat/create_message';
     String finalUri = basicUrl + _path;
     var str = {
-      "participant_id": senderId,
-      "event_id": eventId,
+      // "participant_id": senderId,
+      "chat_id": chatId,
       "text": text,
     };
     print("access token: " + APICalls().getCurrentAccess());

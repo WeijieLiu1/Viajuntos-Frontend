@@ -202,5 +202,9 @@
     "NameofEvent": "Name of Event",
     "Members": "#Members",
     "Writemessag": "Write message...",
-    "airDescription": "Here you have the air quality prediction for the next 2 days."
+    "airDescription": "Here you have the air quality prediction for the next 2 days.",
+    "Chat": "Chat",
+    "NoMoreMessages": "No more messages",
+    "NoChatYet": "You have no chat rooms yet",
+    "StartConversation": "Start a conversation with your friends!"
 }

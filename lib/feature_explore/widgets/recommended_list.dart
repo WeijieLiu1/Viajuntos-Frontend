@@ -145,17 +145,17 @@ class _RecommendedListState extends State<RecommendedList> {
                                                         FontWeight.bold)),
                                             Row(
                                               children: [
-                                                AirTag(
-                                                    id: _recommendations[index]
-                                                        ["id"],
-                                                    latitude:
-                                                        _recommendations[index]
-                                                                ["latitude"]
-                                                            .toString(),
-                                                    longitud:
-                                                        _recommendations[index]
-                                                                ["longitud"]
-                                                            .toString()),
+                                                // AirTag(
+                                                //     id: _recommendations[index]
+                                                //         ["id"],
+                                                //     latitude:
+                                                //         _recommendations[index]
+                                                //                 ["latitude"]
+                                                //             .toString(),
+                                                //     longitud:
+                                                //         _recommendations[index]
+                                                //                 ["longitud"]
+                                                //             .toString()),
                                                 const Expanded(
                                                     child: SizedBox()),
                                                 IconButton(

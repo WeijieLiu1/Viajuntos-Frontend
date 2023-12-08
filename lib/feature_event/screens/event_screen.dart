@@ -69,20 +69,19 @@ class _EventScreenState extends State<EventScreen> {
                   var acu = api.getCurrentUser();
                   bool aux = acu.compareTo(idEventCreator) == 0;
                   if (!aux) {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ChatScreen(
-                                  eventId: widget.id,
-                                  participanId: acu,
-                                )));
+                    // todo: fix chat
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => ChatScreen(
+                    //               eventId: widget.id,
+                    //               participanId: acu,
+                    //             )));
                   } else {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ListChatScreen(
-                                  id_event: widget.id,
-                                )));
+                            builder: (context) => ListChatScreen()));
                   }
                 },
               )

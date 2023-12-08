@@ -52,7 +52,6 @@ class SendWidget extends StatelessWidget {
                 print(messageTextController.text);
 
                 Response resp = await cAPI.createMessage(
-                    currentUserId,
                     eventId, //"23fa941a-9bee-4788-8b3d-3ebaa886bfe7",
                     messageTextController.text);
                 messageTextController.clear();
@@ -73,7 +72,7 @@ class SendWidget extends StatelessWidget {
                     "b4fa64c9-cfda-4c92-91d0-ac5dad48a83f");
                 */
                 /*
-                cAPI.openSession(eventId,
+                cAPI.GetChatMessages(eventId,
                     "b4fa64c9-cfda-4c92-91d0-ac5dad48a83f");
                  */
                 /*

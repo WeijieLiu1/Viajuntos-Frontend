@@ -65,8 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Theme.of(context).colorScheme.onSurface,
             icon: const Icon(Icons.arrow_back_ios_new_sharp),
             onPressed: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/home', (route) => false);
+              Navigator.pop(context);
             },
           ),
           iconTheme:

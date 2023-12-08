@@ -1,23 +1,47 @@
 class Chat {
-  String id;
-  String event_id;
-  String creador_id;
-  String participant_id;
-  Chat(
-      {required this.id,
-      required this.event_id,
-      required this.creador_id,
-      required this.participant_id});
-  Chat.fromJson(Map<String, dynamic> json)
-      : id = json['id'],
-        event_id = json['event_id'],
-        creador_id = json['creador_id'],
-        participant_id = json['participant_id'];
+  String? id;
+  String? name;
+  String? type;
+  String? created_at;
+  String? creator_id;
+  Chat({this.id, this.name, this.type, this.created_at, this.creator_id});
+  Chat.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    type = json['type'];
+    created_at = json['created_at'];
+    creator_id = json['creator_id'];
+  }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['type'] = type;
+    data['created_at'] = created_at;
+    data['creator_id'] = creator_id;
+    return data;
+  }
+}
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'event_id': event_id,
-        'creador_id': creador_id,
-        'participant_id': participant_id,
-      };
+class ListChat {
+  List<Chat>? chats;
+
+  ListChat({this.chats});
+
+  ListChat.fromJson(Map<String, dynamic> json) {
+    if (json['chats'] != null) {
+      chats = <Chat>[];
+      json['chats'].forEach((v) {
+        chats!.add(Chat.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (chats != null) {
+      data['chats'] = chats!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
 }

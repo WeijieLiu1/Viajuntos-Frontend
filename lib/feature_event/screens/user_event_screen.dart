@@ -38,9 +38,7 @@ class UserEventScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ListChatScreen(
-                                id_event: id,
-                              )));
+                          builder: (context) => ListChatScreen()));
                 },
                 icon: const Icon(
                   Icons.message,

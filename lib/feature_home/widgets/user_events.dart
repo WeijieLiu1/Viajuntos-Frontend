@@ -24,12 +24,11 @@ class _UserEventsListState extends State<UserEventsList> {
               '/v3/events/:0', ["creator"], {"userid": api.getCurrentUser()}),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              print("UserEventsList ConnectionState.done");
-              print("userid: " + api.getCurrentUser());
-              print("snapshot: " + snapshot.toString());
+              // print("UserEventsList ConnectionState.done");
+              // print("userid: " + api.getCurrentUser());
+              // print("snapshot: " + snapshot.toString());
               // print("_events:" + json.decode(snapshot.data).toString());
               var _events = json.decode(snapshot.data.body);
-
               return ListView.separated(
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
