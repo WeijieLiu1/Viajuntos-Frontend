@@ -39,10 +39,10 @@ class MapScreenState extends State<MapScreen> {
                 var lat = snapshot.data[0];
                 var long = snapshot.data[1];
                 return Stack(children: [
-                  lat == 0 && long == 0
-                      ? Container(
-                          decoration: const BoxDecoration(color: Colors.grey))
-                      : MapWidget(lat: lat, long: long, isEvent: false),
+                  // lat == 0 && long == 0
+                  //     ? Container(
+                  //         decoration: const BoxDecoration(color: Colors.grey))
+                  //     : MapWidget(lat: lat, long: long, isEvent: false),
                   Padding(
                     padding: const EdgeInsets.only(top: 40, left: 16),
                     child: CircleAvatar(

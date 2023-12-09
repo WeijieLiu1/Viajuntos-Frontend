@@ -11,13 +11,13 @@ class EventLocationScreen extends StatelessWidget {
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         body: Stack(children: [
-          lat == 0 && lng == 0
-              ? Container(decoration: const BoxDecoration(color: Colors.grey))
-              : MapWidget(
-                  lat: lat,
-                  long: lng,
-                  isEvent: true,
-                ),
+          // lat == 0 && lng == 0
+          //     ? Container(decoration: const BoxDecoration(color: Colors.grey))
+          //     : MapWidget(
+          //         lat: lat,
+          //         long: lng,
+          //         isEvent: true,
+          //       ),
           Padding(
             padding: const EdgeInsets.only(top: 40, left: 16),
             child: CircleAvatar(

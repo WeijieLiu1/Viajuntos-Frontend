@@ -2,13 +2,16 @@
 
 import 'dart:convert';
 import 'dart:core';
+import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/screens/change_image_profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
 import 'package:viajuntos/utils/api_controller.dart';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 //import '../services/sharedPreferencesHelper.dart';
 
 class EditarProfile extends StatefulWidget {
@@ -246,6 +249,43 @@ class _EditarProfileState extends State<EditarProfile> {
     return colorRetorno;
   }
 
+  Future<void> _pickAndCropImage() async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      final croppedImage = await ImageCropper().cropImage(
+          sourcePath: pickedImage.path,
+          aspectRatio: CropAspectRatio(
+            ratioX: 4, // 设置裁剪框的宽高比例
+            ratioY: 3,
+          ),
+          compressFormat: ImageCompressFormat.jpg, // 设置裁剪后的图片格式
+          uiSettings: [
+            AndroidUiSettings(
+              toolbarTitle: 'Crop Image', // Android端裁剪页面的标题
+              toolbarColor: Colors.deepOrange, // Android端裁剪页面的工具栏颜色
+              toolbarWidgetColor: Colors.white, // Android端裁剪页面的工具栏图标颜色
+            ),
+            IOSUiSettings(
+              title: 'Cropper',
+            ),
+          ]);
+
+      if (croppedImage != null) {
+        // 裁剪成功，可以在这里进行操作，例如将图片显示在界面上
+        //gs://viajuntos-397806.appspot.com/viajuntos-397806-images/ProfileImages
+        final path =
+            'gs://viajuntos-397806.appspot.com/viajuntos-397806-images/ProfileImages/' +
+                APICalls().getCurrentUser();
+
+        final file = File(croppedImage.path);
+
+        final ref = FirebaseStorage.instance.ref().child(path);
+        ref.putFile(file);
+      }
+    }
+  }
+
   SnackBar mensajeMuestra(String mensaje) {
     return SnackBar(
       content: Text(mensaje),
@@ -341,13 +381,7 @@ class _EditarProfileState extends State<EditarProfile> {
                             color: Theme.of(context).colorScheme.primary,
                             size: 30,
                           ),
-                          onPressed: () async {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PerfilImage(idUser: idUsuar)));
-                          },
+                          onPressed: _pickAndCropImage,
                         ),
                       ),
                     ],

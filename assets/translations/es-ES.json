@@ -206,5 +206,12 @@
     "Chat": "Chat",
     "NoMoreMessages": "No hay más mensajes",
     "NoChatYet": "No hay mensajes todavía",
-    "StartConversation": "¡Empieza una conversación con tus amigos!"
+    "StartConversation": "¡Empieza una conversación con tus amigos!",
+    "AddToCalendar": "Añadir al calendario",
+    "ComfirmAddTOCalendar": "¿Quieres añadir este evento a tu calendario?",
+    "EventAdded": "¡Evento añadido!",
+    "SuccessfullyAdding": "Se ha añadido el evento a tu calendario",
+    "EventAddFailed": "¡Error al añadir evento!",
+    "ErrorAddingEvent": "Error al añadir el evento a tu calendario",
+    "Ok": "Ok"
 }

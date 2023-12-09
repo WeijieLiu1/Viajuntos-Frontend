@@ -206,5 +206,12 @@
     "Chat": "Chat",
     "NoMoreMessages": "No hi ha més missatges per carregar",
     "NoChatYet": "Encara no hi ha cap xat",
-    "StartConversation": "Comença una conversa amb els teus amics!"
+    "StartConversation": "Comença una conversa amb els teus amics!",
+    "AddToCalendar": "Afegir al calendari",
+    "ComfirmAddTOCalendar": "Voles afegir aquest esdeveniment al calendari?",
+    "EventAdded": "Esdeveniment afegit al calendari",
+    "SuccessfullyAdding": "Afegit correctament",
+    "ErrorAdding": "Error en afegir",
+    "EventAddFailed": "No s'ha pogut afegir l'esdeveniment al calendari",
+    "Ok": "Ok"
 }

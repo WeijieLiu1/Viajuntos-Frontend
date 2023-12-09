@@ -1,34 +1,41 @@
 {
   "project_info": {
-    "project_number": "1070142557519",
-    "project_id": "viajuntos-4dbb3",
-    "storage_bucket": "viajuntos-4dbb3.appspot.com"
+    "project_number": "19640108832",
+    "project_id": "viajuntos-397806",
+    "storage_bucket": "viajuntos-397806.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1070142557519:android:c5b353376a250e9cd1c93a",
+        "mobilesdk_app_id": "1:19640108832:android:5208c60ec17e12765cb945",
         "android_client_info": {
           "package_name": "com.example.viajuntos"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1070142557519-u657k61k14fjr9l90n2hg741h92gdmop.apps.googleusercontent.com",
+          "client_id": "19640108832-qnaapop6ivc2tn3blak8grfauopdejs2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDOoGyg1FAThY5rGIsGwhuozXqatP34hdY"
+          "current_key": "AIzaSyCojDgmyDQzrb7YJ-4HE4pWSWPdjymHQLg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1070142557519-u657k61k14fjr9l90n2hg741h92gdmop.apps.googleusercontent.com",
+              "client_id": "19640108832-i40eop5i8dnngrkm4dg86o0233evfdii.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "19640108832-26jpio8lp8234bs8dnqmr6k43op9uq1e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.Viajuntos"
+              }
             }
           ]
         }

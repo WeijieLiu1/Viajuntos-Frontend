@@ -206,5 +206,12 @@
     "Chat": "Chat",
     "NoMoreMessages": "没有更多消息",
     "NoChatYet": "你还没有聊天室",
-    "StartConversation": "和你的朋友们开始对话吧!"
+    "StartConversation": "和你的朋友们开始对话吧!",
+    "AddToCalendar": "添加到日历",
+    "ComfirmAddTOCalendar": "您确定想要添加到日历吗?",
+    "EventAdded": "活动已添加到日历",
+    "SuccessfullyAdding": "成功添加",
+    "EventAddFailed": "活动添加失败",
+    "ErrorAdding": "添加错误",
+    "Ok": "好"
 }
