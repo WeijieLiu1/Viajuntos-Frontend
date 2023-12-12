@@ -10,7 +10,7 @@ class CreationSucess extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('Create',
+            title: Text('Successed',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.surface,
                         fontWeight: FontWeight.w600,

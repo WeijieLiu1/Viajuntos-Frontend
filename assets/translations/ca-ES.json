@@ -213,5 +213,7 @@
     "SuccessfullyAdding": "Afegit correctament",
     "ErrorAdding": "Error en afegir",
     "EventAddFailed": "No s'ha pogut afegir l'esdeveniment al calendari",
-    "Ok": "Ok"
+    "Ok": "Ok",
+    "Successed": "Exitós",
+    "Fee": "Tarifa"
 }

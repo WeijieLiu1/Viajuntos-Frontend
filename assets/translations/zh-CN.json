@@ -213,5 +213,7 @@
     "SuccessfullyAdding": "成功添加",
     "EventAddFailed": "活动添加失败",
     "ErrorAdding": "添加错误",
-    "Ok": "好"
+    "Ok": "好",
+    "Successed": "成功",
+    "Fee": "付费"
 }

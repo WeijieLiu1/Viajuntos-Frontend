@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:viajuntos/feature_event/screens/create_event.dart';
 import 'package:viajuntos/feature_explore/screens/home.dart';
 import 'package:viajuntos/feature_home/screens/home.dart';
@@ -25,6 +26,7 @@ class NavigationBottomBar extends StatefulWidget {
 
 class _NavigationBottomBarState extends State<NavigationBottomBar> {
   int _index = 0;
+  String clipboardText = '';
   String _scanResult = 'Unknown';
   static const List<Widget> _widgetOptions = <Widget>[
     MainHomeScreen(),
@@ -33,23 +35,14 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
     CreateEventScreen()
   ];
 
+  Map user = {};
   APICalls ac = APICalls();
 
   String getCurrentUser() {
     return ac.getCurrentUser();
   }
 
-  String urlProfilePhoto = "";
   final ExternServicePhoto es = ExternServicePhoto();
-
-  Future<void> getProfilePhoto() async {
-    final response = await es.getAPhoto(getCurrentUser());
-    if (response != 'Fail') {
-      setState(() {
-        urlProfilePhoto = response;
-      });
-    }
-  }
 
   Future<void> scanQR() async {
     String barcodeScanRes;
@@ -97,6 +90,55 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
         break;
       default:
       // http://localhost:5000/v2/users/new_friend?code=bmWecsrvil7UTVT
+    }
+  }
+
+  Future<void> getClipboardData() async {
+    try {
+      // 调用Clipboard的方法获取剪贴板内容
+      ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+
+      if (data != null && data.text != null) {
+        // 剪贴板中有文本内容
+        clipboardText = data.text!;
+        print('Clipboard Text: $clipboardText');
+        tryResolveClipboardData();
+      } else {
+        print('Clipboard is empty or does not contain text');
+      }
+    } catch (e) {
+      // 处理异常
+      print('Failed to get clipboard data: $e');
+    }
+  }
+
+  Future<void> tryResolveClipboardData() async {
+    try {
+      var uri = Uri.parse(clipboardText);
+      var type = uri.pathSegments[1];
+      switch (type) {
+        case "events": // join event
+          var id = uri.pathSegments[2];
+          if (id != '') {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => EventScreen(id: id)));
+          }
+          break;
+        case "users": // add friend
+          var response = await APICalls().getCollection('/v2/users/new_friend',
+              [], {"code": uri.queryParameters["code"]!});
+          // http://localhost:5000/v2/users/new_friend?code=bmWecsrvil7UTVT
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      ProfileScreen(id: json.decode(response.body)["id"])));
+          break;
+        default:
+      }
+    } catch (e) {
+      // 处理异常
+      print('Failed to set clipboard data: $e');
     }
   }
 
@@ -149,11 +191,19 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
     });
   }
 
+  // void initUser() async {
+  //   final response =
+  //       await APICalls().getItem('v2/users/:0', [getCurrentUser()]);
+  //   user = json.decode(response.body);
+  //   print("user[image_url]" + user["image_url"]);
+  // }
+
   @override
   void initState() {
     super.initState();
     initUniLinks();
-    getProfilePhoto();
+    getClipboardData();
+    // initUser();
     // print('initState1');
     // _socket = IO.io(
     //   baseLocalUrl,
@@ -231,22 +281,23 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
                 onTap: () {
                   // print('click');
                   // _socket.emit('connect', 'msgtest');
-                  Navigator.push(
+                  var res = Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProfileScreen(
                           id: getCurrentUser(),
                         ),
                       ));
+                  res.then((value) => setState(() {
+                        user = value;
+                      }));
                 },
                 child: SizedBox(
                   width: 36,
                   height: 36,
                   child: ClipRRect(
                       child: FittedBox(
-                          child: (urlProfilePhoto == "")
-                              ? Image.asset('assets/noProfileImage.png')
-                              : Image.network(urlProfilePhoto),
+                          child: Image.asset('assets/noProfileImage.png'),
                           fit: BoxFit.fitHeight),
                       borderRadius: BorderRadius.circular(100)),
                 ),

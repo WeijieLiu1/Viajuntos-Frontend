@@ -30,23 +30,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Map user = {};
   String idProfile = '0';
-  String urlProfilePhoto = "";
   final ExternServicePhoto es = ExternServicePhoto();
-
-  Future<void> getProfilePhoto(String idUsuar) async {
-    final response = await es.getAPhoto(idUsuar);
-    if (response != 'Fail') {
-      setState(() {
-        urlProfilePhoto = response;
-      });
-    }
-  }
 
   @override
   void initState() {
     super.initState();
     idProfile = widget.id;
-    getProfilePhoto(idProfile);
   }
 
   @override
@@ -88,9 +77,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Column(children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundImage: (urlProfilePhoto == "")
+                            backgroundImage: ("${user["image_url"]}" == "")
                                 ? const AssetImage('assets/noProfileImage.png')
-                                : NetworkImage(urlProfilePhoto)
+                                : NetworkImage("${user["image_url"]}")
                                     as ImageProvider,
                           ),
                         ]),
@@ -368,7 +357,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                         child: Text('Ok').tr(),
                                                         onPressed: () =>
                                                             Navigator.pop(
-                                                                context),
+                                                                context, user),
                                                       )
                                                     ]));
                                       },
@@ -392,25 +381,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       for (var i = 0;
                                           i < user["friends"].length;
                                           i++)
-                                        ListTile(
-                                          leading: const CircleAvatar(
-                                            backgroundImage:
-                                                AssetImage("assets/dog.jpg"),
-                                          ),
-                                          title: Text(
-                                              user["friends"][i]["username"]),
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProfileScreen(
-                                                    id: user["friends"][i]
-                                                        ["id"],
+                                        FutureBuilder(
+                                            future: ac.getItem('v2/users/:0',
+                                                [user["friends"][i]["id"]]),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot snapshot) {
+                                              if (snapshot.connectionState ==
+                                                  ConnectionState.done) {
+                                                Map auxUser = {};
+                                                auxUser = json
+                                                    .decode(snapshot.data.body);
+                                                return ListTile(
+                                                  leading: CircleAvatar(
+                                                    backgroundImage: (auxUser[
+                                                                    "image_url"] ==
+                                                                "" ||
+                                                            auxUser["image_url"] ==
+                                                                null)
+                                                        ? const AssetImage(
+                                                            'assets/noProfileImage.png')
+                                                        : NetworkImage(auxUser[
+                                                                "image_url"])
+                                                            as ImageProvider,
                                                   ),
-                                                ));
-                                          },
-                                        )
+                                                  title:
+                                                      Text(auxUser["username"]),
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              ProfileScreen(
+                                                            id: auxUser["id"],
+                                                          ),
+                                                        ));
+                                                  },
+                                                );
+                                              } else {
+                                                return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                );
+                                              }
+                                            })
                                     ])
                                   : Text('onlyseeyourfriends').tr(),
                             ),

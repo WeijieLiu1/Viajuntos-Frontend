@@ -22,7 +22,6 @@ class _EventState extends State<Event> {
   APICalls api = APICalls();
   final ExternServicePhoto es = ExternServicePhoto();
   bool found = false;
-  String urlProfilePhoto = "";
   List attendesEvent = [];
 
   Future<dynamic> joinEvent(String id, Map<String, dynamic> bodyData) async {
@@ -37,6 +36,12 @@ class _EventState extends State<Event> {
     return response;
   }
 
+  Future<String> getUserImage(String idProfile) async {
+    final response = await api.getItem("/v2/users/:0", [idProfile]);
+    return json.decode(response.body)["image_url"];
+    // getProfilePhoto(idUsuar);
+  }
+
   Future<List<dynamic>> getAllPhotosInEvent(String idEvent) async {
     final response = await api
         .getCollection('/v2/events/participants', [], {"eventid": idEvent});
@@ -44,7 +49,7 @@ class _EventState extends State<Event> {
     List aux = [];
 
     for (var v in attendes) {
-      final response2 = await es.getAPhoto(v);
+      final response2 = await getUserImage(v);
       if (response2 != 'Fail') {
         aux.add({"user_id": v, "image": response2});
       } else {
@@ -145,100 +150,109 @@ class _EventState extends State<Event> {
                                                 CrossAxisAlignment.center,
                                             children: [
                                               FutureBuilder(
-                                                  future: api.getItem(
-                                                      "/v1/users/:0", [
-                                                    _event[0]["user_creator"]
-                                                  ]),
-                                                  builder: (BuildContext
-                                                          context,
-                                                      AsyncSnapshot snapshot) {
-                                                    if (snapshot
-                                                            .connectionState ==
-                                                        ConnectionState.done) {
-                                                      var _user = [
-                                                        json.decode(
-                                                            snapshot.data.body)
-                                                      ];
-                                                      return Text(
+                                                future: api.getItem(
+                                                    "/v1/users/:0", [
+                                                  _event[0]["user_creator"]
+                                                ]),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.done) {
+                                                    var _user = json.decode(
+                                                        snapshot.data.body);
+
+                                                    return Row(
+                                                      children: [
+                                                        Text(
                                                           'Createdby'.tr() +
-                                                              _user[0]
-                                                                  ["username"],
+                                                              _user["username"],
                                                           style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                              fontSize: 14,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500));
-                                                    } else {
-                                                      return SkeletonItem(
-                                                          child: SkeletonParagraph(
-                                                              style: SkeletonParagraphStyle(
-                                                                  lines: 1,
-                                                                  spacing: 2,
-                                                                  lineStyle: SkeletonLineStyle(
-                                                                      width: 40,
-                                                                      height:
-                                                                          20,
-                                                                      borderRadius:
-                                                                          BorderRadius.circular(
-                                                                              10)))));
-                                                    }
-                                                  }),
-                                              const SizedBox(width: 10),
-                                              InkWell(
-                                                onTap: () {
-                                                  Navigator.of(context)
-                                                      .pushNamed('/profile');
-                                                },
-                                                child: FutureBuilder(
-                                                    future: es.getAPhoto(
-                                                        _event[0]
-                                                            ["user_creator"]),
-                                                    builder:
-                                                        (BuildContext context,
-                                                            AsyncSnapshot
-                                                                snapshot) {
-                                                      if (snapshot
-                                                              .connectionState ==
-                                                          ConnectionState
-                                                              .done) {
-                                                        var photoUrl =
-                                                            snapshot.data;
-                                                        return SizedBox(
-                                                          width: 36,
-                                                          height: 36,
-                                                          child: ClipRRect(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .primary,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        InkWell(
+                                                          onTap: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pushNamed(
+                                                                    '/profile');
+                                                          },
+                                                          child: SizedBox(
+                                                            width: 36,
+                                                            height: 36,
+                                                            child: ClipRRect(
                                                               child: FittedBox(
-                                                                  child: photoUrl !=
-                                                                          ''
-                                                                      ? Image.network(
-                                                                          photoUrl)
-                                                                      : Image.asset(
-                                                                          'assets/noProfileImage.jpg'),
-                                                                  fit: BoxFit
-                                                                      .fitHeight),
+                                                                child: _user[
+                                                                            "image_url"] !=
+                                                                        ''
+                                                                    ? Image.network(
+                                                                        _user[
+                                                                            "image_url"])
+                                                                    : Image.asset(
+                                                                        'assets/noProfileImage.jpg'),
+                                                                fit: BoxFit
+                                                                    .fitHeight,
+                                                              ),
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          100)),
-                                                        );
-                                                      } else {
-                                                        return const Center(
+                                                                          100),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  } else {
+                                                    return Row(
+                                                      children: [
+                                                        SkeletonItem(
+                                                          child:
+                                                              SkeletonParagraph(
+                                                            style:
+                                                                SkeletonParagraphStyle(
+                                                              lines: 1,
+                                                              spacing: 2,
+                                                              lineStyle:
+                                                                  SkeletonLineStyle(
+                                                                width: 40,
+                                                                height: 20,
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                            width: 10),
+                                                        Center(
                                                           child: SkeletonItem(
-                                                              child:
-                                                                  SkeletonAvatar(
-                                                            style: SkeletonAvatarStyle(
+                                                            child:
+                                                                SkeletonAvatar(
+                                                              style:
+                                                                  SkeletonAvatarStyle(
                                                                 shape: BoxShape
                                                                     .circle,
                                                                 width: 36,
-                                                                height: 36),
-                                                          )),
-                                                        );
-                                                      }
-                                                    }),
+                                                                height: 36,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  }
+                                                },
                                               ),
                                             ],
                                           ),

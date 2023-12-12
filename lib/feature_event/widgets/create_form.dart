@@ -1,9 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:viajuntos/feature_event/screens/creation_sucess.dart';
@@ -42,7 +44,9 @@ class _CreateEventFormState extends State<CreateEventForm> {
   final TextEditingController _max_participants =
       TextEditingController(text: '');
   final TextEditingController _image = TextEditingController(text: '');
+  final TextEditingController _amount_event = TextEditingController(text: '');
   late Uint8List _imageContent;
+  bool is_event_free = false;
 
   void _selectTime() async {
     TimeOfDay? newTime = await showTimePicker(
@@ -241,6 +245,10 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _longitude,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
                     decoration: InputDecoration(hintText: 'Longitude'.tr()),
                   ),
                 ),
@@ -248,6 +256,10 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 Expanded(
                   child: TextFormField(
                     controller: _latitude,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
                     decoration: InputDecoration(hintText: 'Latitude'.tr()),
                   ),
                 ),
@@ -261,8 +273,30 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   .tr(),
               TextFormField(
                 controller: _max_participants,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    try {
+                      if (newValue.text.isEmpty) {
+                        setState(() {
+                          _max_participants.text = '';
+                        });
+                        return newValue;
+                      }
+                      final int val = int.parse(newValue.text);
+                      if (val == 0) {
+                        return TextEditingValue(); // 禁用输入值为0
+                      }
+                      return newValue;
+                    } catch (e) {
+                      return oldValue; // 如果输入无效，则保留原始值
+                    }
+                  }),
+                ],
                 decoration: InputDecoration(hintText: 'peoplewillattend'.tr()),
               ),
+
               const SizedBox(height: 20),
               Text('Description',
                       style: TextStyle(
@@ -275,6 +309,62 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 decoration:
                     InputDecoration(hintText: 'Letattendeesexpect'.tr()),
               ),
+              const SizedBox(height: 40),
+              Text('IsPaidEvent?',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16))
+                  .tr(),
+              Switch(
+                  value: is_event_free,
+                  onChanged: (value) {
+                    setState(() {
+                      is_event_free = value;
+                    });
+                  }),
+              Visibility(
+                visible: is_event_free,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Price',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        )).tr(),
+                    TextFormField(
+                      controller: _amount_event,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d+\.?\d{0,2}')),
+                        TextInputFormatter.withFunction((oldValue, newValue) {
+                          try {
+                            if (newValue.text.isEmpty) {
+                              setState(() {
+                                _max_participants.text = '';
+                              });
+                              return newValue;
+                            }
+                            final double? val = double.tryParse(newValue.text);
+                            if (val == 0.0) {
+                              return TextEditingValue(); // 禁用输入值为0
+                            }
+                            return newValue;
+                          } catch (e) {
+                            return oldValue; // 如果输入无效，则保留原始值
+                          }
+                        }),
+                      ],
+                      decoration: InputDecoration(hintText: 'AddPrice'.tr()),
+                    ),
+                  ],
+                ),
+              ),
+
               const SizedBox(height: 40),
               Text('Image',
                       style: TextStyle(
@@ -333,7 +423,9 @@ class _CreateEventFormState extends State<CreateEventForm> {
             "longitud": double.parse(_longitude.text),
             "latitude": double.parse(_latitude.text),
             "max_participants": int.parse(_max_participants.text),
-            "event_image_uri": _image.text
+            "event_image_uri": _image.text,
+            "event_free": is_event_free,
+            "amount_event": double.parse(_amount_event.text),
           };
 
           var response = await api.postItem('/v3/events/', [], body);

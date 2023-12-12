@@ -213,5 +213,7 @@
     "SuccessfullyAdding": "Event successfully added to your calendar!",
     "EventAddFailed": "Event add fail",
     "ErrorAddingEvent": "Error adding event to your calendar",
-    "Ok": "Ok"
+    "Ok": "Ok",
+    "Successed": "Successed",
+    "Fee": "Fee"
 }

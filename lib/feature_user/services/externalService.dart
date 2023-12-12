@@ -13,15 +13,6 @@ class ExternServicePhoto {
     return response;
   }
 
-  Future<Map<String, dynamic>> postAPhoto(String idUser, String url) async {
-    var path = 'postFoto';
-    final uri = baseUri + path;
-    var str = {"email": idUser, "URL": url};
-    var response = await http.post(Uri.parse(uri),
-        body: jsonEncode(str), headers: {'Content-Type': 'application/json'});
-    return json.decode(response.body);
-  }
-
   Future<String> getAPhoto(String idUser) async {
     String aux =
         "https://res.cloudinary.com/homies-image-control/image/upload/Fail";

@@ -213,5 +213,7 @@
     "SuccessfullyAdding": "Se ha añadido el evento a tu calendario",
     "EventAddFailed": "¡Error al añadir evento!",
     "ErrorAddingEvent": "Error al añadir el evento a tu calendario",
-    "Ok": "Ok"
+    "Ok": "Ok",
+    "Successed": "¡Éxito!",
+    "Fee": "Tarifa"
 }

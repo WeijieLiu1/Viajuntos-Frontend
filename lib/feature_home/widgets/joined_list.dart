@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:math';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
@@ -128,36 +130,70 @@ class _JoinedListState extends State<JoinedList> {
                         ),
                         const Expanded(child: SizedBox()),
                         Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                SizedBox(
                                   width: 120,
                                   height: 72,
                                   child: ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(10)),
-                                      child: FittedBox(
-                                          child: Image.network(_joined[index]
-                                              ["event_image_uri"]),
-                                          fit: BoxFit.fitWidth))),
-                              Row(
-                                children: [
-                                  IconButton(
-                                      iconSize: 20,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface,
-                                      icon: const Icon(Icons.share),
-                                      onPressed: () => showShareMenu(
-                                          baseLocalUrl +
-                                              '/v3/events/' +
-                                              _joined[index]["id"],
-                                          context)),
-                                  const SizedBox(width: 10),
-                                  LikeButton(id: _joined[index]["id"])
-                                ],
-                              )
-                            ])
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(10)),
+                                    child: FittedBox(
+                                      child: Image.network(
+                                          _joined[index]["event_image_uri"]),
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                ),
+                                if (!_joined[index]
+                                    ["is_event_free"]) // 如果不是免费活动
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: Transform.rotate(
+                                      angle: pi / 4, // 设置旋转角度，这里是45度
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          'Fee',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ).tr(),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  iconSize: 20,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  icon: const Icon(Icons.share),
+                                  onPressed: () => showShareMenu(
+                                    baseLocalUrl +
+                                        '/v3/events/' +
+                                        _joined[index]["id"],
+                                    context,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                LikeButton(id: _joined[index]["id"]),
+                              ],
+                            )
+                          ],
+                        )
                       ],
                     ),
                   );

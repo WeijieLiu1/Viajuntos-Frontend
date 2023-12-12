@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:viajuntos/feature_event/screens/user_event_screen.dart';
@@ -72,6 +75,28 @@ class _UserEventsListState extends State<UserEventsList> {
                                         fit: BoxFit.cover),
                                     borderRadius: BorderRadius.circular(10)),
                               ),
+                              if (!_events[index]["is_event_free"]) // 如果不是免费活动
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Transform.rotate(
+                                    angle: pi / 4, // 设置旋转角度，这里是45度
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        'Fee',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ).tr(),
+                                    ),
+                                  ),
+                                ),
                               Container(
                                   height: 115,
                                   width: 100,

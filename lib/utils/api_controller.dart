@@ -171,11 +171,11 @@ class APICalls {
 
   Future<dynamic> _refresh(Function onSuccess, Function onError) async {
     // Llama a refresh, si es correcto setea las variables y llama a onSuccess. Si no llama a onError
-    final response = await http
-        .get(Uri.parse( API_URL + _REFRESH_ENDPOINT), headers: {
-      'Authorization': 'Bearer $_REFRESH_TOKEN',
-      'Content-Type': 'application/json'
-    });
+    final response = await http.get(Uri.parse(API_URL + _REFRESH_ENDPOINT),
+        headers: {
+          'Authorization': 'Bearer $_REFRESH_TOKEN',
+          'Content-Type': 'application/json'
+        });
     if (response.statusCode ~/ 100 == 2) {
       Map<String, dynamic> credentials = jsonDecode(response.body);
       _USER_ID = credentials['id'].toString();
@@ -212,10 +212,10 @@ class APICalls {
   void _redirectToLogin() {
     // ignore: todo
     // TODO: Navegar a la login screen
-    
+
     navigatorKey.currentState!.pushReplacement(MaterialPageRoute(
-        builder: (context) => WelcomeScreen(),
-      ));
+      builder: (context) => WelcomeScreen(),
+    ));
     // Navigator.pushAndRemoveUntil(
     //     MaterialPageRoute(builder: (context) => const WelcomeScreen()),
     //     (route) => false);
@@ -225,12 +225,12 @@ class APICalls {
     // ignore: todo
     // TODO: Navegar a la home screen
     navigatorKey.currentState!.pushReplacement(MaterialPageRoute(
-        builder: (context) => NavigationBottomBar(),
-      ));
+      builder: (context) => NavigationBottomBar(),
+    ));
     // navigatorKey.currentState!.pushAndRemoveUntil(
     //     MaterialPageRoute(builder: (context) => const NavigationBottomBar()),
     //     (route) => false);
-        
+
     // Navigator.pushAndRemoveUntil(
     //     context,
     //     MaterialPageRoute(

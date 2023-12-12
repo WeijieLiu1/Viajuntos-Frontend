@@ -41,12 +41,13 @@ class ImagePageState extends State<ImagePage> {
                 minimumSize: const Size(250, 50),
               ),
               onPressed: () async {
-                var resposta = await es.postAPhoto(widget.idUser, widget.url);
-                if (resposta['resposta'] == 1) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/edit_profile', (route) => false);
-                  //Navigator.of(context).pushNamed('/edit_profile');
-                }
+                //todo: upload image
+                // var resposta = await es.postAPhoto(widget.idUser, widget.url);
+                // if (resposta['resposta'] == 1) {
+                //   Navigator.of(context).pushNamedAndRemoveUntil(
+                //       '/edit_profile', (route) => false);
+                //   //Navigator.of(context).pushNamed('/edit_profile');
+                // }
               },
               child: Text(
                 "Select",

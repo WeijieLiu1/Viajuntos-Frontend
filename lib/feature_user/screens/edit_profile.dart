@@ -27,6 +27,7 @@ class _EditarProfileState extends State<EditarProfile> {
   late String description;
   late String hobbies;
   late String idUsuar;
+  late String image_url;
   List<dynamic> idiomas = [];
   bool colorInit = false;
   bool colorInit2 = false;
@@ -39,7 +40,6 @@ class _EditarProfileState extends State<EditarProfile> {
   Color secundary3 = Colors.black;
   Map user = {};
   String idProfile = "0";
-  String urlProfilePhoto = "";
   APICalls ac = APICalls();
   final ExternServicePhoto es = ExternServicePhoto();
 
@@ -62,18 +62,19 @@ class _EditarProfileState extends State<EditarProfile> {
       description = user["description"];
       hobbies = user["hobbies"];
       idUsuar = user["id"];
+      image_url = user["image_url"];
     });
-    getProfilePhoto(idUsuar);
+    // getProfilePhoto(idUsuar);
   }
 
-  Future<void> getProfilePhoto(String idUsuar) async {
-    final response = await es.getAPhoto(idUsuar);
-    if (response != 'Fail') {
-      setState(() {
-        urlProfilePhoto = response;
-      });
-    }
-  }
+  // Future<void> getProfilePhoto(String idUsuar) async {
+  //   final response = await es.getAPhoto(idUsuar);
+  //   if (response != 'Fail') {
+  //     setState(() {
+  //       urlProfilePhoto = response;
+  //     });
+  //   }
+  // }
 
   @override
   void initState() {
@@ -257,7 +258,7 @@ class _EditarProfileState extends State<EditarProfile> {
           sourcePath: pickedImage.path,
           aspectRatio: CropAspectRatio(
             ratioX: 4, // 设置裁剪框的宽高比例
-            ratioY: 3,
+            ratioY: 4,
           ),
           compressFormat: ImageCompressFormat.jpg, // 设置裁剪后的图片格式
           uiSettings: [
@@ -274,14 +275,91 @@ class _EditarProfileState extends State<EditarProfile> {
       if (croppedImage != null) {
         // 裁剪成功，可以在这里进行操作，例如将图片显示在界面上
         //gs://viajuntos-397806.appspot.com/viajuntos-397806-images/ProfileImages
-        final path =
-            'gs://viajuntos-397806.appspot.com/viajuntos-397806-images/ProfileImages/' +
-                APICalls().getCurrentUser();
+        // final path =
+        //     'gs://viajuntos-397806.appspot.com/viajuntos-397806-images/ProfileImages/' +
+        //         APICalls().getCurrentUser();
 
         final file = File(croppedImage.path);
 
-        final ref = FirebaseStorage.instance.ref().child(path);
-        ref.putFile(file);
+        final storageRef = FirebaseStorage.instance.ref();
+        // Create the file metadata
+        final metadata = SettableMetadata(contentType: "image/jpeg");
+        // Upload file and metadata to the path 'images/mountains.jpg'
+        final uploadTask = storageRef
+            .child("viajuntos-397806-images/ProfileImages/" +
+                APICalls().getCurrentUser())
+            .putFile(file, metadata);
+        // Listen for state changes, errors, and completion of the upload.
+        uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
+          switch (taskSnapshot.state) {
+            case TaskState.running:
+              final progress = 100.0 *
+                  (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
+              print("Upload is $progress% complete.");
+              break;
+            case TaskState.paused:
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                          title: Text("UploadPausedTitle").tr(),
+                          content: Text("UploadPausedContent").tr(),
+                          actions: [
+                            TextButton(
+                              child: Text('Ok').tr(),
+                              onPressed: () => Navigator.pop(context),
+                            )
+                          ]));
+              break;
+            case TaskState.canceled:
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                          title: Text("UploadCanceledTitle").tr(),
+                          content: Text("UploadCanceledContent").tr(),
+                          actions: [
+                            TextButton(
+                              child: Text('Ok').tr(),
+                              onPressed: () => Navigator.pop(context),
+                            )
+                          ]));
+              break;
+            case TaskState.error:
+              // Handle unsuccessful uploads
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                          title: Text("UploadErrorTitle").tr(),
+                          content: Text("UploadErrorContent").tr(),
+                          actions: [
+                            TextButton(
+                              child: Text('Ok').tr(),
+                              onPressed: () => Navigator.pop(context),
+                            )
+                          ]));
+              break;
+            case TaskState.success:
+              showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                          title: Text("UploadSuccessTitle").tr(),
+                          content: Text("UploadSuccessContent").tr(),
+                          actions: [
+                            TextButton(
+                              child: Text('Ok').tr(),
+                              onPressed: () => Navigator.pop(context),
+                            )
+                          ]));
+              var a = taskSnapshot.ref.getDownloadURL();
+              // 管理调试令牌
+              // viajuntos-token1: 74DAE15D-F943-40F6-8034-F0B280917599
+              taskSnapshot.ref.getDownloadURL().then((value) => {
+                    setState(() {
+                      image_url = value.toString();
+                    })
+                  });
+              break;
+          }
+        });
       }
     }
   }
@@ -364,10 +442,9 @@ class _EditarProfileState extends State<EditarProfile> {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: (urlProfilePhoto == "")
+                            image: (image_url == "")
                                 ? AssetImage('assets/noProfileImage.png')
-                                : NetworkImage(urlProfilePhoto)
-                                    as ImageProvider,
+                                : NetworkImage(image_url) as ImageProvider,
                           ),
                         ),
                       ),
@@ -421,7 +498,8 @@ class _EditarProfileState extends State<EditarProfile> {
                               "username": username,
                               "languages": idiomas,
                               "description": description,
-                              "hobbies": hobbies
+                              "hobbies": hobbies,
+                              "image_url": image_url
                             };
                             var ap = await updateUser(bodyAux);
                             if (ap == 200) {

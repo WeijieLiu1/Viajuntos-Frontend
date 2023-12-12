@@ -158,13 +158,27 @@ class _ListChatScreen extends State<ListChatScreen> {
                                                   Padding(
                                                     padding: EdgeInsets.only(
                                                         right: 8),
-                                                    child: Image.network(
-                                                      chat_image_url[
-                                                          "image_url"], // 替换为您的图像路径
-                                                      width: 40,
-                                                      height: 40,
-                                                      // 可根据需要设置其他图像属性
-                                                    ),
+                                                    child: (chat_image_url !=
+                                                                null &&
+                                                            chat_image_url[
+                                                                    "image_url"] !=
+                                                                null &&
+                                                            chat_image_url[
+                                                                    "image_url"] !=
+                                                                "")
+                                                        ? Image.network(
+                                                            chat_image_url[
+                                                                "image_url"], // 您的图像路径
+                                                            width: 40,
+                                                            height: 40,
+                                                            // 其他图像属性
+                                                          )
+                                                        : Image.asset(
+                                                            'assets/noProfileImage.png', // 占位图像路径
+                                                            width: 40,
+                                                            height: 40,
+                                                            // 其他图像属性
+                                                          ),
                                                   ),
                                                   Text(
                                                     listChats[index]

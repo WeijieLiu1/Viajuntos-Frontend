@@ -28,7 +28,6 @@ class _UserEventState extends State<UserEvent> {
 
   final ExternServicePhoto es = ExternServicePhoto();
   bool found = false;
-  String urlProfilePhoto = "";
   List attendesEvent = [];
 
   APICalls api = APICalls();
