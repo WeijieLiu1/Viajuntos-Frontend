@@ -46,7 +46,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
   final TextEditingController _image = TextEditingController(text: '');
   final TextEditingController _amount_event = TextEditingController(text: '');
   late Uint8List _imageContent;
-  bool is_event_free = false;
+  bool is_event_pee = false;
 
   void _selectTime() async {
     TimeOfDay? newTime = await showTimePicker(
@@ -317,14 +317,14 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           fontSize: 16))
                   .tr(),
               Switch(
-                  value: is_event_free,
+                  value: is_event_pee,
                   onChanged: (value) {
                     setState(() {
-                      is_event_free = value;
+                      is_event_pee = value;
                     });
                   }),
               Visibility(
-                visible: is_event_free,
+                visible: is_event_pee,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -345,7 +345,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           try {
                             if (newValue.text.isEmpty) {
                               setState(() {
-                                _max_participants.text = '';
+                                _amount_event.text = '';
                               });
                               return newValue;
                             }
@@ -424,8 +424,9 @@ class _CreateEventFormState extends State<CreateEventForm> {
             "latitude": double.parse(_latitude.text),
             "max_participants": int.parse(_max_participants.text),
             "event_image_uri": _image.text,
-            "event_free": is_event_free,
-            "amount_event": double.parse(_amount_event.text),
+            "event_free": is_event_pee,
+            "amount_event":
+                is_event_pee ? 0.0 : double.parse(_amount_event.text),
           };
 
           var response = await api.postItem('/v3/events/', [], body);
