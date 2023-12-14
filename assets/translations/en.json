@@ -215,5 +215,12 @@
     "ErrorAddingEvent": "Error adding event to your calendar",
     "Ok": "Ok",
     "Successed": "Successed",
-    "Fee": "Fee"
+    "Fee": "Fee",
+    "IsPaidEvent?": "Is Paid Event?",
+    "Price": "Price",
+    "AddPrice": "Add Price",
+    "EventType": "Event Type",
+    "PUBLIC": "PUBLIC",
+    "PRIVATE": "PRIVATE",
+    "FRIENDS": "FRIENDS"
 }

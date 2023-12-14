@@ -76,6 +76,9 @@ dependencies:
   intl: ^0.18.1
   image_cropper: ^5.0.1
   firebase_app_check: ^0.2.1+8
+  flutter_paypal_payment: ^1.0.6
+  flutter_inappwebview: ^5.8.0
+  dio: ^5.4.0
 
 dev_dependencies:
   flutter_test:

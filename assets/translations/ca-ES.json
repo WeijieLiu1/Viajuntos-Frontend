@@ -215,5 +215,12 @@
     "EventAddFailed": "No s'ha pogut afegir l'esdeveniment al calendari",
     "Ok": "Ok",
     "Successed": "Exitós",
-    "Fee": "Tarifa"
+    "Fee": "Tarifa",
+    "IsPaidEvent?": "És un esdeveniment de pagament?",
+    "AddPrice": "Afegiu el preu",
+    "Price": "Preu",
+    "EventType": "Tipus d'esdeveniment",
+    "PUBLIC": "PÚBLIC",
+    "FRIENDS": "AMICS",
+    "PRIVATE": "PRIVAT"
 }

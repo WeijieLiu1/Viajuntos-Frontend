@@ -36,7 +36,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
       TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute + 1);
 
   List event = [];
-
   final TextEditingController _name = TextEditingController(text: '');
   final TextEditingController _description = TextEditingController(text: '');
   final TextEditingController _latitude = TextEditingController(text: '');
@@ -44,7 +43,9 @@ class _CreateEventFormState extends State<CreateEventForm> {
   final TextEditingController _max_participants =
       TextEditingController(text: '');
   final TextEditingController _image = TextEditingController(text: '');
-  final TextEditingController _amount_event = TextEditingController(text: '');
+  final TextEditingController _amount_event =
+      TextEditingController(text: '0.0');
+  String event_type = 'PUBLIC'.tr();
   late Uint8List _imageContent;
   bool is_event_pee = false;
 
@@ -140,9 +141,40 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           fontWeight: FontWeight.w600,
                           fontSize: 16))
                   .tr(),
+
               TextFormField(
                 controller: _name,
                 decoration: InputDecoration(hintText: 'Whatcreating'.tr()),
+              ),
+              const SizedBox(height: 20),
+              Text('EventType',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16))
+                  .tr(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  DropdownButtonFormField<String>(
+                    value: event_type,
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        event_type = newValue!;
+                      });
+                    },
+                    items: <String>[
+                      'PUBLIC'.tr(),
+                      'FRIENDS'.tr(),
+                      'PRIVATE'.tr()
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               Text('Datetimeeventstarts',
@@ -399,6 +431,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
           Map<String, dynamic> body = {
             "name": _name.text,
             "description": _description.text,
+            "event_type": event_type,
             "date_started": _selectedStartedTime.year.toString() +
                 '-' +
                 _selectedStartedTime.month.toString() +

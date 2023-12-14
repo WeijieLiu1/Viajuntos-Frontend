@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -173,7 +176,6 @@ class _RecentlyAddedState extends State<RecentlyAdded> {
                                                           fontSize: 14,
                                                           fontWeight:
                                                               FontWeight.bold)),
-                                              const SizedBox(height: 10),
                                               Text(
                                                   recommendations[index]
                                                       ["name"],
@@ -223,7 +225,29 @@ class _RecentlyAddedState extends State<RecentlyAdded> {
                                             ]),
                                       ))
                                 ],
-                              )
+                              ),
+                              if (!recommendations[index]["is_event_free"])
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: Transform.rotate(
+                                    angle: pi / 4, // 设置旋转角度，这里是45度
+                                    child: Container(
+                                      padding: const EdgeInsets.all(4.0),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red,
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text(
+                                        'Fee',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ).tr(),
+                                    ),
+                                  ),
+                                ),
                             ],
                           )),
                     ),

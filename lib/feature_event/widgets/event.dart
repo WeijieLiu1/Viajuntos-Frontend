@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
+import 'package:http/http.dart';
 import 'package:viajuntos/feature_event/widgets/event_map.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
@@ -22,9 +25,102 @@ class _EventState extends State<Event> {
   APICalls api = APICalls();
   final ExternServicePhoto es = ExternServicePhoto();
   bool found = false;
+  bool paid = false;
   List attendesEvent = [];
 
-  Future<dynamic> joinEvent(String id, Map<String, dynamic> bodyData) async {
+  @override
+  void initState() {
+    super.initState();
+    getPaymentStatus(widget.id);
+  }
+
+  void PayEvent(List<dynamic> _event) async {
+    var amount = _event[0]["amount_event"];
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (BuildContext context) => PaypalCheckoutView(
+        sandboxMode: true,
+        clientId:
+            "AYQPBYQ6U-hyIKBERgEN_qjO4fSIFvjljwKaYaCgU00NEKXB76Uxsba29zRPHp6AO1HBV7-VMFNyDhYt",
+        secretKey:
+            "EMfnOAW3h4UuOjrQJnnDBAf7s-ro7RLguWanGlXjYJxpF_OCH7-wZD4HKw45wIq1jXKkYlSMXUcsoSg_",
+        transactions: [
+          {
+            "amount": {
+              "total": _event[0]["amount_event"],
+              "currency": "USD",
+              "details": {
+                "subtotal": _event[0]["amount_event"],
+                "shipping": '0',
+                "shipping_discount": 0
+              }
+            },
+            "description": "Viajuntos Fee Event",
+            // "payment_options": {
+            //   "allowed_payment_method":
+            //       "INSTANT_FUNDING_SOURCE"
+            // },
+            "item_list": {
+              "items": [
+                {
+                  "name": _event[0]["name"],
+                  "quantity": 1,
+                  "price": _event[0]["amount_event"],
+                  "currency": "USD"
+                }
+              ],
+            }
+          }
+        ],
+        note: "Contact us for any questions on your order.",
+        onSuccess: (Map params) async {
+          print('onSuccess');
+          print(params);
+          Navigator.pop(context);
+          final bodyData = {
+            "event_id": _event[0]["id"],
+            "amount": amount,
+            "payment_type": "Paypal",
+            "payment_id": params["data"]["id"]
+          };
+
+          final response =
+              await api.postItem('/v3/events/:0', ["add_payment"], bodyData);
+          print(response.statusCode);
+          setState(() {
+            paid = true;
+          });
+        },
+        onError: (error) {
+          print('onError');
+          Navigator.pop(context);
+        },
+        onCancel: () {
+          print('cancelled:');
+          Navigator.pop(context);
+        },
+      ),
+    ));
+  }
+
+  Future<void> getPaymentStatus(String idEvent) async {
+    final Response response =
+        await api.getItem('/v3/events/get_payment/:0', [idEvent]);
+    var data = json.decode(response.body);
+    print("data: " + data.toString());
+    if (response.statusCode == 200) {
+      if (data["status"] == "PAID")
+        setState(() {
+          paid = true;
+        });
+      else {
+        setState(() {
+          paid = false;
+        });
+      }
+    }
+  }
+
+  Future<dynamic> joinEvent(Map<String, dynamic> bodyData) async {
     final response =
         await api.postItem('/v3/events/:0/:1', [widget.id, 'join'], bodyData);
     return response;
@@ -56,12 +152,13 @@ class _EventState extends State<Event> {
         aux.add({"user_id": v, "image": ''});
       }
     }
-
-    print(attendes);
-    print(attendesEvent);
     return aux;
   }
 
+  Future<List<dynamic>> getAllPayments(String id) async {
+    final response = await api.getItem('/v3/events/get_all_payments/:0', [id]);
+    return json.decode(response.body);
+  }
   // Future<String> getProfilePhoto(String idUsuar) async {
   //   final response = await es.getAPhoto(idUsuar);
   //   if (response != 'Fail') {
@@ -350,19 +447,29 @@ class _EventState extends State<Event> {
                                                               .size
                                                               .width,
                                                       child: FutureBuilder(
-                                                          future:
-                                                              getAllPhotosInEvent(
-                                                                  widget.id),
+                                                          future: Future.wait([
+                                                            getAllPhotosInEvent(
+                                                                widget.id),
+                                                            getAllPayments(
+                                                                widget.id)
+                                                          ]), //
+
                                                           builder: (BuildContext
                                                                   context,
-                                                              AsyncSnapshot
+                                                              AsyncSnapshot<
+                                                                      List<
+                                                                          dynamic>>
                                                                   snapshot) {
                                                             if (snapshot
                                                                     .connectionState ==
                                                                 ConnectionState
                                                                     .done) {
                                                               var attendees =
-                                                                  snapshot.data;
+                                                                  snapshot
+                                                                      .data![0];
+                                                              var payments =
+                                                                  snapshot
+                                                                      .data![1];
                                                               print(attendees);
                                                               return ListView
                                                                   .separated(
@@ -382,6 +489,10 @@ class _EventState extends State<Event> {
                                                                       itemBuilder:
                                                                           (BuildContext context,
                                                                               int index) {
+                                                                        bool hasPaid = payments.any((payment) =>
+                                                                            (payment['user_id'] == attendees[index]['user_id']) ||
+                                                                            (_event[0]["user_creator"] ==
+                                                                                attendees[index]['user_id']));
                                                                         return InkWell(
                                                                           onTap:
                                                                               () {
@@ -389,13 +500,24 @@ class _EventState extends State<Event> {
                                                                                 MaterialPageRoute(builder: (context) => ProfileScreen(id: attendees[index]["user_id"])));
                                                                           },
                                                                           child:
+                                                                              Stack(
+                                                                            children: [
                                                                               CircleAvatar(
-                                                                            radius:
-                                                                                40,
-                                                                            // ignore: unrelated_type_equality_checks
-                                                                            backgroundImage: attendees[index]["image"] == ''
-                                                                                ? AssetImage('assets/noProfileImage.png')
-                                                                                : NetworkImage(attendees[index]["image"]) as ImageProvider,
+                                                                                radius: 40,
+                                                                                backgroundImage: attendees[index]['image'] == '' ? AssetImage('assets/noProfileImage.png') : NetworkImage(attendees[index]['image']) as ImageProvider,
+                                                                              ),
+                                                                              if (hasPaid)
+                                                                                Positioned(
+                                                                                  bottom: 0,
+                                                                                  right: 0,
+                                                                                  child: Icon(
+                                                                                    CupertinoIcons.checkmark_circle_fill,
+                                                                                    // Icons.check_circle_outline_sharp,
+                                                                                    color: Colors.green,
+                                                                                    size: 24,
+                                                                                  ),
+                                                                                ),
+                                                                            ],
                                                                           ),
                                                                         );
                                                                       });
@@ -544,8 +666,8 @@ class _EventState extends State<Event> {
                                           final bodyData = {
                                             "user_id": api.getCurrentUser()
                                           };
-                                          var response = await joinEvent(
-                                              _event[0]["id"], bodyData);
+                                          var response =
+                                              await joinEvent(bodyData);
                                           SnackBar snackBar;
                                           if (response.statusCode == 200) {
                                             snackBar = SnackBar(
@@ -554,6 +676,7 @@ class _EventState extends State<Event> {
                                                   .secondary,
                                               content: Text('Youarein').tr(),
                                             );
+                                            getPaymentStatus(_event[0]["id"]);
                                           } else {
                                             snackBar = SnackBar(
                                               backgroundColor: Theme.of(context)
@@ -605,70 +728,138 @@ class _EventState extends State<Event> {
                                         ),
                                       );
                                     } else {
-                                      return InkWell(
-                                        onTap: () async {
-                                          final bodyData = {
-                                            "user_id": api.getCurrentUser()
-                                          };
-                                          var response = await leaveEvent(
-                                              _event[0]["id"], bodyData);
-                                          setState(() {
-                                            found = false;
-                                          });
-                                          SnackBar snackBar;
-                                          if (response.statusCode == 200) {
-                                            snackBar = SnackBar(
-                                              backgroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                              content: Text('Youleft').tr(),
-                                            );
-                                          } else {
-                                            snackBar = SnackBar(
-                                              backgroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .error,
-                                              content:
-                                                  Text('Somethingbadhappened')
-                                                      .tr(),
-                                            );
-                                          }
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(snackBar);
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .error,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .error
-                                                    .withOpacity(0.5),
-                                                spreadRadius: 5,
-                                                blurRadius: 7,
-                                                offset: const Offset(0,
-                                                    3), // changes position of shadow
-                                              ),
-                                            ],
+                                      return Row(
+                                        children: [
+                                          Visibility(
+                                            visible: !paid &&
+                                                _event[0]["user_creator"] !=
+                                                    api.getCurrentUser(),
+                                            child: Row(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () async {
+                                                    PayEvent(_event);
+                                                  },
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10.0),
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .error,
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .colorScheme
+                                                              .error
+                                                              .withOpacity(0.5),
+                                                          spreadRadius: 5,
+                                                          blurRadius: 7,
+                                                          offset: const Offset(
+                                                              0,
+                                                              3), // changes position of shadow
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    width: 60,
+                                                    height: 40,
+                                                    child: Center(
+                                                        child: Text('Pay',
+                                                                style: TextStyle(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .background,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold))
+                                                            .tr()),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 40),
+                                              ],
+                                            ),
                                           ),
-                                          width: 150,
-                                          height: 40,
-                                          child: Center(
-                                              child: Text('LEAVE',
-                                                      style: TextStyle(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .background,
-                                                          fontWeight:
-                                                              FontWeight.bold))
-                                                  .tr()),
-                                        ),
+                                          Visibility(
+                                            visible: _event[0]
+                                                    ["user_creator"] !=
+                                                api.getCurrentUser(),
+                                            child: InkWell(
+                                              onTap: () async {
+                                                final bodyData = {
+                                                  "user_id":
+                                                      api.getCurrentUser()
+                                                };
+                                                var response = await leaveEvent(
+                                                    _event[0]["id"], bodyData);
+                                                setState(() {
+                                                  found = false;
+                                                });
+                                                SnackBar snackBar;
+                                                if (response.statusCode ==
+                                                    200) {
+                                                  snackBar = SnackBar(
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .secondary,
+                                                    content:
+                                                        Text('Youleft').tr(),
+                                                  );
+                                                } else {
+                                                  snackBar = SnackBar(
+                                                    backgroundColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .error,
+                                                    content: Text(
+                                                            'Somethingbadhappened')
+                                                        .tr(),
+                                                  );
+                                                }
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(snackBar);
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .error
+                                                          .withOpacity(0.5),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 7,
+                                                      offset: const Offset(0,
+                                                          3), // changes position of shadow
+                                                    ),
+                                                  ],
+                                                ),
+                                                width: 60,
+                                                height: 40,
+                                                child: Center(
+                                                    child: Text('LEAVE',
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .background,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold))
+                                                        .tr()),
+                                              ),
+                                            ),
+                                          )
+                                        ],
                                       );
                                     }
                                   } else {

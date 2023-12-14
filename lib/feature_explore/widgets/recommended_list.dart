@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'package:viajuntos/utils/air_tag.dart';
@@ -29,6 +32,7 @@ class _RecommendedListState extends State<RecommendedList> {
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               var _recommendations = json.decode(snapshot.data.body);
+              print("body: " + snapshot.data.body.toString());
               return ListView.separated(
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
@@ -133,7 +137,6 @@ class _RecommendedListState extends State<RecommendedList> {
                                                     fontSize: 14,
                                                     fontWeight:
                                                         FontWeight.bold)),
-                                            const SizedBox(height: 10),
                                             Text(
                                                 _recommendations[index]["name"],
                                                 style: TextStyle(
@@ -182,7 +185,29 @@ class _RecommendedListState extends State<RecommendedList> {
                                           ]),
                                     ))
                               ],
-                            )
+                            ),
+                            if (!_recommendations[index]["is_event_free"])
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: Transform.rotate(
+                                  angle: pi / 4, // 设置旋转角度，这里是45度
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(5),
+                                    ),
+                                    child: Text(
+                                      'Fee',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ).tr(),
+                                  ),
+                                ),
+                              ),
                           ],
                         )),
                   );

@@ -215,5 +215,12 @@
     "ErrorAdding": "添加错误",
     "Ok": "好",
     "Successed": "成功",
-    "Fee": "付费"
+    "Fee": "付费",
+    "IsPaidEvent?": "这是一个付费活动吗?",
+    "Price": "价格",
+    "AddPrice": "添加价格",
+    "EventType": "活动类型",
+    "PUBLIC": "公开",
+    "PRIVATE": "私人",
+    "FRIENDS": "朋友可见"
 }

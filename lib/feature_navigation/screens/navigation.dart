@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:http/http.dart';
 import 'package:viajuntos/feature_event/screens/create_event.dart';
 import 'package:viajuntos/feature_explore/screens/home.dart';
@@ -259,9 +260,77 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
                 onTap: () {
-                  // print('click');
-                  // _socket.emit('connect', 'msgtest');
-                  scanQR();
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => PaypalCheckoutView(
+                      sandboxMode: true,
+                      clientId:
+                          "AYQPBYQ6U-hyIKBERgEN_qjO4fSIFvjljwKaYaCgU00NEKXB76Uxsba29zRPHp6AO1HBV7-VMFNyDhYt",
+                      secretKey:
+                          "EMfnOAW3h4UuOjrQJnnDBAf7s-ro7RLguWanGlXjYJxpF_OCH7-wZD4HKw45wIq1jXKkYlSMXUcsoSg_",
+                      transactions: const [
+                        {
+                          "amount": {
+                            "total": '100',
+                            "currency": "USD",
+                            "details": {
+                              "subtotal": '100',
+                              "shipping": '0',
+                              "shipping_discount": 0
+                            }
+                          },
+                          "description": "The payment transaction description.",
+                          // "payment_options": {
+                          //   "allowed_payment_method":
+                          //       "INSTANT_FUNDING_SOURCE"
+                          // },
+                          "item_list": {
+                            "items": [
+                              {
+                                "name": "Apple",
+                                "quantity": 4,
+                                "price": '10',
+                                "currency": "USD"
+                              },
+                              {
+                                "name": "Pineapple",
+                                "quantity": 5,
+                                "price": '12',
+                                "currency": "USD"
+                              }
+                            ],
+
+                            // Optional
+                            //   "shipping_address": {
+                            //     "recipient_name": "Tharwat samy",
+                            //     "line1": "tharwat",
+                            //     "line2": "",
+                            //     "city": "tharwat",
+                            //     "country_code": "EG",
+                            //     "postal_code": "25025",
+                            //     "phone": "+00000000",
+                            //     "state": "ALex"
+                            //  },
+                          }
+                        }
+                      ],
+                      note: "Contact us for any questions on your order.",
+                      onSuccess: (Map params) async {
+                        print('onSuccess');
+                        print(params);
+                        Navigator.pop(context);
+                      },
+                      onError: (error) {
+                        print('onError');
+                        Navigator.pop(context);
+                      },
+                      onCancel: () {
+                        print('cancelled:');
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ));
+
+                  // scanQR();
                 },
                 child: SizedBox(
                   width: 36,
