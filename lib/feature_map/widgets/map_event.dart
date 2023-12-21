@@ -156,7 +156,7 @@ class _EventWidgetState extends State<EventWidget> {
                   return CircleAvatar(
                     backgroundImage: photoUrl != ''
                         ? NetworkImage(photoUrl) as ImageProvider
-                        : AssetImage('assets/noProfileImage.jpg'),
+                        : AssetImage('assets/noProfileImage.png'),
                   );
                 } else {
                   return const Center(

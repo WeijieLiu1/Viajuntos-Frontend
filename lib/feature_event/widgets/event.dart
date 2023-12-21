@@ -323,7 +323,7 @@ class _EventState extends State<Event> {
                                                                         _user[
                                                                             "image_url"])
                                                                     : Image.asset(
-                                                                        'assets/noProfileImage.jpg'),
+                                                                        'assets/noProfileImage.png'),
                                                                 fit: BoxFit
                                                                     .fitHeight,
                                                               ),
@@ -517,10 +517,10 @@ class _EventState extends State<Event> {
                                                                       itemBuilder:
                                                                           (BuildContext context,
                                                                               int index) {
-                                                                        bool hasPaid = payments.any((payment) =>
-                                                                            (payment['user_id'] == attendees[index]['user_id']) ||
-                                                                            (_event[0]["user_creator"] ==
-                                                                                attendees[index]['user_id']));
+                                                                        bool
+                                                                            hasPaid =
+                                                                            _event[0]["user_creator"] == api.getCurrentUser() &&
+                                                                                payments.any((payment) => (payment['user_id'] == attendees[index]['user_id']) || (_event[0]["user_creator"] == attendees[index]['user_id']));
                                                                         return InkWell(
                                                                           onTap:
                                                                               () {

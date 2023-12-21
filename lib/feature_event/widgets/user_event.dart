@@ -204,7 +204,7 @@ class _UserEventState extends State<UserEvent> {
                                                                         ? Image.network(
                                                                             photoUrl)
                                                                         : Image.asset(
-                                                                            'assets/noProfileImage.jpg'),
+                                                                            'assets/noProfileImage.png'),
                                                                     fit: BoxFit
                                                                         .fitHeight),
                                                                 borderRadius:
