@@ -222,5 +222,7 @@
     "EventType": "Tipo de evento",
     "PUBLIC": "PÚBLICO",
     "PRIVATE": "PRIVADO",
-    "FRIENDS": "AMIGOS"
+    "FRIENDS": "AMIGOS",
+    "TimeConflict": "Conflicto de horario",
+    "EventTimeConflict": "¿Quieres unirte aunque ya hay un evento en este horario?"
 }

@@ -46,7 +46,6 @@ class SendWidget extends StatelessWidget {
 
                 String currentUserId = APICalls().getCurrentUser();
                 String accessToken = APICalls().getCurrentAccess();
-                cAPI.getEvents(currentUserId);
 
                 print("accessToken:" + accessToken);
                 print(messageTextController.text);

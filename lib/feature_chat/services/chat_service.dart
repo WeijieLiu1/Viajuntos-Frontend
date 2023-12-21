@@ -38,7 +38,10 @@ class chatAPI {
     String _path = 'v2/events/joined/';
     String finalUri = basicUrl + _path + participantId;
 
-    final response = await http.get(Uri.parse(finalUri));
+    final response = await http.get(Uri.parse(finalUri), headers: {
+      'Authorization': 'Bearer ' + APICalls().getCurrentAccess(),
+      'Content-Type': 'application/json'
+    });
 
     if (response.statusCode != 200) {
       // return error

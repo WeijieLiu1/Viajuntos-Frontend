@@ -222,5 +222,7 @@
     "EventType": "活动类型",
     "PUBLIC": "公开",
     "PRIVATE": "私人",
-    "FRIENDS": "朋友可见"
+    "FRIENDS": "朋友可见",
+    "TimeConflict": "时间冲突",
+    "EventTimeConflict": "在这个时间段已经有活动了，仍然要加入吗？"
 }

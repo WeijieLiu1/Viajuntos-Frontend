@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:http/http.dart';
+import 'package:viajuntos/feature_chat/services/chat_service.dart';
 import 'package:viajuntos/feature_event/widgets/event_map.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
@@ -136,6 +139,31 @@ class _EventState extends State<Event> {
     final response = await api.getItem("/v2/users/:0", [idProfile]);
     return json.decode(response.body)["image_url"];
     // getProfilePhoto(idUsuar);
+  }
+
+  Future<bool> checkTimeConflict() async {
+    final response = await api.getCollection(
+        '/v3/events/:0/:1', ['joined', api.getCurrentUser()], null);
+    var _joinedEvents = [json.decode(response.body)];
+    final response2 = await api.getItem('/v3/events/:0', [widget.id]);
+    var newEvent = json.decode(response2.body);
+    final dateFormat = DateFormat('EEE, dd MMM yyyy HH:mm:ss \'GMT\'');
+    DateTime newEventDateStart = dateFormat.parse(newEvent["date_started"]);
+    DateTime newEventDateEnd = dateFormat.parse(newEvent["date_end"]);
+
+    for (var event in _joinedEvents[0]) {
+      DateTime eventDateStart = dateFormat.parse(event["date_started"]);
+      DateTime eventDateEnd = dateFormat.parse(event["date_end"]);
+      if ((newEventDateStart.isAfter(eventDateStart) &&
+              newEventDateStart.isBefore(eventDateEnd)) ||
+          (newEventDateEnd.isAfter(eventDateStart) &&
+              newEventDateEnd.isBefore(eventDateEnd)) ||
+          (newEventDateStart.isAtSameMomentAs(eventDateStart)) ||
+          (newEventDateEnd.isAtSameMomentAs(eventDateEnd))) {
+        return true; // 发现时间冲突
+      }
+    }
+    return false;
   }
 
   Future<List<dynamic>> getAllPhotosInEvent(String idEvent) async {
@@ -666,32 +694,112 @@ class _EventState extends State<Event> {
                                           final bodyData = {
                                             "user_id": api.getCurrentUser()
                                           };
-                                          var response =
-                                              await joinEvent(bodyData);
-                                          SnackBar snackBar;
-                                          if (response.statusCode == 200) {
-                                            snackBar = SnackBar(
-                                              backgroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary,
-                                              content: Text('Youarein').tr(),
-                                            );
-                                            getPaymentStatus(_event[0]["id"]);
+                                          var hasConflict =
+                                              await checkTimeConflict();
+                                          if (hasConflict) {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                        title:
+                                                            Text('TimeConflict')
+                                                                .tr(),
+                                                        content: Text(
+                                                                'EventTimeConflict')
+                                                            .tr(),
+                                                        actions: [
+                                                          TextButton(
+                                                            child:
+                                                                Text('Cancel')
+                                                                    .tr(),
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                    context),
+                                                          ),
+                                                          TextButton(
+                                                            child: Text('Yes')
+                                                                .tr(),
+                                                            onPressed:
+                                                                () async {
+                                                              Navigator.pop(
+                                                                  context);
+                                                              var response =
+                                                                  await joinEvent(
+                                                                      bodyData);
+                                                              SnackBar snackBar;
+                                                              if (response
+                                                                      .statusCode ==
+                                                                  200) {
+                                                                snackBar =
+                                                                    SnackBar(
+                                                                  backgroundColor: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary,
+                                                                  content: Text(
+                                                                          'Youarein')
+                                                                      .tr(),
+                                                                );
+                                                                getPaymentStatus(
+                                                                    _event[0]
+                                                                        ["id"]);
+                                                              } else {
+                                                                snackBar =
+                                                                    SnackBar(
+                                                                  backgroundColor:
+                                                                      Theme.of(
+                                                                              context)
+                                                                          .colorScheme
+                                                                          .error,
+                                                                  content: Text(
+                                                                          'Somethingbadhappened')
+                                                                      .tr(),
+                                                                );
+                                                              }
+                                                              setState(() {
+                                                                found = response
+                                                                        .statusCode ==
+                                                                    200;
+                                                              });
+                                                              ScaffoldMessenger
+                                                                      .of(
+                                                                          context)
+                                                                  .showSnackBar(
+                                                                      snackBar);
+                                                            },
+                                                          ),
+                                                        ]));
                                           } else {
-                                            snackBar = SnackBar(
-                                              backgroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .error,
-                                              content:
-                                                  Text('Somethingbadhappened')
-                                                      .tr(),
-                                            );
+                                            var response =
+                                                await joinEvent(bodyData);
+                                            SnackBar snackBar;
+                                            if (response.statusCode == 200) {
+                                              snackBar = SnackBar(
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                content: Text('Youarein').tr(),
+                                              );
+                                              getPaymentStatus(_event[0]["id"]);
+                                            } else {
+                                              snackBar = SnackBar(
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .error,
+                                                content:
+                                                    Text('Somethingbadhappened')
+                                                        .tr(),
+                                              );
+                                            }
+                                            setState(() {
+                                              found =
+                                                  response.statusCode == 200;
+                                            });
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(snackBar);
                                           }
-                                          setState(() {
-                                            found = false;
-                                          });
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(snackBar);
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(

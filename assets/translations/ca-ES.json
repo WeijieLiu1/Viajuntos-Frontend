@@ -222,5 +222,7 @@
     "EventType": "Tipus d'esdeveniment",
     "PUBLIC": "PÚBLIC",
     "FRIENDS": "AMICS",
-    "PRIVATE": "PRIVAT"
+    "PRIVATE": "PRIVAT",
+    "TimeConflict": "Conflicte horari",
+    "EventTimeConflict": "Hi ha un esdeveniment programat en aquest horari. Vols unir-te igualment?"
 }
