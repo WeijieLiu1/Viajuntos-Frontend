@@ -156,179 +156,174 @@ class _ChatScreen extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     //print("eventname:" + eventsName);
-    return FutureBuilder(
-        //future: api.getItem('/v2/events/:0', [eventId]),
-        future: chatMessageFuture,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text('Error: ${snapshot.error}'),
-              );
-            }
 
-            chatMessage = snapshot.data ?? [];
-            chatMessage = chatMessage.reversed.toList();
-            return Scaffold(
-              resizeToAvoidBottomInset: true,
-              backgroundColor: Colors.white,
-              appBar: AppBar(
-                backgroundColor: Theme.of(context).colorScheme.background,
-                flexibleSpace: SafeArea(
-                  child: Container(
-                    padding: EdgeInsets.only(right: 16),
-                    child: Row(
-                      children: <Widget>[
-                        IconButton(
-                            iconSize: 24,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            icon: const Icon(Icons.arrow_back_ios_new_sharp),
-                            onPressed: () {
-                              _socket.disconnect();
-                              Navigator.pop(context);
-                            }),
-                        SizedBox(
-                          width: 2,
-                        ),
-                        ClipOval(
-                          child: SizedBox(
-                            width: 36,
-                            height: 36,
-                            child: ClipRRect(
-                                child: FittedBox(
-                                    child: (widget.chat_image_url.isEmpty)
-                                        ? Image.asset(
-                                            'assets/noProfileImage.png')
-                                        : Image.network(widget.chat_image_url),
-                                    fit: BoxFit.fitHeight),
-                                borderRadius: BorderRadius.circular(100)),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 12,
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                chatName,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(
-                                height: 6,
-                              ),
-                              Text(
-                                widget.chat.name!,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground,
-                                    fontSize: 13),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        flexibleSpace: SafeArea(
+          child: Container(
+            padding: EdgeInsets.only(right: 16),
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                    iconSize: 24,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    icon: const Icon(Icons.arrow_back_ios_new_sharp),
+                    onPressed: () {
+                      _socket.disconnect();
+                      Navigator.pop(context);
+                    }),
+                SizedBox(
+                  width: 2,
+                ),
+                ClipOval(
+                  child: SizedBox(
+                    width: 36,
+                    height: 36,
+                    child: ClipRRect(
+                        child: FittedBox(
+                            child: (widget.chat_image_url.isEmpty)
+                                ? Image.asset('assets/noProfileImage.png')
+                                : Image.network(widget.chat_image_url),
+                            fit: BoxFit.fitHeight),
+                        borderRadius: BorderRadius.circular(100)),
                   ),
                 ),
-              ),
-              body:
-                  // ChatBody(
-                  //   chat: widget.chat,
-                  //   chatMessage: chatMessage,
-                  // )
+                SizedBox(
+                  width: 12,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        chatName,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      SizedBox(
+                        height: 6,
+                      ),
+                      Text(
+                        widget.chat.name!,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onBackground,
+                            fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body:
+          // ChatBody(
+          //   chat: widget.chat,
+          //   chatMessage: chatMessage,
+          // )
+          Container(
+              child: Stack(
+        children: [
+          FutureBuilder(
+              //future: api.getItem('/v2/events/:0', [eventId]),
+              future: chatMessageFuture,
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  }
 
-                  Container(
-                      child: Stack(
-                children: [
-                  Container(
+                  chatMessage = snapshot.data ?? [];
+                  chatMessage = chatMessage.reversed.toList();
+                  return Container(
                       child: ChatBody(
                     chat: widget.chat,
                     chatMessage: chatMessage,
                     mapMembers: mapMembers,
-                  )),
-                  // Positioned(
-                  //   top: 0,
-                  //   left: 0,
-                  //   right: 0,
-                  //   child: Container(
-                  //     alignment: Alignment.center,
-                  //     padding: EdgeInsets.symmetric(vertical: 5),
-                  //     child: Text(
-                  //       'NoMoreMessages',
-                  //       style: TextStyle(
-                  //         color: Colors.grey,
-                  //         fontStyle: FontStyle.italic,
-                  //       ),
-                  //     ).tr(),
-                  //   ),
-                  // ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                      height: 60,
-                      width: double.infinity,
-                      color: Colors.white,
-                      child: Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 15,
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              controller: messageTextController,
-                              decoration: InputDecoration(
-                                  hintText: "Writemessag".tr(),
-                                  hintStyle: TextStyle(color: Colors.black54),
-                                  border: InputBorder.none),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 15,
-                          ),
-                          FloatingActionButton(
-                            onPressed: () {
-                              if (messageTextController.text.isNotEmpty) {
-                                _socket.emit('ChatMessage', {
-                                  'chat_id': widget.chat.id.toString(),
-                                  'text': messageTextController.text,
-                                  'sender_id': api.getCurrentUser(),
-                                });
-                                messageTextController.clear();
-                              }
-                            },
-                            child: Icon(
-                              Icons.send,
-                              color: Theme.of(context).colorScheme.primary,
-                              size: 18,
-                            ),
-                            backgroundColor: Colors.blue,
-                            elevation: 0,
-                          ),
-                        ],
-                      ),
+                  ));
+                } else {
+                  return Center(
+                      child: SizedBox(
+                    child: CircularProgressIndicator(),
+                    height: 30.0,
+                    width: 30.0,
+                  ));
+                }
+              }),
+          // Positioned(
+          //   top: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Container(
+          //     alignment: Alignment.center,
+          //     padding: EdgeInsets.symmetric(vertical: 5),
+          //     child: Text(
+          //       'NoMoreMessages',
+          //       style: TextStyle(
+          //         color: Colors.grey,
+          //         fontStyle: FontStyle.italic,
+          //       ),
+          //     ).tr(),
+          //   ),
+          // ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Container(
+              padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+              height: 60,
+              width: double.infinity,
+              color: Colors.white,
+              child: Row(
+                children: <Widget>[
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: messageTextController,
+                      decoration: InputDecoration(
+                          hintText: "Writemessag".tr(),
+                          hintStyle: TextStyle(color: Colors.black54),
+                          border: InputBorder.none),
                     ),
-                  )
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      if (messageTextController.text.isNotEmpty) {
+                        _socket.emit('ChatMessage', {
+                          'chat_id': widget.chat.id.toString(),
+                          'text': messageTextController.text,
+                          'sender_id': api.getCurrentUser(),
+                        });
+                        messageTextController.clear();
+                      }
+                    },
+                    child: Icon(
+                      Icons.send,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 18,
+                    ),
+                    backgroundColor: Colors.blue,
+                    elevation: 0,
+                  ),
                 ],
-              )),
-            );
-          } else {
-            return Center(
-                child: SizedBox(
-              child: CircularProgressIndicator(),
-              height: 30.0,
-              width: 30.0,
-            ));
-          }
-        });
+              ),
+            ),
+          )
+        ],
+      )),
+    );
   }
 }
