@@ -224,5 +224,6 @@
     "PRIVATE": "PRIVADO",
     "FRIENDS": "AMIGOS",
     "TimeConflict": "Conflicto de horario",
-    "EventTimeConflict": "¿Quieres unirte aunque ya hay un evento en este horario?"
+    "EventTimeConflict": "¿Quieres unirte aunque ya hay un evento en este horario?",
+    "InformationWall": "Muro de información"
 }

@@ -107,7 +107,7 @@ class _EventState extends State<Event> {
 
   Future<void> getPaymentStatus(String idEvent) async {
     final Response response =
-        await api.getItem('/v3/events/get_payment/:0', [idEvent]);
+        await api.getItem('/v3/events/:0/get_payment', [idEvent]);
     var data = json.decode(response.body);
     print("data: " + data.toString());
     if (response.statusCode == 200) {
@@ -184,7 +184,7 @@ class _EventState extends State<Event> {
   }
 
   Future<List<dynamic>> getAllPayments(String id) async {
-    final response = await api.getItem('/v3/events/get_all_payments/:0', [id]);
+    final response = await api.getItem('/v3/events/:0/get_all_payments', [id]);
     return json.decode(response.body);
   }
   // Future<String> getProfilePhoto(String idUsuar) async {

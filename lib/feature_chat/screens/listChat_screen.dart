@@ -131,7 +131,6 @@ class _ListChatScreen extends State<ListChatScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(5),
                                             onTap: () async {
-                                              print("object");
                                               Navigator.push(
                                                   context,
                                                   MaterialPageRoute(

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:viajuntos/feature_chat/screens/chat_screen.dart';
 import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
+import 'package:viajuntos/feature_event/screens/information_wall_screen.dart';
 import 'package:viajuntos/feature_event/widgets/event.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:viajuntos/utils/globals.dart';
@@ -58,130 +59,170 @@ class _EventScreenState extends State<EventScreen> {
                 .tr(),
             backgroundColor: Theme.of(context).colorScheme.background,
             actions: <Widget>[
-              IconButton(
-                  iconSize: 24,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  icon: const Icon(Icons.share),
-                  onPressed: () => showShareMenu(
-                      baseLocalUrl + '/v3/events/' + widget.id, context)),
               LikeButton(id: widget.id),
-              IconButton(
-                iconSize: 24,
-                color: Theme.of(context).colorScheme.onSurface,
-                icon: const Icon(CupertinoIcons.calendar_badge_plus),
-                onPressed: () async {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                              title: Text('AddToCalendar').tr(),
-                              content: Text('ComfirmAddTOCalendar').tr(),
-                              actions: [
-                                TextButton(
-                                  child: Text('Cancel').tr(),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                                TextButton(
-                                    child: Text('Yes').tr(),
-                                    onPressed: () async {
-                                      final device_calendar.DeviceCalendarPlugin
-                                          _deviceCalendarPlugin =
-                                          device_calendar
-                                              .DeviceCalendarPlugin();
-                                      var permissionsGranted =
-                                          await _deviceCalendarPlugin
-                                              .hasPermissions();
-                                      if (permissionsGranted.isSuccess &&
-                                          !permissionsGranted.data!) {
-                                        permissionsGranted =
+              PopupMenuButton<String>(
+                offset: const Offset(0, 50),
+                color: Theme.of(context).colorScheme.background,
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'share',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.share),
+                        const SizedBox(width: 8),
+                        Text('Share').tr(),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'calendar',
+                    child: Row(
+                      children: [
+                        const Icon(CupertinoIcons.calendar_badge_plus),
+                        const SizedBox(width: 8),
+                        Text('AddToCalendar').tr(),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'information_wall',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info),
+                        const SizedBox(width: 8),
+                        Text('InformationWall').tr(),
+                      ],
+                    ),
+                  ),
+                ],
+                onSelected: (String value) {
+                  if (value == 'share') {
+                    showShareMenu(
+                        baseLocalUrl + '/v3/events/' + widget.id, context);
+                  } else if (value == 'information_wall') {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => InformationWallScreen(
+                                  id: widget.id,
+                                )));
+                  } else if (value == 'calendar') {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                                title: Text('AddToCalendar').tr(),
+                                content: Text('ComfirmAddTOCalendar').tr(),
+                                actions: [
+                                  TextButton(
+                                    child: Text('Cancel').tr(),
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                  TextButton(
+                                      child: Text('Yes').tr(),
+                                      onPressed: () async {
+                                        final device_calendar
+                                            .DeviceCalendarPlugin
+                                            _deviceCalendarPlugin =
+                                            device_calendar
+                                                .DeviceCalendarPlugin();
+                                        var permissionsGranted =
                                             await _deviceCalendarPlugin
-                                                .requestPermissions();
-                                        if (!permissionsGranted.isSuccess ||
+                                                .hasPermissions();
+                                        if (permissionsGranted.isSuccess &&
                                             !permissionsGranted.data!) {
-                                          // Handle permissions denied
-                                          return;
+                                          permissionsGranted =
+                                              await _deviceCalendarPlugin
+                                                  .requestPermissions();
+                                          if (!permissionsGranted.isSuccess ||
+                                              !permissionsGranted.data!) {
+                                            // Handle permissions denied
+                                            return;
+                                          }
                                         }
-                                      }
 
-                                      http.Response resp = await getEventItem(
-                                          '/v2/events/:0', [widget.id]);
-                                      _event = [json.decode(resp.body)];
-                                      final dateFormat = DateFormat(
-                                          'EEE, dd MMM yyyy HH:mm:ss \'GMT\'');
-                                      final dateTimeStart = dateFormat
-                                          .parse(_event[0]["date_started"]);
-                                      final tzDateTimeStart =
-                                          tz.TZDateTime.from(
-                                              dateTimeStart, tz.UTC);
+                                        http.Response resp = await getEventItem(
+                                            '/v2/events/:0', [widget.id]);
+                                        _event = [json.decode(resp.body)];
+                                        final dateFormat = DateFormat(
+                                            'EEE, dd MMM yyyy HH:mm:ss \'GMT\'');
+                                        final dateTimeStart = dateFormat
+                                            .parse(_event[0]["date_started"]);
+                                        final tzDateTimeStart =
+                                            tz.TZDateTime.from(
+                                                dateTimeStart, tz.UTC);
 
-                                      final dateTimeEnd = dateFormat
-                                          .parse(_event[0]["date_end"]);
-                                      final tzDateTimeEnd = tz.TZDateTime.from(
-                                          dateTimeEnd, tz.UTC);
+                                        final dateTimeEnd = dateFormat
+                                            .parse(_event[0]["date_end"]);
+                                        final tzDateTimeEnd =
+                                            tz.TZDateTime.from(
+                                                dateTimeEnd, tz.UTC);
 
-                                      device_calendar.Event event =
-                                          device_calendar.Event(
-                                        "1",
-                                        title: _event[0]["name"],
-                                        description: _event[0]["description"],
-                                        location: "latitude: " +
-                                            _event[0]["latitude"].toString() +
-                                            "," +
-                                            "longitude: " +
-                                            _event[0]["longitud"].toString(),
-                                        start: tzDateTimeStart,
-                                        end: tzDateTimeEnd,
-                                      );
+                                        device_calendar.Event event =
+                                            device_calendar.Event(
+                                          "1",
+                                          title: _event[0]["name"],
+                                          description: _event[0]["description"],
+                                          location: "latitude: " +
+                                              _event[0]["latitude"].toString() +
+                                              "," +
+                                              "longitude: " +
+                                              _event[0]["longitud"].toString(),
+                                          start: tzDateTimeStart,
+                                          end: tzDateTimeEnd,
+                                        );
 
-                                      final createResult =
-                                          await _deviceCalendarPlugin
-                                              .createOrUpdateEvent(event);
+                                        final createResult =
+                                            await _deviceCalendarPlugin
+                                                .createOrUpdateEvent(event);
 
-                                      if (createResult!.isSuccess &&
-                                          createResult.data != null) {
-                                        // 事件创建成功
-                                        Navigator.pop(context);
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                                  title:
-                                                      Text('EventAdded').tr(),
-                                                  content:
-                                                      Text('SuccessfullyAdding')
-                                                          .tr(),
-                                                  actions: [
-                                                    TextButton(
-                                                      child: Text('Ok').tr(),
-                                                      onPressed: () =>
-                                                          Navigator.pop(
-                                                              context),
-                                                    ),
-                                                  ],
-                                                ));
-                                      } else {
-                                        // 事件创建失败
-                                        Navigator.pop(context);
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                                  title: Text('EventAddFailed')
-                                                      .tr(),
-                                                  content:
-                                                      Text('ErrorAddingEvent')
-                                                          .tr(),
-                                                  actions: [
-                                                    TextButton(
-                                                      child: Text('Ok').tr(),
-                                                      onPressed: () =>
-                                                          Navigator.pop(
-                                                              context),
-                                                    ),
-                                                  ],
-                                                ));
-                                      }
-                                    })
-                              ]));
+                                        if (createResult!.isSuccess &&
+                                            createResult.data != null) {
+                                          // 事件创建成功
+                                          Navigator.pop(context);
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                    title:
+                                                        Text('EventAdded').tr(),
+                                                    content: Text(
+                                                            'SuccessfullyAdding')
+                                                        .tr(),
+                                                    actions: [
+                                                      TextButton(
+                                                        child: Text('Ok').tr(),
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                      ),
+                                                    ],
+                                                  ));
+                                        } else {
+                                          // 事件创建失败
+                                          Navigator.pop(context);
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog(
+                                                    title:
+                                                        Text('EventAddFailed')
+                                                            .tr(),
+                                                    content:
+                                                        Text('ErrorAddingEvent')
+                                                            .tr(),
+                                                    actions: [
+                                                      TextButton(
+                                                        child: Text('Ok').tr(),
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                      ),
+                                                    ],
+                                                  ));
+                                        }
+                                      })
+                                ]));
+                  }
                 },
-              )
+              ),
             ],
             leading: IconButton(
               iconSize: 24,

@@ -224,5 +224,6 @@
     "PRIVATE": "PRIVATE",
     "FRIENDS": "FRIENDS",
     "TimeConflict": "Time Conflict",
-    "EventTimeConflict": "There's already an event scheduled during this time. Do you want to join anyway?"
+    "EventTimeConflict": "There's already an event scheduled during this time. Do you want to join anyway?",
+    "InformationWall": "Information Wall"
 }

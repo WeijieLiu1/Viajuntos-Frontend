@@ -224,5 +224,6 @@
     "PRIVATE": "私人",
     "FRIENDS": "朋友可见",
     "TimeConflict": "时间冲突",
-    "EventTimeConflict": "在这个时间段已经有活动了，仍然要加入吗？"
+    "EventTimeConflict": "在这个时间段已经有活动了，仍然要加入吗？",
+    "InformationWall": "信息墙"
 }

@@ -224,5 +224,6 @@
     "FRIENDS": "AMICS",
     "PRIVATE": "PRIVAT",
     "TimeConflict": "Conflicte horari",
-    "EventTimeConflict": "Hi ha un esdeveniment programat en aquest horari. Vols unir-te igualment?"
+    "EventTimeConflict": "Hi ha un esdeveniment programat en aquest horari. Vols unir-te igualment?",
+    "InformationWall": "Paret d'informació"
 }

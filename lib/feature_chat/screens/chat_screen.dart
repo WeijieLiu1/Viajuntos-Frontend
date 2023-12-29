@@ -7,6 +7,8 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:http/http.dart';
 import 'package:viajuntos/feature_chat/models/chat_model.dart';
 import 'package:viajuntos/feature_chat/models/message_model.dart';
+
+import 'package:viajuntos/feature_chat/widgets/chat_body.dart';
 import 'package:viajuntos/feature_chat/services/chat_service.dart';
 import 'package:viajuntos/feature_chat/widgets/chat_widget.dart';
 import 'package:viajuntos/feature_user/services/login_signUp.dart';
@@ -14,7 +16,6 @@ import 'package:viajuntos/utils/api_controller.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
 import 'package:viajuntos/feature_user/models/user_model.dart';
 import '../../utils/globals.dart';
-
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatScreen extends StatefulWidget {
@@ -42,6 +43,7 @@ class _ChatScreen extends State<ChatScreen> {
   final ExternServicePhoto es = ExternServicePhoto();
   late ScrollController _scrollController;
   List<Message> chatMessage = [];
+  Map<String, dynamic> userImages = {};
 
   Future<http.Response> getEventItem(
       String endpoint, List<String> pathParams) async {
@@ -54,7 +56,11 @@ class _ChatScreen extends State<ChatScreen> {
     return response;
   }
 
-  void InitMembers(String chatId) async {
+  void initializeMembers(String chatId) async {
+    await InitMembers(chatId);
+  }
+
+  Future<void> InitMembers(String chatId) async {
     final response = await api.getItem("/v1/chat/all_members/:0", [chatId]);
     var auxMembers = json.decode(response.body);
     List<User> listMembers =
@@ -133,7 +139,7 @@ class _ChatScreen extends State<ChatScreen> {
     super.initState();
     chatName = widget.chat.name!;
     linkImageEvent = widget.chat_image_url;
-    InitMembers(widget.chat.id.toString());
+    initializeMembers(widget.chat.id.toString());
     chatMessageFuture = initAllMessages();
 
     _socket = IO.io(
@@ -234,104 +240,21 @@ class _ChatScreen extends State<ChatScreen> {
                   ),
                 ),
               ),
-              body: Container(
-                  child: Stack(
+              body:
+                  // ChatBody(
+                  //   chat: widget.chat,
+                  //   chatMessage: chatMessage,
+                  // )
+
+                  Container(
+                      child: Stack(
                 children: [
                   Container(
-                    child: ListView.builder(
-                      reverse: true,
-                      itemCount: chatMessage.length,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.only(top: 10, bottom: 70),
-                      physics: AlwaysScrollableScrollPhysics(),
-                      controller: _scrollController,
-                      itemBuilder: (context, index) {
-                        //for each message
-                        double paddingSelf = 30;
-                        double paddingOther = 10;
-                        //hardcode
-                        bool messageMine = chatMessage[index].sender_id ==
-                            api.getCurrentUser();
-
-                        return Container(
-                          //icon+message
-                          alignment: messageMine
-                              ? Alignment.centerRight
-                              : Alignment.centerLeft,
-                          padding: EdgeInsets.only(
-                              left: messageMine ? paddingSelf : paddingOther,
-                              right: messageMine ? paddingOther : paddingSelf,
-                              top: 10,
-                              bottom: 10),
-                          child: Align(
-                              alignment: (messageMine
-                                  ? Alignment.topRight
-                                  : Alignment.topLeft),
-                              child: Row(
-                                mainAxisAlignment: messageMine
-                                    ? MainAxisAlignment.end
-                                    : MainAxisAlignment.start,
-                                children: <Widget>[
-                                  if (!messageMine)
-                                    SizedBox(
-                                      width: 36,
-                                      height: 36,
-                                      child: ClipRRect(
-                                          child: FittedBox(
-                                              child: (urlPhotoOther == "")
-                                                  ? Image.asset(
-                                                      'assets/noProfileImage.png')
-                                                  : Image.network(
-                                                      urlPhotoOther),
-                                              fit: BoxFit.fitHeight),
-                                          borderRadius:
-                                              BorderRadius.circular(100)),
-                                    ),
-                                  Flexible(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.only(
-                                            topLeft: messageMine
-                                                ? Radius.circular(20)
-                                                : Radius.circular(0),
-                                            topRight: messageMine
-                                                ? Radius.circular(0)
-                                                : Radius.circular(20),
-                                            bottomLeft: Radius.circular(20),
-                                            bottomRight: Radius.circular(
-                                                20)), //BorderRadius.circular(20),
-                                        color: (messageMine
-                                            //?Theme.of(context).colorScheme.secondary:Theme.of(context).colorScheme.onSecondary
-                                            ? HexColor('80ED99')
-                                            : Colors.grey.shade200),
-                                      ),
-                                      padding: EdgeInsets.all(12),
-                                      child: Text(
-                                        chatMessage[index].text,
-                                        style: TextStyle(fontSize: 15),
-                                      ),
-                                    ),
-                                  ),
-                                  if (messageMine)
-                                    SizedBox(
-                                      width: 36,
-                                      height: 36,
-                                      child: ClipRRect(
-                                          child: FittedBox(
-                                              child: (urlPhotoMine == "")
-                                                  ? Image.asset(
-                                                      'assets/noProfileImage.png')
-                                                  : Image.network(urlPhotoMine),
-                                              fit: BoxFit.fitHeight),
-                                          borderRadius:
-                                              BorderRadius.circular(100)),
-                                    ),
-                                ],
-                              )),
-                        );
-                      },
-                    ),
-                  ),
+                      child: ChatBody(
+                    chat: widget.chat,
+                    chatMessage: chatMessage,
+                    mapMembers: mapMembers,
+                  )),
                   // Positioned(
                   //   top: 0,
                   //   left: 0,

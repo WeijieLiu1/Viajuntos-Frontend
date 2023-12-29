@@ -17,6 +17,7 @@ class _ShareMenuState extends State<ShareMenuFriend> {
   @override
   Widget build(BuildContext context) {
     return Container(
+        color: Theme.of(context).colorScheme.background,
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         margin: const EdgeInsets.all(8.0),

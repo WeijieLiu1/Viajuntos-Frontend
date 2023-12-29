@@ -35,6 +35,7 @@ class _SettingsState extends State<Settings> {
           if (snapshot.connectionState == ConnectionState.done) {
             user = json.decode(snapshot.data.body);
             return Drawer(
+              backgroundColor: Theme.of(context).colorScheme.background,
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
@@ -56,6 +57,9 @@ class _SettingsState extends State<Settings> {
                     onTap: () =>
                         {Navigator.of(context).pushNamed('/edit_profile')},
                   ),
+                  Divider(
+                    thickness: 0.2,
+                  ),
                   ListTile(
                     leading: const Icon(Icons.share),
                     title: Text('Addfriend').tr(),
@@ -65,6 +69,9 @@ class _SettingsState extends State<Settings> {
                       url = json.decode(response.body);
                       showShareMenuFriend(url['invite_link'], context);
                     },
+                  ),
+                  Divider(
+                    thickness: 0.2,
                   ),
                   (user["auth_methods"].contains("viajuntos"))
                       ? ListTile(
@@ -92,11 +99,17 @@ class _SettingsState extends State<Settings> {
                                         ]))
                           },
                         ),
+                  Divider(
+                    thickness: 0.2,
+                  ),
                   ListTile(
                     leading: const Icon(Icons.language),
                     title: Text('Languages').tr(),
                     onTap: () =>
                         {Navigator.of(context).pushNamed('/languages')},
+                  ),
+                  Divider(
+                    thickness: 0.2,
                   ),
                   ListTile(
                       leading: const Icon(Icons.delete),
@@ -122,6 +135,9 @@ class _SettingsState extends State<Settings> {
                                           // APICalls().logOut();
                                         })
                                   ]))),
+                  Divider(
+                    thickness: 0.2,
+                  ),
                   ListTile(
                     leading: const Icon(Icons.exit_to_app),
                     title: Text('Logout').tr(),

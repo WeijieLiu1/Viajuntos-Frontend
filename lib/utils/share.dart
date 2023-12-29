@@ -15,6 +15,7 @@ showShareMenuFriend(String url, BuildContext context) {
   showModalBottomSheet(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       context: context,
+      backgroundColor: Theme.of(context).colorScheme.background,
       builder: (BuildContext context) {
         return ShareMenuFriend(url: url);
       });
