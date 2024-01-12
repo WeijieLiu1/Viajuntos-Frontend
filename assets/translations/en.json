@@ -225,5 +225,9 @@
     "FRIENDS": "FRIENDS",
     "TimeConflict": "Time Conflict",
     "EventTimeConflict": "There's already an event scheduled during this time. Do you want to join anyway?",
-    "InformationWall": "Information Wall"
+    "InformationWall": "Information Wall",
+    "Map": "Map",
+    "EventMap": "Event Map",
+    "from": "FROM",
+    "to": "TO"
 }

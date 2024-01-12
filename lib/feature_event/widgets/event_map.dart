@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_event/screens/event_location.dart';
+import 'package:viajuntos/feature_map/screens/EventPositionMap.dart';
 
 class EventMapButton extends StatelessWidget {
-  final double lat, lng;
-  const EventMapButton({Key? key, required this.lat, required this.lng})
-      : super(key: key);
+  final EventModel event;
+  const EventMapButton({Key? key, required this.event}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,11 +16,14 @@ class EventMapButton extends StatelessWidget {
               borderRadius: BorderRadius.all(Radius.circular(20))),
           child: InkWell(
               onTap: () {
+                LatLng latLng = LatLng(
+                    event.latitude!.toDouble(), event.longitud!.toDouble());
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            EventLocationScreen(lat: lat, lng: lng)));
+                        builder: (context) => EventPositionMap(
+                              initialPosition: latLng,
+                            )));
               },
               child: Container(
                   decoration: BoxDecoration(

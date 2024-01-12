@@ -80,6 +80,7 @@ dependencies:
   flutter_inappwebview: ^5.8.0
   dio: ^5.4.0
   page_view_dot_indicator: ^2.3.0
+  google_maps_flutter: ^2.5.0
 
 dev_dependencies:
   flutter_test:

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:http/http.dart';
 import 'package:viajuntos/feature_chat/services/chat_service.dart';
+import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_event/widgets/event_map.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
@@ -17,8 +18,8 @@ import 'dart:convert';
 import 'package:skeletons/skeletons.dart';
 
 class Event extends StatefulWidget {
-  final String id;
-  const Event({Key? key, required this.id}) : super(key: key);
+  final EventModel event;
+  const Event({Key? key, required this.event}) : super(key: key);
 
   @override
   State<Event> createState() => _EventState();
@@ -30,15 +31,16 @@ class _EventState extends State<Event> {
   bool found = false;
   bool paid = false;
   List attendesEvent = [];
+  // late EventModel event;
 
   @override
   void initState() {
     super.initState();
-    getPaymentStatus(widget.id);
+    getPaymentStatus(widget.event.id.toString());
   }
 
-  void PayEvent(List<dynamic> _event) async {
-    var amount = _event[0]["amount_event"];
+  void PayEvent(EventModel event) async {
+    var amount = event.amountevent.toString();
     Navigator.of(context).push(MaterialPageRoute(
       builder: (BuildContext context) => PaypalCheckoutView(
         sandboxMode: true,
@@ -49,10 +51,10 @@ class _EventState extends State<Event> {
         transactions: [
           {
             "amount": {
-              "total": _event[0]["amount_event"],
+              "total": event.amountevent,
               "currency": "USD",
               "details": {
-                "subtotal": _event[0]["amount_event"],
+                "subtotal": event.amountevent,
                 "shipping": '0',
                 "shipping_discount": 0
               }
@@ -65,9 +67,9 @@ class _EventState extends State<Event> {
             "item_list": {
               "items": [
                 {
-                  "name": _event[0]["name"],
+                  "name": event.name.toString(),
                   "quantity": 1,
-                  "price": _event[0]["amount_event"],
+                  "price": event.amountevent,
                   "currency": "USD"
                 }
               ],
@@ -80,7 +82,7 @@ class _EventState extends State<Event> {
           print(params);
           Navigator.pop(context);
           final bodyData = {
-            "event_id": _event[0]["id"],
+            "event_id": event.id.toString(),
             "amount": amount,
             "payment_type": "Paypal",
             "payment_id": params["data"]["id"]
@@ -106,32 +108,34 @@ class _EventState extends State<Event> {
   }
 
   Future<void> getPaymentStatus(String idEvent) async {
-    final Response response =
-        await api.getItem('/v3/events/:0/get_payment', [idEvent]);
-    var data = json.decode(response.body);
-    print("data: " + data.toString());
-    if (response.statusCode == 200) {
-      if (data["status"] == "PAID")
-        setState(() {
-          paid = true;
-        });
-      else {
-        setState(() {
-          paid = false;
-        });
+    if (widget.event.is_event_free == false) {
+      final Response response =
+          await api.getItem('/v3/events/:0/get_payment', [idEvent]);
+      var data = json.decode(response.body);
+      print("data: " + data.toString());
+      if (response.statusCode == 200) {
+        if (data["status"] == "PAID")
+          setState(() {
+            paid = true;
+          });
+        else {
+          setState(() {
+            paid = false;
+          });
+        }
       }
     }
   }
 
   Future<dynamic> joinEvent(Map<String, dynamic> bodyData) async {
-    final response =
-        await api.postItem('/v3/events/:0/:1', [widget.id, 'join'], bodyData);
+    final response = await api.postItem(
+        '/v3/events/:0/:1', [widget.event.id.toString(), 'join'], bodyData);
     return response;
   }
 
   Future<dynamic> leaveEvent(String id, Map<String, dynamic> bodyData) async {
-    final response =
-        await api.postItem('/v3/events/:0/:1', [widget.id, 'leave'], bodyData);
+    final response = await api.postItem(
+        '/v3/events/:0/:1', [widget.event.id.toString(), 'leave'], bodyData);
     return response;
   }
 
@@ -145,7 +149,8 @@ class _EventState extends State<Event> {
     final response = await api.getCollection(
         '/v3/events/:0/:1', ['joined', api.getCurrentUser()], null);
     var _joinedEvents = [json.decode(response.body)];
-    final response2 = await api.getItem('/v3/events/:0', [widget.id]);
+    final response2 =
+        await api.getItem('/v3/events/:0', [widget.event.id.toString()]);
     var newEvent = json.decode(response2.body);
     final dateFormat = DateFormat('EEE, dd MMM yyyy HH:mm:ss \'GMT\'');
     DateTime newEventDateStart = dateFormat.parse(newEvent["date_started"]);
@@ -168,7 +173,7 @@ class _EventState extends State<Event> {
 
   Future<List<dynamic>> getAllPhotosInEvent(String idEvent) async {
     final response = await api
-        .getCollection('/v2/events/participants', [], {"eventid": idEvent});
+        .getCollection('/v3/events/participants', [], {"eventid": idEvent});
     var attendes = json.decode(response.body);
     List aux = [];
 
@@ -200,735 +205,475 @@ class _EventState extends State<Event> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: api.getItem('/v3/events/:0', [widget.id]),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          var _event = [json.decode(snapshot.data.body)];
-          //getAllPhotosInEvent(_event[0]["id"]);
-          return SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Column(
-                children: [
-                  Expanded(
-                      child: SizedBox(
+    return SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Column(
+          children: [
+            Expanded(
+                child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Stack(children: [
+                      SizedBox(
+                          height: 250,
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height,
-                          child: Stack(children: [
-                            SizedBox(
-                                height: 250,
-                                width: MediaQuery.of(context).size.width,
-                                child: FittedBox(
-                                    child: Image.network(
-                                        _event[0]['event_image_uri']),
-                                    fit: BoxFit.cover)),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    height: 420,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .background,
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(10),
-                                        topRight: Radius.circular(10),
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .surface
-                                              .withOpacity(0.5),
-                                          spreadRadius: 5,
-                                          blurRadius: 7,
-                                          offset: const Offset(0,
-                                              3), // changes position of shadow
-                                        ),
-                                      ],
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 20,
-                                          left: 16,
-                                          right: 16,
-                                          bottom: 16),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(_event[0]["name"],
-                                              style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .surface,
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold)),
-                                          const SizedBox(height: 30),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              FutureBuilder(
-                                                future: api.getItem(
-                                                    "/v1/users/:0", [
-                                                  _event[0]["user_creator"]
-                                                ]),
-                                                builder: (BuildContext context,
-                                                    AsyncSnapshot snapshot) {
-                                                  if (snapshot
-                                                          .connectionState ==
-                                                      ConnectionState.done) {
-                                                    var _user = json.decode(
-                                                        snapshot.data.body);
-
-                                                    return Row(
-                                                      children: [
-                                                        Text(
-                                                          'Createdby'.tr() +
-                                                              _user["username"],
-                                                          style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .colorScheme
-                                                                .primary,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.w500,
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 10),
-                                                        InkWell(
-                                                          onTap: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pushNamed(
-                                                                    '/profile');
-                                                          },
-                                                          child: SizedBox(
-                                                            width: 36,
-                                                            height: 36,
-                                                            child: ClipRRect(
-                                                              child: FittedBox(
-                                                                child: _user[
-                                                                            "image_url"] !=
-                                                                        ''
-                                                                    ? Image.network(
-                                                                        _user[
-                                                                            "image_url"])
-                                                                    : Image.asset(
-                                                                        'assets/noProfileImage.png'),
-                                                                fit: BoxFit
-                                                                    .fitHeight,
-                                                              ),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          100),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  } else {
-                                                    return Row(
-                                                      children: [
-                                                        SkeletonItem(
-                                                          child:
-                                                              SkeletonParagraph(
-                                                            style:
-                                                                SkeletonParagraphStyle(
-                                                              lines: 1,
-                                                              spacing: 2,
-                                                              lineStyle:
-                                                                  SkeletonLineStyle(
-                                                                width: 40,
-                                                                height: 20,
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            10),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 10),
-                                                        Center(
-                                                          child: SkeletonItem(
-                                                            child:
-                                                                SkeletonAvatar(
-                                                              style:
-                                                                  SkeletonAvatarStyle(
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                                width: 36,
-                                                                height: 36,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    );
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 20),
-                                          const Divider(),
-                                          Expanded(
-                                            child: SingleChildScrollView(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const SizedBox(height: 20),
-                                                  Text(
-                                                      _event[0]["date_started"]
-                                                          .substring(
-                                                              0,
-                                                              _event[0]["date_started"]
-                                                                      .length -
-                                                                  7),
-                                                      style: TextStyle(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .primary,
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                  const SizedBox(height: 15),
-                                                  // Row(
-                                                  //     crossAxisAlignment:
-                                                  //         CrossAxisAlignment
-                                                  //             .center,
-                                                  //     children: [
-                                                  //       Text('Airqualityinthisarea',
-                                                  //               style: TextStyle(
-                                                  //                   color: Theme.of(
-                                                  //                           context)
-                                                  //                       .colorScheme
-                                                  //                       .onSurface,
-                                                  //                   fontSize:
-                                                  //                       14))
-                                                  //           .tr(),
-                                                  //       const Expanded(
-                                                  //           child: SizedBox()),
-                                                  //       AirTag(
-                                                  //           id: _event[0]["id"],
-                                                  //           latitude: _event[0]
-                                                  //                   ["latitude"]
-                                                  //               .toString(),
-                                                  //           longitud: _event[0]
-                                                  //                   ["longitud"]
-                                                  //               .toString())
-                                                  // //     ]),
-                                                  // const SizedBox(height: 20),
-                                                  // const Divider(),
-                                                  // const SizedBox(height: 20),
-                                                  Text('Description',
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .surface,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 18))
-                                                      .tr(),
-                                                  const SizedBox(height: 10),
-                                                  Text(_event[0]["description"],
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSurface)),
-                                                  const SizedBox(height: 20),
-                                                  const Divider(),
-                                                  const SizedBox(height: 20),
-                                                  Text('Attendees',
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .surface,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 18))
-                                                      .tr(),
-                                                  const SizedBox(height: 10),
-                                                  SizedBox(
-                                                      height: 80,
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                              .size
-                                                              .width,
-                                                      child: FutureBuilder(
-                                                          future: Future.wait([
-                                                            getAllPhotosInEvent(
-                                                                widget.id),
-                                                            getAllPayments(
-                                                                widget.id)
-                                                          ]), //
-
-                                                          builder: (BuildContext
-                                                                  context,
-                                                              AsyncSnapshot<
-                                                                      List<
-                                                                          dynamic>>
-                                                                  snapshot) {
-                                                            if (snapshot
-                                                                    .connectionState ==
-                                                                ConnectionState
-                                                                    .done) {
-                                                              var attendees =
-                                                                  snapshot
-                                                                      .data![0];
-                                                              var payments =
-                                                                  snapshot
-                                                                      .data![1];
-                                                              print(attendees);
-                                                              return ListView
-                                                                  .separated(
-                                                                      shrinkWrap:
-                                                                          true,
-                                                                      scrollDirection:
-                                                                          Axis
-                                                                              .horizontal,
-                                                                      separatorBuilder: (context,
-                                                                              index) =>
-                                                                          const SizedBox(
-                                                                              width:
-                                                                                  20),
-                                                                      itemCount:
-                                                                          attendees
-                                                                              .length,
-                                                                      itemBuilder:
-                                                                          (BuildContext context,
-                                                                              int index) {
-                                                                        bool
-                                                                            hasPaid =
-                                                                            _event[0]["user_creator"] == api.getCurrentUser() &&
-                                                                                payments.any((payment) => (payment['user_id'] == attendees[index]['user_id']) || (_event[0]["user_creator"] == attendees[index]['user_id']));
-                                                                        return InkWell(
-                                                                          onTap:
-                                                                              () {
-                                                                            Navigator.push(context,
-                                                                                MaterialPageRoute(builder: (context) => ProfileScreen(id: attendees[index]["user_id"])));
-                                                                          },
-                                                                          child:
-                                                                              Stack(
-                                                                            children: [
-                                                                              CircleAvatar(
-                                                                                radius: 40,
-                                                                                backgroundImage: attendees[index]['image'] == '' ? AssetImage('assets/noProfileImage.png') : NetworkImage(attendees[index]['image']) as ImageProvider,
-                                                                              ),
-                                                                              if (hasPaid)
-                                                                                Positioned(
-                                                                                  bottom: 0,
-                                                                                  right: 0,
-                                                                                  child: Icon(
-                                                                                    CupertinoIcons.checkmark_circle_fill,
-                                                                                    // Icons.check_circle_outline_sharp,
-                                                                                    color: Colors.green,
-                                                                                    size: 24,
-                                                                                  ),
-                                                                                ),
-                                                                            ],
-                                                                          ),
-                                                                        );
-                                                                      });
-                                                            } else {
-                                                              return ListView
-                                                                  .separated(
-                                                                      physics:
-                                                                          const NeverScrollableScrollPhysics(),
-                                                                      scrollDirection:
-                                                                          Axis
-                                                                              .horizontal,
-                                                                      shrinkWrap:
-                                                                          true,
-                                                                      separatorBuilder: (context, index) => const SizedBox(
-                                                                          width:
-                                                                              20),
-                                                                      itemCount:
-                                                                          5,
-                                                                      itemBuilder:
-                                                                          (BuildContext context,
-                                                                              int index) {
-                                                                        return const Center(
-                                                                          child: SkeletonItem(
-                                                                              child: SkeletonAvatar(
-                                                                            style: SkeletonAvatarStyle(
-                                                                                shape: BoxShape.circle,
-                                                                                width: 80,
-                                                                                height: 80),
-                                                                          )),
-                                                                        );
-                                                                      });
-                                                            }
-                                                          })),
-                                                  const SizedBox(height: 20),
-                                                  const Divider(),
-                                                  const SizedBox(height: 20),
-                                                  Text('Location',
-                                                          style: TextStyle(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .colorScheme
-                                                                  .surface,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontSize: 18))
-                                                      .tr(),
-                                                  const SizedBox(height: 20),
-                                                  EventMapButton(
-                                                      lat: _event[0]
-                                                          ["latitude"],
-                                                      lng: _event[0]
-                                                          ["longitud"]),
-                                                  const SizedBox(height: 20)
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                    )),
-                              ],
-                            )
-                          ]))),
-                  Material(
-                    elevation: 15.0,
-                    child: Container(
-                        decoration: BoxDecoration(
-                            border: Border(
-                                top: BorderSide(
-                                    width: 1.0,
+                          child: FittedBox(
+                              child: Image.network(
+                                  widget.event.event_image_uri.toString()),
+                              fit: BoxFit.cover)),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: 420,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.background,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(10),
+                                  topRight: Radius.circular(10),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
                                     color: Theme.of(context)
                                         .colorScheme
-                                        .onSurface
-                                        .withOpacity(0.5)))),
-                        height: 100,
-                        width: MediaQuery.of(context).size.width,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            IconButton(
-                                iconSize: 27,
-                                color: Theme.of(context).colorScheme.secondary,
-                                icon: const Icon(Icons.people),
-                                onPressed: () {}),
-                            FutureBuilder(
-                                future: api.getCollection(
-                                    '/v3/events/participants',
-                                    [],
-                                    {"eventid": _event[0]["id"]}),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    var participants =
-                                        json.decode(snapshot.data.body);
-                                    return Text(
-                                        participants.length.toString() +
-                                            "/" +
-                                            _event[0]["max_participants"]
-                                                .toString(),
+                                        .surface
+                                        .withOpacity(0.5),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(
+                                        0, 3), // changes position of shadow
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 20, left: 16, right: 16, bottom: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(widget.event.name.toString(),
                                         style: TextStyle(
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .secondary,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 16));
-                                  } else {
-                                    return SkeletonItem(
-                                        child: SkeletonParagraph(
-                                            style: SkeletonParagraphStyle(
-                                                lines: 1,
-                                                lineStyle: SkeletonLineStyle(
-                                                    width: 20,
-                                                    height: 20,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)))));
-                                  }
-                                }),
-                            const SizedBox(width: 30),
-                            FutureBuilder(
-                                future: api.getCollection(
-                                    '/v3/events/participants',
-                                    [],
-                                    {"eventid": _event[0]["id"]}),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    var participants =
-                                        json.decode(snapshot.data.body);
-                                    found = false;
-                                    int i = 0;
-                                    while (!found && i < participants.length) {
-                                      if (participants[i] ==
-                                          api.getCurrentUser()) {
-                                        found = true;
-                                      }
-                                      ++i;
-                                    }
-                                    if (!found) {
-                                      return InkWell(
-                                        onTap: () async {
-                                          final bodyData = {
-                                            "user_id": api.getCurrentUser()
-                                          };
-                                          var hasConflict =
-                                              await checkTimeConflict();
-                                          if (hasConflict) {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertDialog(
-                                                        title:
-                                                            Text('TimeConflict')
-                                                                .tr(),
-                                                        content: Text(
-                                                                'EventTimeConflict')
-                                                            .tr(),
-                                                        actions: [
-                                                          TextButton(
-                                                            child:
-                                                                Text('Cancel')
-                                                                    .tr(),
-                                                            onPressed: () =>
-                                                                Navigator.pop(
-                                                                    context),
-                                                          ),
-                                                          TextButton(
-                                                            child: Text('Yes')
-                                                                .tr(),
-                                                            onPressed:
-                                                                () async {
-                                                              Navigator.pop(
-                                                                  context);
-                                                              var response =
-                                                                  await joinEvent(
-                                                                      bodyData);
-                                                              SnackBar snackBar;
-                                                              if (response
-                                                                      .statusCode ==
-                                                                  200) {
-                                                                snackBar =
-                                                                    SnackBar(
-                                                                  backgroundColor: Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .secondary,
-                                                                  content: Text(
-                                                                          'Youarein')
-                                                                      .tr(),
-                                                                );
-                                                                getPaymentStatus(
-                                                                    _event[0]
-                                                                        ["id"]);
-                                                              } else {
-                                                                snackBar =
-                                                                    SnackBar(
-                                                                  backgroundColor:
-                                                                      Theme.of(
-                                                                              context)
-                                                                          .colorScheme
-                                                                          .error,
-                                                                  content: Text(
-                                                                          'Somethingbadhappened')
-                                                                      .tr(),
-                                                                );
-                                                              }
-                                                              setState(() {
-                                                                found = response
-                                                                        .statusCode ==
-                                                                    200;
-                                                              });
-                                                              ScaffoldMessenger
-                                                                      .of(
-                                                                          context)
-                                                                  .showSnackBar(
-                                                                      snackBar);
-                                                            },
-                                                          ),
-                                                        ]));
-                                          } else {
-                                            var response =
-                                                await joinEvent(bodyData);
-                                            SnackBar snackBar;
-                                            if (response.statusCode == 200) {
-                                              snackBar = SnackBar(
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                content: Text('Youarein').tr(),
-                                              );
-                                              getPaymentStatus(_event[0]["id"]);
-                                            } else {
-                                              snackBar = SnackBar(
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .error,
-                                                content:
-                                                    Text('Somethingbadhappened')
-                                                        .tr(),
-                                              );
-                                            }
-                                            setState(() {
-                                              found =
-                                                  response.statusCode == 200;
-                                            });
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(snackBar);
-                                          }
-                                        },
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary
-                                                    .withOpacity(0.5),
-                                                spreadRadius: 5,
-                                                blurRadius: 7,
-                                                offset: const Offset(0,
-                                                    3), // changes position of shadow
-                                              ),
-                                            ],
-                                          ),
-                                          width: 150,
-                                          height: 40,
-                                          child: Center(
-                                              child: Text('JOINNOW',
-                                                      style: TextStyle(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .background,
-                                                          fontWeight:
-                                                              FontWeight.bold))
-                                                  .tr()),
-                                        ),
-                                      );
-                                    } else {
-                                      return Row(
-                                        children: [
-                                          Visibility(
-                                            visible: !paid &&
-                                                _event[0]["user_creator"] !=
-                                                    api.getCurrentUser(),
-                                            child: Row(
-                                              children: [
-                                                InkWell(
-                                                  onTap: () async {
-                                                    PayEvent(_event);
-                                                  },
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.0),
+                                                .surface,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(height: 30),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        FutureBuilder(
+                                          future: api.getItem("/v1/users/:0", [
+                                            widget.event.user_creator.toString()
+                                          ]),
+                                          builder: (BuildContext context,
+                                              AsyncSnapshot snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.done) {
+                                              var _user = json
+                                                  .decode(snapshot.data.body);
+
+                                              return Row(
+                                                children: [
+                                                  Text(
+                                                    'Createdby'.tr() +
+                                                        _user["username"],
+                                                    style: TextStyle(
                                                       color: Theme.of(context)
                                                           .colorScheme
-                                                          .error,
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .colorScheme
-                                                              .error
-                                                              .withOpacity(0.5),
-                                                          spreadRadius: 5,
-                                                          blurRadius: 7,
-                                                          offset: const Offset(
-                                                              0,
-                                                              3), // changes position of shadow
-                                                        ),
-                                                      ],
+                                                          .primary,
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
-                                                    width: 60,
-                                                    height: 40,
-                                                    child: Center(
-                                                        child: Text('Pay',
-                                                                style: TextStyle(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .background,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold))
-                                                            .tr()),
                                                   ),
-                                                ),
-                                                SizedBox(width: 40),
-                                              ],
-                                            ),
-                                          ),
-                                          Visibility(
-                                            visible: _event[0]
-                                                    ["user_creator"] !=
+                                                  const SizedBox(width: 10),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  ProfileScreen(
+                                                                      id: _user[
+                                                                          "id"])));
+                                                    },
+                                                    child: SizedBox(
+                                                      width: 36,
+                                                      height: 36,
+                                                      child: ClipRRect(
+                                                        child: FittedBox(
+                                                          child: _user[
+                                                                      "image_url"] !=
+                                                                  ''
+                                                              ? Image.network(
+                                                                  _user[
+                                                                      "image_url"])
+                                                              : Image.asset(
+                                                                  'assets/noProfileImage.png'),
+                                                          fit: BoxFit.fitHeight,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(100),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            } else {
+                                              return Row(
+                                                children: [
+                                                  SkeletonItem(
+                                                    child: SkeletonParagraph(
+                                                      style:
+                                                          SkeletonParagraphStyle(
+                                                        lines: 1,
+                                                        spacing: 2,
+                                                        lineStyle:
+                                                            SkeletonLineStyle(
+                                                          width: 40,
+                                                          height: 20,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Center(
+                                                    child: SkeletonItem(
+                                                      child: SkeletonAvatar(
+                                                        style:
+                                                            SkeletonAvatarStyle(
+                                                          shape:
+                                                              BoxShape.circle,
+                                                          width: 36,
+                                                          height: 36,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    const Divider(),
+                                    Expanded(
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 20),
+                                            Text(
+                                                widget.event.date_started
+                                                    .toString()
+                                                    .substring(
+                                                        0,
+                                                        widget.event
+                                                                .date_started
+                                                                .toString()
+                                                                .length -
+                                                            7),
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w500)),
+                                            const SizedBox(height: 15),
+                                            // Row(
+                                            //     crossAxisAlignment:
+                                            //         CrossAxisAlignment
+                                            //             .center,
+                                            //     children: [
+                                            //       Text('Airqualityinthisarea',
+                                            //               style: TextStyle(
+                                            //                   color: Theme.of(
+                                            //                           context)
+                                            //                       .colorScheme
+                                            //                       .onSurface,
+                                            //                   fontSize:
+                                            //                       14))
+                                            //           .tr(),
+                                            //       const Expanded(
+                                            //           child: SizedBox()),
+                                            //       AirTag(
+                                            //           id: event[0]["id"],
+                                            //           latitude: event[0]
+                                            //                   ["latitude"]
+                                            //               .toString(),
+                                            //           longitud: event[0]
+                                            //                   ["longitud"]
+                                            //               .toString())
+                                            // //     ]),
+                                            // const SizedBox(height: 20),
+                                            // const Divider(),
+                                            // const SizedBox(height: 20),
+                                            Text('Description',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surface,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18))
+                                                .tr(),
+                                            const SizedBox(height: 10),
+                                            Text(
+                                                widget.event.description
+                                                    .toString(),
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onSurface)),
+                                            const SizedBox(height: 20),
+                                            const Divider(),
+                                            const SizedBox(height: 20),
+                                            Text('Attendees',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surface,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18))
+                                                .tr(),
+                                            const SizedBox(height: 10),
+                                            SizedBox(
+                                                height: 80,
+                                                width: MediaQuery.of(context)
+                                                    .size
+                                                    .width,
+                                                child: FutureBuilder(
+                                                    future: Future.wait([
+                                                      getAllPhotosInEvent(widget
+                                                          .event.id
+                                                          .toString()),
+                                                      getAllPayments(widget
+                                                          .event.id
+                                                          .toString())
+                                                    ]), //
+
+                                                    builder: (BuildContext
+                                                            context,
+                                                        AsyncSnapshot<
+                                                                List<dynamic>>
+                                                            snapshot) {
+                                                      if (snapshot
+                                                              .connectionState ==
+                                                          ConnectionState
+                                                              .done) {
+                                                        var attendees =
+                                                            snapshot.data![0];
+                                                        var payments =
+                                                            snapshot.data![1];
+                                                        print(attendees);
+                                                        return ListView
+                                                            .separated(
+                                                                shrinkWrap:
+                                                                    true,
+                                                                scrollDirection:
+                                                                    Axis
+                                                                        .horizontal,
+                                                                separatorBuilder: (context,
+                                                                        index) =>
+                                                                    const SizedBox(
+                                                                        width:
+                                                                            20),
+                                                                itemCount:
+                                                                    attendees
+                                                                        .length,
+                                                                itemBuilder:
+                                                                    (BuildContext
+                                                                            context,
+                                                                        int index) {
+                                                                  bool hasPaid = widget
+                                                                              .event
+                                                                              .user_creator
+                                                                              .toString() ==
+                                                                          api
+                                                                              .getCurrentUser() &&
+                                                                      payments.any((payment) =>
+                                                                          (payment['user_id'] ==
+                                                                              attendees[index][
+                                                                                  'user_id']) ||
+                                                                          (widget.event.user_creator.toString() ==
+                                                                              attendees[index]['user_id']));
+                                                                  return InkWell(
+                                                                    onTap: () {
+                                                                      Navigator.push(
+                                                                          context,
+                                                                          MaterialPageRoute(
+                                                                              builder: (context) => ProfileScreen(id: attendees[index]["user_id"])));
+                                                                    },
+                                                                    child:
+                                                                        Stack(
+                                                                      children: [
+                                                                        CircleAvatar(
+                                                                          radius:
+                                                                              40,
+                                                                          backgroundImage: attendees[index]['image'] == ''
+                                                                              ? AssetImage('assets/noProfileImage.png')
+                                                                              : NetworkImage(attendees[index]['image']) as ImageProvider,
+                                                                        ),
+                                                                        if (hasPaid)
+                                                                          Positioned(
+                                                                            bottom:
+                                                                                0,
+                                                                            right:
+                                                                                0,
+                                                                            child:
+                                                                                Icon(
+                                                                              CupertinoIcons.checkmark_circle_fill,
+                                                                              // Icons.check_circle_outline_sharp,
+                                                                              color: Colors.green,
+                                                                              size: 24,
+                                                                            ),
+                                                                          ),
+                                                                      ],
+                                                                    ),
+                                                                  );
+                                                                });
+                                                      } else {
+                                                        return ListView
+                                                            .separated(
+                                                                physics:
+                                                                    const NeverScrollableScrollPhysics(),
+                                                                scrollDirection:
+                                                                    Axis
+                                                                        .horizontal,
+                                                                shrinkWrap:
+                                                                    true,
+                                                                separatorBuilder: (context,
+                                                                        index) =>
+                                                                    const SizedBox(
+                                                                        width:
+                                                                            20),
+                                                                itemCount: 5,
+                                                                itemBuilder:
+                                                                    (BuildContext
+                                                                            context,
+                                                                        int index) {
+                                                                  return const Center(
+                                                                    child: SkeletonItem(
+                                                                        child: SkeletonAvatar(
+                                                                      style: SkeletonAvatarStyle(
+                                                                          shape: BoxShape
+                                                                              .circle,
+                                                                          width:
+                                                                              80,
+                                                                          height:
+                                                                              80),
+                                                                    )),
+                                                                  );
+                                                                });
+                                                      }
+                                                    })),
+                                            const SizedBox(height: 20),
+                                            const Divider(),
+                                            const SizedBox(height: 20),
+                                            Text('Location',
+                                                    style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surface,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18))
+                                                .tr(),
+                                            const SizedBox(height: 20),
+                                            EventMapButton(event: widget.event),
+                                            const SizedBox(height: 20)
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )),
+                        ],
+                      )
+                    ]))),
+            Material(
+              elevation: 15.0,
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border(
+                          top: BorderSide(
+                              width: 1.0,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.5)))),
+                  height: 100,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      IconButton(
+                          iconSize: 27,
+                          color: Theme.of(context).colorScheme.secondary,
+                          icon: const Icon(Icons.people),
+                          onPressed: () {}),
+                      FutureBuilder(
+                        future: api.getCollection(
+                          '/v3/events/participants',
+                          [],
+                          {"eventid": widget.event.id.toString()},
+                        ),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            var participants = json.decode(snapshot.data.body);
+                            int participantsCount = participants.length;
+                            found = false;
+                            int i = 0;
+                            while (!found && i < participants.length) {
+                              if (participants[i] == api.getCurrentUser()) {
+                                found = true;
+                              }
+                              ++i;
+                            }
+                            // 第一个部分
+                            Widget firstSection = Text(
+                              '$participantsCount/${widget.event.max_participants}',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            );
+
+                            // 第二个部分
+                            Widget secondSection = found
+                                ? Row(
+                                    children: [
+                                      Visibility(
+                                        visible: !paid &&
+                                            widget.event.user_creator
+                                                    .toString() !=
                                                 api.getCurrentUser(),
-                                            child: InkWell(
+                                        child: Row(
+                                          children: [
+                                            InkWell(
                                               onTap: () async {
-                                                final bodyData = {
-                                                  "user_id":
-                                                      api.getCurrentUser()
-                                                };
-                                                var response = await leaveEvent(
-                                                    _event[0]["id"], bodyData);
-                                                setState(() {
-                                                  found = false;
-                                                });
-                                                SnackBar snackBar;
-                                                if (response.statusCode ==
-                                                    200) {
-                                                  snackBar = SnackBar(
-                                                    backgroundColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
-                                                    content:
-                                                        Text('Youleft').tr(),
-                                                  );
-                                                } else {
-                                                  snackBar = SnackBar(
-                                                    backgroundColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .error,
-                                                    content: Text(
-                                                            'Somethingbadhappened')
-                                                        .tr(),
-                                                  );
-                                                }
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(snackBar);
+                                                PayEvent(widget.event);
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -954,7 +699,7 @@ class _EventState extends State<Event> {
                                                 width: 60,
                                                 height: 40,
                                                 child: Center(
-                                                    child: Text('LEAVE',
+                                                    child: Text('Pay',
                                                             style: TextStyle(
                                                                 color: Theme.of(
                                                                         context)
@@ -966,35 +711,579 @@ class _EventState extends State<Event> {
                                                         .tr()),
                                               ),
                                             ),
-                                          )
+                                            SizedBox(width: 40),
+                                          ],
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible: widget.event.user_creator
+                                                .toString() !=
+                                            api.getCurrentUser(),
+                                        child: InkWell(
+                                          onTap: () async {
+                                            final bodyData = {
+                                              "user_id": api.getCurrentUser()
+                                            };
+                                            var response = await leaveEvent(
+                                                widget.event.id.toString(),
+                                                bodyData);
+                                            setState(() {
+                                              found = false;
+                                            });
+                                            SnackBar snackBar;
+                                            if (response.statusCode == 200) {
+                                              snackBar = SnackBar(
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .secondary,
+                                                content: Text('Youleft').tr(),
+                                              );
+                                            } else {
+                                              snackBar = SnackBar(
+                                                backgroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .error,
+                                                content:
+                                                    Text('Somethingbadhappened')
+                                                        .tr(),
+                                              );
+                                            }
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(snackBar);
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .error,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error
+                                                      .withOpacity(0.5),
+                                                  spreadRadius: 5,
+                                                  blurRadius: 7,
+                                                  offset: const Offset(0,
+                                                      3), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                            width: 60,
+                                            height: 40,
+                                            child: Center(
+                                                child: Text('LEAVE',
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .background,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold))
+                                                    .tr()),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                : InkWell(
+                                    onTap: () async {
+                                      final bodyData = {
+                                        "user_id": api.getCurrentUser()
+                                      };
+                                      var hasConflict =
+                                          await checkTimeConflict();
+                                      if (hasConflict) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                                    title: Text('TimeConflict')
+                                                        .tr(),
+                                                    content: Text(
+                                                            'EventTimeConflict')
+                                                        .tr(),
+                                                    actions: [
+                                                      TextButton(
+                                                        child:
+                                                            Text('Cancel').tr(),
+                                                        onPressed: () =>
+                                                            Navigator.pop(
+                                                                context),
+                                                      ),
+                                                      TextButton(
+                                                        child: Text('Yes').tr(),
+                                                        onPressed: () async {
+                                                          Navigator.pop(
+                                                              context);
+                                                          var response =
+                                                              await joinEvent(
+                                                                  bodyData);
+                                                          SnackBar snackBar;
+                                                          if (response
+                                                                  .statusCode ==
+                                                              200) {
+                                                            snackBar = SnackBar(
+                                                              backgroundColor:
+                                                                  Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary,
+                                                              content: Text(
+                                                                      'Youarein')
+                                                                  .tr(),
+                                                            );
+                                                            getPaymentStatus(
+                                                                widget.event.id
+                                                                    .toString());
+                                                          } else {
+                                                            snackBar = SnackBar(
+                                                              backgroundColor:
+                                                                  Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .error,
+                                                              content: Text(
+                                                                      'Somethingbadhappened')
+                                                                  .tr(),
+                                                            );
+                                                          }
+                                                          setState(() {
+                                                            found = response
+                                                                    .statusCode ==
+                                                                200;
+                                                          });
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  snackBar);
+                                                        },
+                                                      ),
+                                                    ]));
+                                      } else {
+                                        var response =
+                                            await joinEvent(bodyData);
+                                        SnackBar snackBar;
+                                        if (response.statusCode == 200) {
+                                          snackBar = SnackBar(
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            content: Text('Youarein').tr(),
+                                          );
+                                          getPaymentStatus(
+                                              widget.event.id.toString());
+                                        } else {
+                                          snackBar = SnackBar(
+                                            backgroundColor: Theme.of(context)
+                                                .colorScheme
+                                                .error,
+                                            content:
+                                                Text('Somethingbadhappened')
+                                                    .tr(),
+                                          );
+                                        }
+                                        setState(() {
+                                          found = response.statusCode == 200;
+                                        });
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      }
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary
+                                                .withOpacity(0.5),
+                                            spreadRadius: 5,
+                                            blurRadius: 7,
+                                            offset: const Offset(0,
+                                                3), // changes position of shadow
+                                          ),
                                         ],
-                                      );
-                                    }
-                                  } else {
-                                    return Center(
-                                      child: SkeletonItem(
-                                          child: SkeletonParagraph(
-                                              style: SkeletonParagraphStyle(
-                                                  lines: 1,
-                                                  spacing: 2,
-                                                  lineStyle: SkeletonLineStyle(
-                                                      width: 150,
-                                                      height: 40,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10))))),
-                                    );
-                                  }
-                                })
-                          ],
-                        )),
-                  )
-                ],
-              ));
-        } else {
-          return const CircularProgressIndicator();
-        }
-      },
-    );
+                                      ),
+                                      width: 150,
+                                      height: 40,
+                                      child: Center(
+                                          child: Text('JOINNOW',
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .background,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                              .tr()),
+                                    ),
+                                  );
+
+                            return Row(
+                              children: [
+                                firstSection,
+                                const SizedBox(width: 30),
+                                secondSection,
+                              ],
+                            );
+                          } else {
+                            return Center(
+                              child: SkeletonItem(
+                                child: SkeletonParagraph(
+                                  style: SkeletonParagraphStyle(
+                                    lines: 1,
+                                    spacing: 2,
+                                    lineStyle: SkeletonLineStyle(
+                                      width: 150,
+                                      height: 40,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      //   FutureBuilder(
+                      //       future: api.getCollection('/v3/events/participants',
+                      //           [], {"eventid": widget.event.id.toString()}),
+                      //       builder:
+                      //           (BuildContext context, AsyncSnapshot snapshot) {
+                      //         if (snapshot.connectionState ==
+                      //             ConnectionState.done) {
+                      //           var participants =
+                      //               json.decode(snapshot.data.body);
+                      //           return Text(
+                      //               participants.length.toString() +
+                      //                   "/" +
+                      //                   widget.event.max_participants
+                      //                       .toString()
+                      //                       .toString(),
+                      //               style: TextStyle(
+                      //                   color: Theme.of(context)
+                      //                       .colorScheme
+                      //                       .secondary,
+                      //                   fontWeight: FontWeight.w500,
+                      //                   fontSize: 16));
+                      //         } else {
+                      //           return SkeletonItem(
+                      //               child: SkeletonParagraph(
+                      //                   style: SkeletonParagraphStyle(
+                      //                       lines: 1,
+                      //                       lineStyle: SkeletonLineStyle(
+                      //                           width: 20,
+                      //                           height: 20,
+                      //                           borderRadius:
+                      //                               BorderRadius.circular(10)))));
+                      //         }
+                      //       }),
+                      //   const SizedBox(width: 30),
+                      //   FutureBuilder(
+                      //       future: api.getCollection('/v3/events/participants',
+                      //           [], {"eventid": widget.event.id.toString()}),
+                      //       builder:
+                      //           (BuildContext context, AsyncSnapshot snapshot) {
+                      //         if (snapshot.connectionState ==
+                      //             ConnectionState.done) {
+                      //           var participants =
+                      //               json.decode(snapshot.data.body);
+                      //           found = false;
+                      //           int i = 0;
+                      //           while (!found && i < participants.length) {
+                      //             if (participants[i] == api.getCurrentUser()) {
+                      //               found = true;
+                      //             }
+                      //             ++i;
+                      //           }
+                      //           if (!found) {
+                      //             return InkWell(
+                      //               onTap: () async {
+                      //                 final bodyData = {
+                      //                   "user_id": api.getCurrentUser()
+                      //                 };
+                      //                 var hasConflict = await checkTimeConflict();
+                      //                 if (hasConflict) {
+                      //                   showDialog(
+                      //                       context: context,
+                      //                       builder: (context) => AlertDialog(
+                      //                               title:
+                      //                                   Text('TimeConflict').tr(),
+                      //                               content:
+                      //                                   Text('EventTimeConflict')
+                      //                                       .tr(),
+                      //                               actions: [
+                      //                                 TextButton(
+                      //                                   child:
+                      //                                       Text('Cancel').tr(),
+                      //                                   onPressed: () =>
+                      //                                       Navigator.pop(
+                      //                                           context),
+                      //                                 ),
+                      //                                 TextButton(
+                      //                                   child: Text('Yes').tr(),
+                      //                                   onPressed: () async {
+                      //                                     Navigator.pop(context);
+                      //                                     var response =
+                      //                                         await joinEvent(
+                      //                                             bodyData);
+                      //                                     SnackBar snackBar;
+                      //                                     if (response
+                      //                                             .statusCode ==
+                      //                                         200) {
+                      //                                       snackBar = SnackBar(
+                      //                                         backgroundColor:
+                      //                                             Theme.of(
+                      //                                                     context)
+                      //                                                 .colorScheme
+                      //                                                 .secondary,
+                      //                                         content:
+                      //                                             Text('Youarein')
+                      //                                                 .tr(),
+                      //                                       );
+                      //                                       getPaymentStatus(
+                      //                                           widget.event.id
+                      //                                               .toString());
+                      //                                     } else {
+                      //                                       snackBar = SnackBar(
+                      //                                         backgroundColor:
+                      //                                             Theme.of(
+                      //                                                     context)
+                      //                                                 .colorScheme
+                      //                                                 .error,
+                      //                                         content: Text(
+                      //                                                 'Somethingbadhappened')
+                      //                                             .tr(),
+                      //                                       );
+                      //                                     }
+                      //                                     setState(() {
+                      //                                       found = response
+                      //                                               .statusCode ==
+                      //                                           200;
+                      //                                     });
+                      //                                     ScaffoldMessenger.of(
+                      //                                             context)
+                      //                                         .showSnackBar(
+                      //                                             snackBar);
+                      //                                   },
+                      //                                 ),
+                      //                               ]));
+                      //                 } else {
+                      //                   var response = await joinEvent(bodyData);
+                      //                   SnackBar snackBar;
+                      //                   if (response.statusCode == 200) {
+                      //                     snackBar = SnackBar(
+                      //                       backgroundColor: Theme.of(context)
+                      //                           .colorScheme
+                      //                           .secondary,
+                      //                       content: Text('Youarein').tr(),
+                      //                     );
+                      //                     getPaymentStatus(
+                      //                         widget.event.id.toString());
+                      //                   } else {
+                      //                     snackBar = SnackBar(
+                      //                       backgroundColor: Theme.of(context)
+                      //                           .colorScheme
+                      //                           .error,
+                      //                       content:
+                      //                           Text('Somethingbadhappened').tr(),
+                      //                     );
+                      //                   }
+                      //                   setState(() {
+                      //                     found = response.statusCode == 200;
+                      //                   });
+                      //                   ScaffoldMessenger.of(context)
+                      //                       .showSnackBar(snackBar);
+                      //                 }
+                      //               },
+                      //               child: Container(
+                      //                 decoration: BoxDecoration(
+                      //                   borderRadius: BorderRadius.circular(10.0),
+                      //                   color: Theme.of(context)
+                      //                       .colorScheme
+                      //                       .secondary,
+                      //                   boxShadow: [
+                      //                     BoxShadow(
+                      //                       color: Theme.of(context)
+                      //                           .colorScheme
+                      //                           .secondary
+                      //                           .withOpacity(0.5),
+                      //                       spreadRadius: 5,
+                      //                       blurRadius: 7,
+                      //                       offset: const Offset(0,
+                      //                           3), // changes position of shadow
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //                 width: 150,
+                      //                 height: 40,
+                      //                 child: Center(
+                      //                     child: Text('JOINNOW',
+                      //                             style: TextStyle(
+                      //                                 color: Theme.of(context)
+                      //                                     .colorScheme
+                      //                                     .background,
+                      //                                 fontWeight:
+                      //                                     FontWeight.bold))
+                      //                         .tr()),
+                      //               ),
+                      //             );
+                      //           } else {
+                      //             return Row(
+                      //               children: [
+                      //                 Visibility(
+                      //                   visible: !paid &&
+                      //                       widget.event.user_creator
+                      //                               .toString() !=
+                      //                           api.getCurrentUser(),
+                      //                   child: Row(
+                      //                     children: [
+                      //                       InkWell(
+                      //                         onTap: () async {
+                      //                           PayEvent(widget.event);
+                      //                         },
+                      //                         child: Container(
+                      //                           decoration: BoxDecoration(
+                      //                             borderRadius:
+                      //                                 BorderRadius.circular(10.0),
+                      //                             color: Theme.of(context)
+                      //                                 .colorScheme
+                      //                                 .error,
+                      //                             boxShadow: [
+                      //                               BoxShadow(
+                      //                                 color: Theme.of(context)
+                      //                                     .colorScheme
+                      //                                     .error
+                      //                                     .withOpacity(0.5),
+                      //                                 spreadRadius: 5,
+                      //                                 blurRadius: 7,
+                      //                                 offset: const Offset(0,
+                      //                                     3), // changes position of shadow
+                      //                               ),
+                      //                             ],
+                      //                           ),
+                      //                           width: 60,
+                      //                           height: 40,
+                      //                           child: Center(
+                      //                               child: Text('Pay',
+                      //                                       style: TextStyle(
+                      //                                           color: Theme.of(
+                      //                                                   context)
+                      //                                               .colorScheme
+                      //                                               .background,
+                      //                                           fontWeight:
+                      //                                               FontWeight
+                      //                                                   .bold))
+                      //                                   .tr()),
+                      //                         ),
+                      //                       ),
+                      //                       SizedBox(width: 40),
+                      //                     ],
+                      //                   ),
+                      //                 ),
+                      //                 Visibility(
+                      //                   visible: widget.event.user_creator
+                      //                           .toString() !=
+                      //                       api.getCurrentUser(),
+                      //                   child: InkWell(
+                      //                     onTap: () async {
+                      //                       final bodyData = {
+                      //                         "user_id": api.getCurrentUser()
+                      //                       };
+                      //                       var response = await leaveEvent(
+                      //                           widget.event.id.toString(),
+                      //                           bodyData);
+                      //                       setState(() {
+                      //                         found = false;
+                      //                       });
+                      //                       SnackBar snackBar;
+                      //                       if (response.statusCode == 200) {
+                      //                         snackBar = SnackBar(
+                      //                           backgroundColor: Theme.of(context)
+                      //                               .colorScheme
+                      //                               .secondary,
+                      //                           content: Text('Youleft').tr(),
+                      //                         );
+                      //                       } else {
+                      //                         snackBar = SnackBar(
+                      //                           backgroundColor: Theme.of(context)
+                      //                               .colorScheme
+                      //                               .error,
+                      //                           content:
+                      //                               Text('Somethingbadhappened')
+                      //                                   .tr(),
+                      //                         );
+                      //                       }
+                      //                       ScaffoldMessenger.of(context)
+                      //                           .showSnackBar(snackBar);
+                      //                     },
+                      //                     child: Container(
+                      //                       decoration: BoxDecoration(
+                      //                         borderRadius:
+                      //                             BorderRadius.circular(10.0),
+                      //                         color: Theme.of(context)
+                      //                             .colorScheme
+                      //                             .error,
+                      //                         boxShadow: [
+                      //                           BoxShadow(
+                      //                             color: Theme.of(context)
+                      //                                 .colorScheme
+                      //                                 .error
+                      //                                 .withOpacity(0.5),
+                      //                             spreadRadius: 5,
+                      //                             blurRadius: 7,
+                      //                             offset: const Offset(0,
+                      //                                 3), // changes position of shadow
+                      //                           ),
+                      //                         ],
+                      //                       ),
+                      //                       width: 60,
+                      //                       height: 40,
+                      //                       child: Center(
+                      //                           child: Text('LEAVE',
+                      //                                   style: TextStyle(
+                      //                                       color:
+                      //                                           Theme.of(context)
+                      //                                               .colorScheme
+                      //                                               .background,
+                      //                                       fontWeight:
+                      //                                           FontWeight.bold))
+                      //                               .tr()),
+                      //                     ),
+                      //                   ),
+                      //                 )
+                      //               ],
+                      //             );
+                      //           }
+                      //         } else {
+                      //           return Center(
+                      //             child: SkeletonItem(
+                      //                 child: SkeletonParagraph(
+                      //                     style: SkeletonParagraphStyle(
+                      //                         lines: 1,
+                      //                         spacing: 2,
+                      //                         lineStyle: SkeletonLineStyle(
+                      //                             width: 150,
+                      //                             height: 40,
+                      //                             borderRadius:
+                      //                                 BorderRadius.circular(
+                      //                                     10))))),
+                      //           );
+                      //         }
+                      //       })
+                    ],
+                  )),
+            )
+          ],
+        ));
   }
 }

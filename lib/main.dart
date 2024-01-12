@@ -7,6 +7,7 @@ import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
 import 'package:viajuntos/feature_chat/screens/test_screen.dart';
 import 'package:viajuntos/feature_map/screens/map.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:viajuntos/feature_map/screens/EventSearchMap.dart';
 import 'package:viajuntos/feature_navigation/screens/navigation.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/screens/edit_profile.dart';
@@ -20,6 +21,7 @@ import 'package:viajuntos/firebase_options.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:flutter/services.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:viajuntos/utils/custum_error_screen.dart';
 import 'feature_user/screens/languages.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,6 +72,10 @@ class MyApp extends StatelessWidget {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
+          ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+            // 自定义错误屏幕
+            return CustomErrorScreen(errorDetails: errorDetails);
+          };
           return MaterialApp(
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
@@ -116,7 +122,7 @@ class MyApp extends StatelessWidget {
               '/signup': (_) => SignUpScreen(),
               '/register': (_) => const RegisterScreen(),
               '/home': (_) => const NavigationBottomBar(),
-              '/map_screen': (_) => const MapScreen(),
+              '/map_screen': (_) => const EventSearchMap(),
               '/profile': (_) => const ProfileScreen(id: "0"),
               '/edit_profile': (_) => const EditarProfile(),
               '/change_password': (_) => const ChangePassword(),

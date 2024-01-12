@@ -193,7 +193,7 @@ class _EventWidgetState extends State<EventWidget> {
                   baseLocalUrl + '/v3/events/' + widget.event["id"], context)),
           const Divider(endIndent: 30),
           FutureBuilder(
-              future: api.getCollection('/v2/events/participants', [],
+              future: api.getCollection('/v3/events/participants', [],
                   {"eventid": widget.event["id"]}),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {

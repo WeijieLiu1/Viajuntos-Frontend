@@ -225,5 +225,9 @@
     "FRIENDS": "AMIGOS",
     "TimeConflict": "Conflicto de horario",
     "EventTimeConflict": "¿Quieres unirte aunque ya hay un evento en este horario?",
-    "InformationWall": "Muro de información"
+    "InformationWall": "Muro de información",
+    "Map": "Mapa",
+    "EventMap": "Mapa del evento",
+    "from": "DE",
+    "to": "A"
 }

@@ -108,7 +108,7 @@ class _ChatBodyState extends State<ChatBody> {
           // .disableAutoConnect()
           .build(),
     );
-    InitMembers(widget.chat.id.toString());
+    // InitMembers(widget.chat.id.toString());
     chatMessageFuture = initAllMessages();
     _scrollController = ScrollController();
     _connectSocket();
@@ -117,96 +117,211 @@ class _ChatBodyState extends State<ChatBody> {
   @override
   Widget build(BuildContext context) {
     print("chatMessage" + auxChatMessage.length.toString());
-    return ListView.builder(
-      reverse: true,
-      itemCount: auxChatMessage.length,
-      shrinkWrap: true,
-      padding: EdgeInsets.only(top: 10, bottom: 70),
-      physics: AlwaysScrollableScrollPhysics(),
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        //for each message
-        double paddingSelf = 30;
-        double paddingOther = 10;
-        //hardcode
-        bool messageMine =
-            auxChatMessage[index].sender_id == api.getCurrentUser();
-        print("messageMine: " + auxChatMessage.length.toString());
-        return Container(
-          //icon+message
-          alignment: messageMine ? Alignment.centerRight : Alignment.centerLeft,
-          padding: EdgeInsets.only(
-              left: messageMine ? paddingSelf : paddingOther,
-              right: messageMine ? paddingOther : paddingSelf,
-              top: 10,
-              bottom: 10),
-          child: Align(
-              alignment: (messageMine ? Alignment.topRight : Alignment.topLeft),
-              child: Row(
-                mainAxisAlignment: messageMine
-                    ? MainAxisAlignment.end
-                    : MainAxisAlignment.start,
-                children: <Widget>[
-                  if (!messageMine)
-                    SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: ClipRRect(
-                          child: FittedBox(
-                              child: (mapMembers[widget
-                                              .chatMessage[index].sender_id]!
-                                          .image_url
-                                          .toString() ==
-                                      "")
-                                  ? Image.asset('assets/noProfileImage.png')
-                                  : Image.network(mapMembers[
-                                          widget.chatMessage[index].sender_id]!
-                                      .image_url
-                                      .toString()),
-                              fit: BoxFit.fitHeight),
-                          borderRadius: BorderRadius.circular(100)),
-                    ),
-                  Flexible(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topLeft: messageMine
-                                ? Radius.circular(20)
-                                : Radius.circular(0),
-                            topRight: messageMine
-                                ? Radius.circular(0)
-                                : Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                            bottomRight: Radius.circular(
-                                20)), //BorderRadius.circular(20),
-                        color: (messageMine
-                            //?Theme.of(context).colorScheme.secondary:Theme.of(context).colorScheme.onSecondary
-                            ? HexColor('80ED99')
-                            : Colors.grey.shade200),
-                      ),
-                      padding: EdgeInsets.all(12),
-                      child: Text(
-                        auxChatMessage[index].text,
-                        style: TextStyle(fontSize: 15),
-                      ),
-                    ),
-                  ),
-                  if (messageMine)
-                    SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: ClipRRect(
-                          child: FittedBox(
-                              child: (urlPhotoMine == "")
-                                  ? Image.asset('assets/noProfileImage.png')
-                                  : Image.network(urlPhotoMine),
-                              fit: BoxFit.fitHeight),
-                          borderRadius: BorderRadius.circular(100)),
-                    ),
-                ],
-              )),
-        );
+    return FutureBuilder(
+      future:
+          api.getItem("/v1/chat/all_members/:0", [widget.chat.id.toString()]),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          var auxMembers = json.decode(snapshot.data.body);
+          List<User> listMembers = auxMembers
+              .map((user) => User.fromJson(user))
+              .toList()
+              .cast<User>();
+          listMembers.forEach((user) {
+            mapMembers[user.id.toString()] = user;
+          });
+          // var id = widget.chatMessage[6].sender_id;
+          // var a = mapMembers[widget.chatMessage[6].sender_id];
+          // var b = mapMembers[widget.chatMessage[6].sender_id]!.image_url;
+          return ListView.builder(
+            reverse: true,
+            itemCount: auxChatMessage.length,
+            shrinkWrap: true,
+            padding: EdgeInsets.only(top: 10, bottom: 70),
+            physics: AlwaysScrollableScrollPhysics(),
+            controller: _scrollController,
+            itemBuilder: (context, index) {
+              //for each message
+              double paddingSelf = 30;
+              double paddingOther = 10;
+              //hardcode
+              bool messageMine =
+                  auxChatMessage[index].sender_id == api.getCurrentUser();
+              print("messageMine: " + auxChatMessage.length.toString());
+              return Container(
+                //icon+message
+                alignment:
+                    messageMine ? Alignment.centerRight : Alignment.centerLeft,
+                padding: EdgeInsets.only(
+                    left: messageMine ? paddingSelf : paddingOther,
+                    right: messageMine ? paddingOther : paddingSelf,
+                    top: 10,
+                    bottom: 10),
+                child: Align(
+                    alignment:
+                        (messageMine ? Alignment.topRight : Alignment.topLeft),
+                    child: Row(
+                      mainAxisAlignment: messageMine
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                      children: <Widget>[
+                        if (!messageMine)
+                          SizedBox(
+                            width: 36,
+                            height: 36,
+                            child: ClipRRect(
+                                child: FittedBox(
+                                    child: (mapMembers[widget.chatMessage[index]
+                                                    .sender_id]!
+                                                .image_url
+                                                .toString() ==
+                                            "")
+                                        ? Image.asset(
+                                            'assets/noProfileImage.png')
+                                        : Image.network(mapMembers[widget
+                                                .chatMessage[index].sender_id]!
+                                            .image_url
+                                            .toString()),
+                                    fit: BoxFit.fitHeight),
+                                borderRadius: BorderRadius.circular(100)),
+                          ),
+                        Flexible(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: messageMine
+                                      ? Radius.circular(20)
+                                      : Radius.circular(0),
+                                  topRight: messageMine
+                                      ? Radius.circular(0)
+                                      : Radius.circular(20),
+                                  bottomLeft: Radius.circular(20),
+                                  bottomRight: Radius.circular(
+                                      20)), //BorderRadius.circular(20),
+                              color: (messageMine
+                                  //?Theme.of(context).colorScheme.secondary:Theme.of(context).colorScheme.onSecondary
+                                  ? HexColor('80ED99')
+                                  : Colors.grey.shade200),
+                            ),
+                            padding: EdgeInsets.all(12),
+                            child: Text(
+                              auxChatMessage[index].text,
+                              style: TextStyle(fontSize: 15),
+                            ),
+                          ),
+                        ),
+                        if (messageMine)
+                          SizedBox(
+                            width: 36,
+                            height: 36,
+                            child: ClipRRect(
+                                child: FittedBox(
+                                    child: (urlPhotoMine == "")
+                                        ? Image.asset(
+                                            'assets/noProfileImage.png')
+                                        : Image.network(urlPhotoMine),
+                                    fit: BoxFit.fitHeight),
+                                borderRadius: BorderRadius.circular(100)),
+                          ),
+                      ],
+                    )),
+              );
+            },
+          );
+        } else
+          return CircularProgressIndicator();
       },
     );
+    // return ListView.builder(
+    //   reverse: true,
+    //   itemCount: auxChatMessage.length,
+    //   shrinkWrap: true,
+    //   padding: EdgeInsets.only(top: 10, bottom: 70),
+    //   physics: AlwaysScrollableScrollPhysics(),
+    //   controller: _scrollController,
+    //   itemBuilder: (context, index) {
+    //     //for each message
+    //     double paddingSelf = 30;
+    //     double paddingOther = 10;
+    //     //hardcode
+    //     bool messageMine =
+    //         auxChatMessage[index].sender_id == api.getCurrentUser();
+    //     print("messageMine: " + auxChatMessage.length.toString());
+    //     return Container(
+    //       //icon+message
+    //       alignment: messageMine ? Alignment.centerRight : Alignment.centerLeft,
+    //       padding: EdgeInsets.only(
+    //           left: messageMine ? paddingSelf : paddingOther,
+    //           right: messageMine ? paddingOther : paddingSelf,
+    //           top: 10,
+    //           bottom: 10),
+    //       child: Align(
+    //           alignment: (messageMine ? Alignment.topRight : Alignment.topLeft),
+    //           child: Row(
+    //             mainAxisAlignment: messageMine
+    //                 ? MainAxisAlignment.end
+    //                 : MainAxisAlignment.start,
+    //             children: <Widget>[
+    //               if (!messageMine)
+    //                 SizedBox(
+    //                   width: 36,
+    //                   height: 36,
+    //                   child: ClipRRect(
+    //                       child: FittedBox(
+    //                           child: (mapMembers[widget
+    //                                           .chatMessage[index].sender_id]!
+    //                                       .image_url
+    //                                       .toString() ==
+    //                                   "")
+    //                               ? Image.asset('assets/noProfileImage.png')
+    //                               : Image.network(mapMembers[
+    //                                       widget.chatMessage[index].sender_id]!
+    //                                   .image_url
+    //                                   .toString()),
+    //                           fit: BoxFit.fitHeight),
+    //                       borderRadius: BorderRadius.circular(100)),
+    //                 ),
+    //               Flexible(
+    //                 child: Container(
+    //                   decoration: BoxDecoration(
+    //                     borderRadius: BorderRadius.only(
+    //                         topLeft: messageMine
+    //                             ? Radius.circular(20)
+    //                             : Radius.circular(0),
+    //                         topRight: messageMine
+    //                             ? Radius.circular(0)
+    //                             : Radius.circular(20),
+    //                         bottomLeft: Radius.circular(20),
+    //                         bottomRight: Radius.circular(
+    //                             20)), //BorderRadius.circular(20),
+    //                     color: (messageMine
+    //                         //?Theme.of(context).colorScheme.secondary:Theme.of(context).colorScheme.onSecondary
+    //                         ? HexColor('80ED99')
+    //                         : Colors.grey.shade200),
+    //                   ),
+    //                   padding: EdgeInsets.all(12),
+    //                   child: Text(
+    //                     auxChatMessage[index].text,
+    //                     style: TextStyle(fontSize: 15),
+    //                   ),
+    //                 ),
+    //               ),
+    //               if (messageMine)
+    //                 SizedBox(
+    //                   width: 36,
+    //                   height: 36,
+    //                   child: ClipRRect(
+    //                       child: FittedBox(
+    //                           child: (urlPhotoMine == "")
+    //                               ? Image.asset('assets/noProfileImage.png')
+    //                               : Image.network(urlPhotoMine),
+    //                           fit: BoxFit.fitHeight),
+    //                       borderRadius: BorderRadius.circular(100)),
+    //                 ),
+    //             ],
+    //           )),
+    //     );
+    //   },
+    // );
   }
 }

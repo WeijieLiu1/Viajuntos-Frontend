@@ -6,12 +6,14 @@ import 'dart:typed_data';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:viajuntos/feature_event/screens/creation_sucess.dart';
 // import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
+import 'package:viajuntos/feature_map/screens/EventPickMap.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 
@@ -48,6 +50,31 @@ class _CreateEventFormState extends State<CreateEventForm> {
   String event_type = 'PUBLIC'.tr();
   late Uint8List _imageContent;
   bool is_event_pee = false;
+  bool _isMapSelected = false;
+  void _toggleInputMode() {
+    if (_latitude.text.isEmpty || _longitude.text.isEmpty) {
+      _latitude.text = '0.0';
+      _longitude.text = '0.0';
+    }
+    LatLng aux = LatLng(double.parse(_latitude.text),
+        double.parse(_longitude.text)); //todo: editar aqui
+    Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EventPickMap(initialPosition: aux)))
+        .then((result) {
+      if (result != null && result is LatLng) {
+        setState(() {
+          _latitude.text = result.latitude.toString();
+          _longitude.text = result.longitude.toString();
+        });
+      }
+    });
+    ;
+    setState(() {
+      _isMapSelected = !_isMapSelected;
+    });
+  }
 
   void _selectTime() async {
     TimeOfDay? newTime = await showTimePicker(
@@ -296,6 +323,15 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   ),
                 ),
               ]),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: _toggleInputMode,
+                child: Text('SelectOnMap').tr(),
+              ),
+
               const SizedBox(height: 20),
               Text('MaxParticipants',
                       style: TextStyle(
@@ -349,6 +385,10 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           fontSize: 16))
                   .tr(),
               Switch(
+                  inactiveTrackColor: Theme.of(context).colorScheme.background,
+                  activeTrackColor: Theme.of(context).colorScheme.secondary,
+                  inactiveThumbColor: Theme.of(context).colorScheme.primary,
+                  activeColor: Theme.of(context).colorScheme.primary,
                   value: is_event_pee,
                   onChanged: (value) {
                     setState(() {

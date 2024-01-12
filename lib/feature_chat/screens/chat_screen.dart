@@ -232,7 +232,7 @@ class _ChatScreen extends State<ChatScreen> {
               child: Stack(
         children: [
           FutureBuilder(
-              //future: api.getItem('/v2/events/:0', [eventId]),
+              //future: api.getItem('/v3/events/:0', [eventId]),
               future: chatMessageFuture,
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {

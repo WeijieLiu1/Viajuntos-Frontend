@@ -225,5 +225,9 @@
     "PRIVATE": "PRIVAT",
     "TimeConflict": "Conflicte horari",
     "EventTimeConflict": "Hi ha un esdeveniment programat en aquest horari. Vols unir-te igualment?",
-    "InformationWall": "Paret d'informació"
+    "InformationWall": "Paret d'informació",
+    "Map": "Mapa",
+    "EventMap": "Mapa d'esdeveniments",
+    "from": "DE",
+    "to": "A"
 }

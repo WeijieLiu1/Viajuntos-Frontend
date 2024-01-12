@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:viajuntos/utils/globals.dart';
 
 class EditEventsAPI {
-  final String url = baseLocalUrl + '/v2/events/';
+  final String url = baseLocalUrl + '/v3/events/';
 
   Future<bool> updateEvent(String id, List event) async {
     String body = jsonEncode(event[0]);

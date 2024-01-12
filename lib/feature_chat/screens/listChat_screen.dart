@@ -44,7 +44,7 @@ class _ListChatScreen extends State<ListChatScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        //future: api.getItem('/v2/events/:0', [eventId]),
+        //future: api.getItem('/v3/events/:0', [eventId]),
 
         // {
         //   "chat_id": "a083cdd5-d7b2-4fc0-ad4a-1fe91682da0d",

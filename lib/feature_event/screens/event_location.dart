@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_map/widgets/map_widget.dart';
 
 class EventLocationScreen extends StatelessWidget {
-  final double lat, lng;
-  const EventLocationScreen({Key? key, required this.lat, required this.lng})
-      : super(key: key);
+  final EventModel event;
+  const EventLocationScreen({Key? key, required this.event}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

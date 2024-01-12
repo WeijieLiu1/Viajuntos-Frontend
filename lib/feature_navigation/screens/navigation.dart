@@ -151,7 +151,7 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
       // Parse the link and warn the user, if it is not correct
 
       if (link != null) {
-        // baseLocalUrl+/v2/events/i
+        // baseLocalUrl+/v3/events/i
         // baseLocalUrl+/v2/users/new_friend?code=xxx
         var uri = Uri.parse(link);
         var type = uri.pathSegments[1];
