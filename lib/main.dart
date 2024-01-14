@@ -72,10 +72,10 @@ class MyApp extends StatelessWidget {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
-          ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
-            // 自定义错误屏幕
-            return CustomErrorScreen(errorDetails: errorDetails);
-          };
+          // ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
+          //   // 自定义错误屏幕
+          //   return CustomErrorScreen(errorDetails: errorDetails);
+          // };
           return MaterialApp(
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
