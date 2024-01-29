@@ -128,7 +128,7 @@ class _RecentlyAddedState extends State<RecentlyAdded> {
                                       child: FittedBox(
                                           child: Image.network(
                                               recommendations[index]
-                                                  ["event_image_uri"],
+                                                  ["event_image_uris"][0],
                                               alignment: Alignment.topCenter),
                                           fit: BoxFit.cover),
                                     ),

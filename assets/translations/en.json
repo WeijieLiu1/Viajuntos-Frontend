@@ -229,5 +229,19 @@
     "Map": "Map",
     "EventMap": "Event Map",
     "from": "FROM",
-    "to": "TO"
+    "to": "TO",
+    "DeleteImageTitle": "Delete Image",
+    "DeleteImageMessage": "Are you sure you want to delete this image?",
+    "UserAlreadyVerified": "User already verified",
+    "SuccessfulVerificationContent": "Your account has been successfully verified!",
+    "EventNotExist": "Event does not exist",
+    "NotCreatorScaning": "You are not the creator of this event",
+    "IncorrentCode": "Incorrect code",
+    "ShowCode": "Show Code",
+    "Pay": "Pay",
+    "ScanCode": "Scan Code",
+    "SelectOnMap": "Select on map",
+    "Pick": "Pick",
+    "ConfirmPositionTitle": "Confirm Position",
+    "ConfirmPositionContent": "Are you sure you want to Select this position?"
 }

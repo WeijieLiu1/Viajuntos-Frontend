@@ -130,8 +130,10 @@ class _ChatScreen extends State<ChatScreen> {
       print("message: " + data.toString());
       receiveMessage(jsonMap);
     });
-    _socket.emit('join_room',
-        {'username': 'YourUsername', 'room': widget.chat.id.toString()});
+    _socket.emit('join_room', {
+      'username': api.getCurrentUser().toString(),
+      'room': widget.chat.id.toString()
+    });
   }
 
   @override

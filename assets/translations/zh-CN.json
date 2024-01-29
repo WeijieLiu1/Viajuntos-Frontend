@@ -229,5 +229,19 @@
     "Map": "地图",
     "EventMap": "活动地图",
     "from": "从",
-    "to": "到"
+    "to": "到",
+    "DeleteImageTitle": "删除图片",
+    "DeleteImageContent": "您确定想要删除这张图片吗?",
+    "UserAlreadyVerified": "用户已经验证",
+    "SuccessfulVerificationContent": "您已经成功验证活动",
+    "EventNotExist": "活动不存在",
+    "NotCreatorScaning": "您不是活动创建者",
+    "IncorrentCode": "验证码错误",
+    "ShowCode": "显示验证码",
+    "Pay": "支付",
+    "ScanCode": "扫描验证码",
+    "SelectOnMap": "在地图上选择",
+    "Pick": "选择",
+    "ConfirmPositionTitle": "确认位置",
+    "ConfirmPositionContent": "您确定想要选择这个位置吗?"
 }

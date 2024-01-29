@@ -195,8 +195,8 @@ class EventPickMapState extends State<EventPickMap> {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                      title: Text("ConfirmPosition").tr(),
-                      content: Text("ConfirmPosition").tr(),
+                      title: Text("ConfirmPositionTitle").tr(),
+                      content: Text("ConfirmPositionContent").tr(),
                       actions: [
                         TextButton(
                             child: Text('Ok').tr(),
@@ -211,7 +211,7 @@ class EventPickMapState extends State<EventPickMap> {
                         )
                       ]));
         },
-        label: Text('显示经纬度'),
+        label: Text('Pick').tr(),
         // icon: Icon(Icons.map),
       ),
     );

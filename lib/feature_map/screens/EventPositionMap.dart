@@ -29,7 +29,6 @@ class EventPositionMapState extends State<EventPositionMap> {
   CameraPosition? _cameraPosition;
   static const LatLng _center =
       const LatLng(41.4048648812451, 2.1722214341300163);
-  LatLng? _lastMapPosition;
 
   @override
   void initState() {
@@ -41,7 +40,6 @@ class EventPositionMapState extends State<EventPositionMap> {
 
   void GetCurrentLocation() async {
     setState(() {
-      _lastMapPosition = widget.initialPosition!;
       _cameraPosition = CameraPosition(
         target: widget.initialPosition!,
         zoom: 14.0,
@@ -146,12 +144,6 @@ class EventPositionMapState extends State<EventPositionMap> {
     );
   }
 
-  void _onMapTapped(LatLng latLng) {
-    setState(() {
-      _lastMapPosition = latLng;
-    });
-  }
-
   void _onInfoWindowTapped() {
     // 在这里执行你想要的操作，比如打开新的页面、显示其他信息等
     print('InfoWindow 被点击了！');
@@ -166,48 +158,11 @@ class EventPositionMapState extends State<EventPositionMap> {
         backgroundColor: Theme.of(context).colorScheme.background,
       ),
       body: _buildGoogleMap(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (_lastMapPosition != null) {
-            print(
-                '经度: ${_lastMapPosition!.latitude}, 纬度: ${_lastMapPosition!.longitude}');
-          } else {
-            print('未选择位置');
-          }
-          if (_cameraPosition != null) {
-            print(
-                '当前经度: ${_cameraPosition!.target.latitude}, 纬度: ${_cameraPosition!.target.longitude}');
-          } else {
-            print('未找到用户位置');
-          }
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                      title: Text("ConfirmPosition").tr(),
-                      content: Text("ConfirmPosition").tr(),
-                      actions: [
-                        TextButton(
-                            child: Text('Ok').tr(),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pop(
-                                  context, _lastMapPosition); // 返回选择的经纬度信息
-                            }),
-                        TextButton(
-                          child: Text('Cancel').tr(),
-                          onPressed: () => Navigator.pop(context),
-                        )
-                      ]));
-        },
-        label: Text('显示经纬度'),
-        // icon: Icon(Icons.map),
-      ),
     );
   }
 
   Widget _buildGoogleMap() {
     return GoogleMap(
-      onTap: _onMapTapped,
       mapType: MapType.normal,
       initialCameraPosition: _cameraPosition ??
           CameraPosition(
@@ -218,11 +173,10 @@ class EventPositionMapState extends State<EventPositionMap> {
         _controller.complete(controller);
       },
       markers: {
-        if (_lastMapPosition != null)
-          Marker(
-            markerId: MarkerId('1'),
-            position: _lastMapPosition!,
-          ),
+        Marker(
+          markerId: MarkerId('1'),
+          position: widget.initialPosition!,
+        ),
       },
     );
   }

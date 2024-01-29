@@ -13,7 +13,7 @@ class EventModel {
   double? longitud;
   double? latitude;
   int? max_participants;
-  String? event_image_uri;
+  late List<String> event_image_uris;
   String? chat_id;
   double? amountevent;
   bool? is_event_free;
@@ -29,7 +29,7 @@ class EventModel {
     this.longitud,
     this.latitude,
     this.max_participants,
-    this.event_image_uri,
+    this.event_image_uris = const [],
     this.chat_id,
     this.amountevent,
     this.is_event_free,
@@ -48,7 +48,8 @@ class EventModel {
     longitud = json['longitud'];
     latitude = json['latitude'];
     max_participants = json['max_participants'];
-    event_image_uri = json['event_image_uri'];
+    event_image_uris =
+        (json['event_image_uris'] as List<dynamic>).cast<String>();
     chat_id = json['chat_id'];
     amountevent = json['amountevent'];
     is_event_free = json['is_event_free'];
@@ -74,7 +75,7 @@ class EventModel {
     data['longitud'] = longitud;
     data['latitude'] = latitude;
     data['max_participants'] = max_participants;
-    data['event_image_uri'] = event_image_uri;
+    data['event_image_uris'] = event_image_uris;
     data['chat_id'] = chat_id;
     data['amountevent'] = amountevent;
     data['is_event_free'] = is_event_free;

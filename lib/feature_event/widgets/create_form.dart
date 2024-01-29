@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:ffi';
+import 'dart:io';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,6 +16,7 @@ import 'package:viajuntos/feature_event/screens/creation_sucess.dart';
 // import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
+import 'package:viajuntos/feature_event/widgets/image_selector.dart';
 import 'package:viajuntos/feature_map/screens/EventPickMap.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
@@ -44,13 +48,15 @@ class _CreateEventFormState extends State<CreateEventForm> {
   final TextEditingController _longitude = TextEditingController(text: '');
   final TextEditingController _max_participants =
       TextEditingController(text: '');
-  final TextEditingController _image = TextEditingController(text: '');
   final TextEditingController _amount_event =
       TextEditingController(text: '0.0');
   String event_type = 'PUBLIC'.tr();
   late Uint8List _imageContent;
   bool is_event_pee = false;
   bool _isMapSelected = false;
+
+  List<String> uploadImages = [];
+
   void _toggleInputMode() {
     if (_latitude.text.isEmpty || _longitude.text.isEmpty) {
       _latitude.text = '0.0';
@@ -111,6 +117,12 @@ class _CreateEventFormState extends State<CreateEventForm> {
     }
   }
 
+  void _handleImagesChanged(List<String> newUploadImages) {
+    setState(() {
+      uploadImages = newUploadImages;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -168,7 +180,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           fontWeight: FontWeight.w600,
                           fontSize: 16))
                   .tr(),
-
               TextFormField(
                 controller: _name,
                 decoration: InputDecoration(hintText: 'Whatcreating'.tr()),
@@ -293,7 +304,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           color: Theme.of(context).colorScheme.secondary),
                     )),
               ]),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               Text('Location',
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary,
@@ -331,7 +342,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 onPressed: _toggleInputMode,
                 child: Text('SelectOnMap').tr(),
               ),
-
               const SizedBox(height: 20),
               Text('MaxParticipants',
                       style: TextStyle(
@@ -364,7 +374,6 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 ],
                 decoration: InputDecoration(hintText: 'peoplewillattend'.tr()),
               ),
-
               const SizedBox(height: 20),
               Text('Description',
                       style: TextStyle(
@@ -377,7 +386,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 decoration:
                     InputDecoration(hintText: 'Letattendeesexpect'.tr()),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               Text('IsPaidEvent?',
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary,
@@ -436,24 +445,18 @@ class _CreateEventFormState extends State<CreateEventForm> {
                   ],
                 ),
               ),
-
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
               Text('Image',
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary,
                           fontWeight: FontWeight.w600,
                           fontSize: 16))
                   .tr(),
-              TextFormField(
-                controller: _image,
-                decoration: InputDecoration(hintText: 'Addimageevent'.tr()),
-              ),
-              // FloatingActionButton(
-              //   onPressed: getImage,
-              //   tooltip: 'Pick Image',
-              //   child: Icon(Icons.add_a_photo),
-              // ),
-              // const SizedBox(height: 20),
+              const SizedBox(height: 20),
+              ImageSelector(
+                  path: api.getCurrentUser(),
+                  uploadImages: uploadImages,
+                  onImagesChanged: _handleImagesChanged),
             ],
           ),
         ),
@@ -496,7 +499,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
             "longitud": double.parse(_longitude.text),
             "latitude": double.parse(_latitude.text),
             "max_participants": int.parse(_max_participants.text),
-            "event_image_uri": _image.text,
+            "event_image_uris": uploadImages,
             "event_free": is_event_pee,
             "amount_event":
                 is_event_pee ? 0.0 : double.parse(_amount_event.text),
@@ -515,7 +518,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                     builder: (context) =>
                         //todo: editar aqui
                         // CreationSucess(image: _imageContent.toString())));
-                        CreationSucess(image: _image.text)));
+                        CreationSucess(image: uploadImages[0])));
           } else if (response.statusCode == 400) {
             snackBar = SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,

@@ -11,22 +11,17 @@ import 'package:viajuntos/utils/api_controller.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:viajuntos/utils/globals.dart';
 
-class ChatBody extends StatefulWidget {
+class ChatBody extends StatelessWidget {
   final Chat chat;
   final List<Message> chatMessage;
   final Map<String, User> mapMembers;
-  const ChatBody({
+  ChatBody({
     Key? key,
     required this.chat,
     required this.chatMessage,
     required this.mapMembers,
   }) : super(key: key);
 
-  @override
-  State<ChatBody> createState() => _ChatBodyState();
-}
-
-class _ChatBodyState extends State<ChatBody> {
   late ScrollController _scrollController;
   APICalls api = APICalls();
   String urlPhotoOther = "";
@@ -35,26 +30,26 @@ class _ChatBodyState extends State<ChatBody> {
       TextEditingController(text: '');
   late IO.Socket _socket;
   late Future<List<Message>> chatMessageFuture;
-  Map<String, User> mapMembers = {};
+  // Map<String, User> mapMembers = {};
   List<Message> auxChatMessage = [];
-  void receiveMessage(message) {
-    if (mounted) {
-      Message newMessage = Message.fromJson(message);
+  // void receiveMessage(message) {
+  //   if (mounted) {
+  //     Message newMessage = Message.fromJson(message);
 
-      setState(() {
-        auxChatMessage.insert(0, newMessage);
-        chatMessageFuture = Future.value(auxChatMessage.reversed.toList());
-      });
+  //     setState(() {
+  //       auxChatMessage.insert(0, newMessage);
+  //       chatMessageFuture = Future.value(auxChatMessage.reversed.toList());
+  //     });
 
-      // Scroll to the bottom after adding the new message
-      _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-      );
-      print("message: " + message.toString());
-    }
-  }
+  //     // Scroll to the bottom after adding the new message
+  //     _scrollController.animateTo(
+  //       _scrollController.position.maxScrollExtent,
+  //       duration: Duration(milliseconds: 300),
+  //       curve: Curves.easeOut,
+  //     );
+  //     print("message: " + message.toString());
+  //   }
+  // }
 
   _connectSocket() {
     _socket.onConnect((data) => {
@@ -73,15 +68,17 @@ class _ChatBodyState extends State<ChatBody> {
     _socket.on('ChatMessage', (data) {
       Map<String, dynamic> jsonMap = jsonDecode(data);
       print("message: " + data.toString());
-      receiveMessage(jsonMap);
+      // receiveMessage(jsonMap);
     });
-    _socket.emit('join_room',
-        {'username': 'YourUsername', 'room': widget.chat.id.toString()});
+    _socket.emit('join_room', {
+      'username': api.getCurrentUser().toString(),
+      'room': chat.id.toString()
+    });
   }
 
   Future<List<Message>> initAllMessages() async {
     final response =
-        await api.getItem("/v1/chat/Message/:0", [widget.chat.id.toString()]);
+        await api.getItem("/v1/chat/Message/:0", [chat.id.toString()]);
     var msg = json.decode(response.body);
     List<Message> chatMessage =
         List<Message>.from(msg.map((data) => Message.fromJson(data)));
@@ -98,10 +95,15 @@ class _ChatBodyState extends State<ChatBody> {
     });
   }
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  // }
+
   @override
-  void initState() {
-    super.initState();
-    auxChatMessage = widget.chatMessage;
+  Widget build(BuildContext context) {
+    print("chatMessage" + auxChatMessage.length.toString());
+    auxChatMessage = chatMessage;
     _socket = IO.io(
       baseLocalUrl,
       IO.OptionBuilder().setTransports(['websocket'])
@@ -112,14 +114,8 @@ class _ChatBodyState extends State<ChatBody> {
     chatMessageFuture = initAllMessages();
     _scrollController = ScrollController();
     _connectSocket();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    print("chatMessage" + auxChatMessage.length.toString());
     return FutureBuilder(
-      future:
-          api.getItem("/v1/chat/all_members/:0", [widget.chat.id.toString()]),
+      future: api.getItem("/v1/chat/all_members/:0", [chat.id.toString()]),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           var auxMembers = json.decode(snapshot.data.body);
@@ -171,15 +167,15 @@ class _ChatBodyState extends State<ChatBody> {
                             height: 36,
                             child: ClipRRect(
                                 child: FittedBox(
-                                    child: (mapMembers[widget.chatMessage[index]
+                                    child: (mapMembers[chatMessage[index]
                                                     .sender_id]!
                                                 .image_url
                                                 .toString() ==
                                             "")
                                         ? Image.asset(
                                             'assets/noProfileImage.png')
-                                        : Image.network(mapMembers[widget
-                                                .chatMessage[index].sender_id]!
+                                        : Image.network(mapMembers[
+                                                chatMessage[index].sender_id]!
                                             .image_url
                                             .toString()),
                                     fit: BoxFit.fitHeight),
