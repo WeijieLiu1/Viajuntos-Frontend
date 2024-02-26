@@ -229,5 +229,19 @@
     "Map": "Mapa",
     "EventMap": "Mapa d'esdeveniments",
     "from": "DE",
-    "to": "A"
+    "to": "A",
+    "DeleteImageTitle": "Eliminar imatge",
+    "DeleteImageMessage": "Vols eliminar aquesta imatge?",
+    "UserAlreadyVerified": "L'usuari ja està verificat",
+    "SuccessfulVerificationContent": "L'usuari s'ha verificat correctament",
+    "EventNotExist": "L'esdeveniment no existeix",
+    "NotCreatorScaning": "No ets el creador d'aquest esdeveniment",
+    "IncorrentCode": "Codi incorrecte",
+    "ShowCode": "Mostra el codi",
+    "Pay": "Pagar",
+    "ScanCode": "Escanegi el codi",
+    "SelectOnMap": "Selecciona al mapa",
+    "Pick": "Selectiona",
+    "ConfirmPositionTitle": "Confirmar posició",
+    "ConfirmPositionContent": "Vols seleccionar la posició?"
 }

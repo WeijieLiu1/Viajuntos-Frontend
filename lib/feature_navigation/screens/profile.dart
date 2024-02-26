@@ -106,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               idProfile)
                                           ? BoxDecoration(
                                               image: (user["auth_methods"]
-                                                      .contains("logo"))
+                                                      .contains("viajuntos"))
                                                   ? const DecorationImage(
                                                       image: AssetImage(
                                                           'assets/Logo.png'),

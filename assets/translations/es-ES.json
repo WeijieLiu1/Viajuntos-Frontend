@@ -229,5 +229,19 @@
     "Map": "Mapa",
     "EventMap": "Mapa del evento",
     "from": "DE",
-    "to": "A"
+    "to": "A",
+    "DeleteImageTitle": "¿Quieres eliminar esta imagen?",
+    "deleteImageMessage": "Si eliminas esta imagen, no podrás recuperarla",
+    "UserAlreadyVerified": "El usuario ya está verificado",
+    "SuccessfulVerificationContent": "¡Tu cuenta ha sido verificada con éxito!",
+    "EventNotExist": "El evento no existe",
+    "NotCreatorScaning": "No eres el creador del evento.",
+    "IncorrentCode": "Código incorrecto",
+    "ShowCode": "Mostrar código",
+    "Pay": "Pagar",
+    "ScanCode": "Escanear código",
+    "SelectOnMap": "Seleccionar en el mapa",
+    "Pick": "Selecciona",
+    "ConfirmPositionTitle": "Confirmar posición",
+    "ConfirmPositionContent": "¿Quieres seleccionar esta posición?"
 }

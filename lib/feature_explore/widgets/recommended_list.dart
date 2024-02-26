@@ -84,7 +84,7 @@ class _RecommendedListState extends State<RecommendedList> {
                                       child: FittedBox(
                                           child: Image.network(
                                               _recommendations[index]
-                                                  ["event_image_uri"],
+                                                  ["event_image_uris"][0],
                                               alignment: Alignment.topCenter),
                                           fit: BoxFit.cover),
                                     ),

@@ -5,17 +5,24 @@ import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:http/http.dart';
 import 'package:viajuntos/feature_chat/services/chat_service.dart';
 import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_event/widgets/event_map.dart';
+import 'package:viajuntos/feature_event/widgets/image_card.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
 import 'package:viajuntos/utils/air_tag.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 import 'package:skeletons/skeletons.dart';
+import 'package:viajuntos/utils/globals.dart';
+import 'package:viajuntos/utils/share.dart';
+
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Event extends StatefulWidget {
   final EventModel event;
@@ -32,11 +39,38 @@ class _EventState extends State<Event> {
   bool paid = false;
   List attendesEvent = [];
   // late EventModel event;
-
+  late IO.Socket _socket;
+  String _scanResult = 'Unknown';
   @override
   void initState() {
     super.initState();
     getPaymentStatus(widget.event.id.toString());
+  }
+
+  void showMyVerifyCode(String idParticipant) async {
+    showVerifyCodeEvent(idParticipant, widget.event.id.toString(), context);
+  }
+
+  void LeaveEvent() async {
+    final bodyData = {"user_id": api.getCurrentUser()};
+    var response = await leaveEvent(widget.event.id.toString(), bodyData);
+
+    SnackBar snackBar;
+    if (response.statusCode == 200) {
+      snackBar = SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        content: Text('Youleft').tr(),
+      );
+      setState(() {
+        found = false;
+      });
+    } else {
+      snackBar = SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.error,
+        content: Text('Somethingbadhappened').tr(),
+      );
+    }
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void PayEvent(EventModel event) async {
@@ -145,6 +179,157 @@ class _EventState extends State<Event> {
     // getProfilePhoto(idUsuar);
   }
 
+  void CallLink(String link) async {
+    var uri = Uri.parse(link);
+    var type = uri.pathSegments[1];
+    _socket.emit('be_scanning', {
+      'username': uri.queryParameters["username"]!,
+      'idEvent': widget.event.id.toString()
+    });
+    var a = 1;
+    switch (type) {
+      case "events":
+        var response =
+            await APICalls().getCollection('/v3/events/:0/verify_event', [
+          widget.event.id.toString()
+        ], {
+          "code": uri.queryParameters["code"]!,
+          "username": uri.queryParameters["username"]!
+        });
+
+        var data = json.decode(response.body);
+        print("auxdata: " + data.toString());
+        if (response.statusCode == 200) {
+          if (data["message"] == "Successful verification") {
+            SnackBar snackBar = SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              content: Text('SuccessfulVerificationContent').tr(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else if (data["message"] == "User already verified") {
+            SnackBar snackBar = SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              content: Text('UserAlreadyVerified').tr(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        } else if (response.statusCode == 400) {
+          if (data["error_message"] == "Event doesn't exist") {
+            SnackBar snackBar = SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text('EventNotExist').tr(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else if (data["error_message"] ==
+              "You are not the creator of this event") {
+            SnackBar snackBar = SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text('NotCreatorScaning').tr(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else if (data["error_message"] == "Code is not in the url") {
+            SnackBar snackBar = SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text('CodeNotinUrl').tr(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else if (data["error_message"] ==
+              "User or Code is not correct for this event") {
+            SnackBar snackBar = SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text('IncorrentCode').tr(),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        }
+        break;
+      default:
+      // http://localhost:5000/v2/users/new_friend?code=bmWecsrvil7UTVT
+      // https://localhost:5000/v3/events/628a0571-605a-49d4-9c81-d71773eaff7f/verify_event?code=111111
+    }
+  }
+
+  void OnVerificationDone(String data) {
+    print("OnVerificationDone");
+    Text titleText = Text("ErrorVerificationTitle").tr();
+    Text contentText = Text("ErrorVerificationContent").tr();
+    switch (data) {
+      case "User is not participant of this event":
+        titleText = Text("UserNotParticipantTitle").tr();
+        contentText = Text("UserNotParticipantContent").tr();
+        break;
+      case "User already verified":
+        titleText = Text("UserAlreadyVerifiedTitle").tr();
+        contentText = Text("UserAlreadyVerifiedContent").tr();
+        break;
+      case "Successful verification":
+        titleText = Text("SuccessfulVerificationTitle").tr();
+        contentText = Text("SuccessfulVerificationContent").tr();
+        break;
+      case "Incorrect code":
+        titleText = Text("IncorrectCodeTitle").tr();
+        contentText = Text("IncorrectCodeContent").tr();
+        break;
+    }
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+                title: Text("titleText").tr(),
+                content: Text("contentText").tr(),
+                actions: [
+                  TextButton(
+                    child: Text('Ok').tr(),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ]));
+  }
+
+  _connectSocket() {
+    _socket.onConnect((data) => {});
+    _socket.onConnectError((data) => print('Socket.io Connect Error: $data'));
+    _socket.onDisconnect((data) => print('Socket.io server disconnected'));
+
+    _socket.connect();
+    _socket.on('VerificationDone', (data) {
+      print("VerificationDone");
+      var a = 0;
+
+      print("VerificationDone");
+      print("onVerificationDone: " + data);
+      OnVerificationDone(data.toString());
+      _socket.disconnect();
+    });
+  }
+
+  Future<void> scanQR() async {
+    String barcodeScanRes;
+    CallLink(
+        "https://localhost:5000/v3/events/628a0571-605a-49d4-9c81-d71773eaff7f/verify_event?username=310e139a-8759-4b35-8036-1adeb9512a20&code=GO61JB");
+
+    // return;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+
+    // try {
+    //   barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+    //       '#ff6666', 'Cancel', true, ScanMode.QR);
+    //   print("barcodeScanRes:" + barcodeScanRes);
+    //   CallLink(barcodeScanRes);
+    // } on PlatformException {
+    //   barcodeScanRes = 'Failed to get platform version.';
+    // }
+
+    // // If the widget was removed from the tree while the asynchronous platform
+    // // message was in flight, we want to discard the reply rather than calling
+    // // setState to update our non-existent appearance.
+    // if (!mounted) return;
+
+    // setState(() {
+    //   _scanResult = barcodeScanRes;
+    // });
+  }
+
   Future<bool> checkTimeConflict() async {
     final response = await api.getCollection(
         '/v3/events/:0/:1', ['joined', api.getCurrentUser()], null);
@@ -214,13 +399,15 @@ class _EventState extends State<Event> {
                 child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,
-                    child: Stack(children: [
+                    child: Column(children: [
                       SizedBox(
                           height: 250,
                           width: MediaQuery.of(context).size.width,
                           child: FittedBox(
-                              child: Image.network(
-                                  widget.event.event_image_uri.toString()),
+                              child: ImageCard(
+                                  linksImage: widget.event.event_image_uris,
+                                  maxWidth: MediaQuery.of(context).size.width,
+                                  maxHeight: 250),
                               fit: BoxFit.cover)),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -253,131 +440,165 @@ class _EventState extends State<Event> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(widget.event.name.toString(),
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .surface,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold)),
-                                    const SizedBox(height: 30),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        FutureBuilder(
-                                          future: api.getItem("/v1/users/:0", [
-                                            widget.event.user_creator.toString()
-                                          ]),
-                                          builder: (BuildContext context,
-                                              AsyncSnapshot snapshot) {
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.done) {
-                                              var _user = json
-                                                  .decode(snapshot.data.body);
+                                    // Text(widget.event.name.toString(),
+                                    //     style: TextStyle(
+                                    //         color: Theme.of(context)
+                                    //             .colorScheme
+                                    //             .surface,
+                                    //         fontSize: 20,
+                                    //         fontWeight: FontWeight.bold)),
+                                    // const SizedBox(height: 30),
 
-                                              return Row(
-                                                children: [
-                                                  Text(
-                                                    'Createdby'.tr() +
-                                                        _user["username"],
-                                                    style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .colorScheme
-                                                          .primary,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  InkWell(
-                                                    onTap: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  ProfileScreen(
-                                                                      id: _user[
-                                                                          "id"])));
-                                                    },
-                                                    child: SizedBox(
-                                                      width: 36,
-                                                      height: 36,
-                                                      child: ClipRRect(
-                                                        child: FittedBox(
-                                                          child: _user[
-                                                                      "image_url"] !=
-                                                                  ''
-                                                              ? Image.network(
-                                                                  _user[
-                                                                      "image_url"])
-                                                              : Image.asset(
-                                                                  'assets/noProfileImage.png'),
-                                                          fit: BoxFit.fitHeight,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(100),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            } else {
-                                              return Row(
-                                                children: [
-                                                  SkeletonItem(
-                                                    child: SkeletonParagraph(
-                                                      style:
-                                                          SkeletonParagraphStyle(
-                                                        lines: 1,
-                                                        spacing: 2,
-                                                        lineStyle:
-                                                            SkeletonLineStyle(
-                                                          width: 40,
-                                                          height: 20,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Center(
-                                                    child: SkeletonItem(
-                                                      child: SkeletonAvatar(
-                                                        style:
-                                                            SkeletonAvatarStyle(
-                                                          shape:
-                                                              BoxShape.circle,
-                                                          width: 36,
-                                                          height: 36,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            }
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 20),
-                                    const Divider(),
                                     Expanded(
                                       child: SingleChildScrollView(
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                FutureBuilder(
+                                                  future: api.getItem(
+                                                      "/v1/users/:0", [
+                                                    widget.event.user_creator
+                                                        .toString()
+                                                  ]),
+                                                  builder: (BuildContext
+                                                          context,
+                                                      AsyncSnapshot snapshot) {
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState.done) {
+                                                      var _user = json.decode(
+                                                          snapshot.data.body);
+
+                                                      return Row(
+                                                        children: [
+                                                          Text(
+                                                            'Createdby'.tr() +
+                                                                _user[
+                                                                    "username"],
+                                                            style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          InkWell(
+                                                            onTap: () {
+                                                              Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder: (context) =>
+                                                                          ProfileScreen(
+                                                                              id: _user["id"])));
+                                                            },
+                                                            child: SizedBox(
+                                                              width: 36,
+                                                              height: 36,
+                                                              child: ClipRRect(
+                                                                child:
+                                                                    FittedBox(
+                                                                  child: _user[
+                                                                              "image_url"] !=
+                                                                          ''
+                                                                      ? Image.network(
+                                                                          _user[
+                                                                              "image_url"])
+                                                                      : Image.asset(
+                                                                          'assets/noProfileImage.png'),
+                                                                  fit: BoxFit
+                                                                      .fitHeight,
+                                                                ),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            100),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    } else {
+                                                      return Row(
+                                                        children: [
+                                                          SkeletonItem(
+                                                            child:
+                                                                SkeletonParagraph(
+                                                              style:
+                                                                  SkeletonParagraphStyle(
+                                                                lines: 1,
+                                                                spacing: 2,
+                                                                lineStyle:
+                                                                    SkeletonLineStyle(
+                                                                  width: 40,
+                                                                  height: 20,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 10),
+                                                          Center(
+                                                            child: SkeletonItem(
+                                                              child:
+                                                                  SkeletonAvatar(
+                                                                style:
+                                                                    SkeletonAvatarStyle(
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                  width: 36,
+                                                                  height: 36,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+                                              ],
+                                            ),
                                             const SizedBox(height: 20),
-                                            Text(
-                                                widget.event.date_started
+                                            const Divider(),
+                                            const SizedBox(height: 20),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Text("from",
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .primary,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500))
+                                                    .tr(),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text(widget.event.date_started
                                                     .toString()
                                                     .substring(
                                                         0,
@@ -385,14 +606,51 @@ class _EventState extends State<Event> {
                                                                 .date_started
                                                                 .toString()
                                                                 .length -
-                                                            7),
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                    fontSize: 14,
-                                                    fontWeight:
-                                                        FontWeight.w500)),
+                                                            7)),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text("to",
+                                                        style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .colorScheme
+                                                                .primary,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500))
+                                                    .tr(),
+                                                SizedBox(
+                                                  width: 5,
+                                                ),
+                                                Text(widget.event.date_end
+                                                    .toString()
+                                                    .substring(
+                                                        0,
+                                                        widget.event.date_end
+                                                                .toString()
+                                                                .length -
+                                                            7)),
+                                              ],
+                                            ),
+                                            // Text(
+                                            //     widget.event.date_started
+                                            //         .toString()
+                                            //         .substring(
+                                            //             0,
+                                            //             widget.event
+                                            //                     .date_started
+                                            //                     .toString()
+                                            //                     .length -
+                                            //                 7),
+                                            //     style: TextStyle(
+                                            //         color: Theme.of(context)
+                                            //             .colorScheme
+                                            //             .primary,
+                                            //         fontSize: 14,
+                                            //         fontWeight:
+                                            //             FontWeight.w500)),
                                             const SizedBox(height: 15),
                                             // Row(
                                             //     crossAxisAlignment:
@@ -619,7 +877,7 @@ class _EventState extends State<Event> {
                                   .colorScheme
                                   .onSurface
                                   .withOpacity(0.5)))),
-                  height: 100,
+                  height: 80,
                   width: MediaQuery.of(context).size.width,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -665,10 +923,65 @@ class _EventState extends State<Event> {
                                 ? Row(
                                     children: [
                                       Visibility(
-                                        visible: !paid &&
+                                        visible: (paid ||
+                                                widget.event.is_event_free ==
+                                                    true) &&
                                             widget.event.user_creator
                                                     .toString() !=
                                                 api.getCurrentUser(),
+                                        child: Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () async {
+                                                showMyVerifyCode(
+                                                    participants[i - 1]);
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary
+                                                          .withOpacity(0.5),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 7,
+                                                      offset: const Offset(0,
+                                                          3), // changes position of shadow
+                                                    ),
+                                                  ],
+                                                ),
+                                                width: 100,
+                                                height: 40,
+                                                child: Center(
+                                                    child: Text('ShowCode',
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .background,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold))
+                                                        .tr()),
+                                              ),
+                                            ),
+                                            SizedBox(width: 40),
+                                          ],
+                                        ),
+                                      ),
+                                      Visibility(
+                                        visible: !paid &&
+                                            widget.event.user_creator
+                                                    .toString() !=
+                                                api.getCurrentUser() &&
+                                            widget.event.is_event_free == false,
                                         child: Row(
                                           children: [
                                             InkWell(
@@ -721,37 +1034,35 @@ class _EventState extends State<Event> {
                                             api.getCurrentUser(),
                                         child: InkWell(
                                           onTap: () async {
-                                            final bodyData = {
-                                              "user_id": api.getCurrentUser()
-                                            };
-                                            var response = await leaveEvent(
-                                                widget.event.id.toString(),
-                                                bodyData);
-                                            setState(() {
-                                              found = false;
-                                            });
-                                            SnackBar snackBar;
-                                            if (response.statusCode == 200) {
-                                              snackBar = SnackBar(
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .secondary,
-                                                content: Text('Youleft').tr(),
-                                              );
-                                            } else {
-                                              snackBar = SnackBar(
-                                                backgroundColor:
-                                                    Theme.of(context)
-                                                        .colorScheme
-                                                        .error,
-                                                content:
-                                                    Text('Somethingbadhappened')
-                                                        .tr(),
-                                              );
-                                            }
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(snackBar);
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AlertDialog(
+                                                        title: Text(
+                                                                "LeaveEventConfirmTitle")
+                                                            .tr(),
+                                                        content: Text(
+                                                                "LeaveEventConfirmContent")
+                                                            .tr(),
+                                                        actions: [
+                                                          TextButton(
+                                                            child:
+                                                                Text('Ok').tr(),
+                                                            onPressed: () {
+                                                              LeaveEvent();
+                                                              Navigator.pop(
+                                                                  context);
+                                                            },
+                                                          ),
+                                                          TextButton(
+                                                            child:
+                                                                Text('Cancel')
+                                                                    .tr(),
+                                                            onPressed: () =>
+                                                                Navigator.pop(
+                                                                    context),
+                                                          )
+                                                        ]));
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
@@ -788,7 +1099,71 @@ class _EventState extends State<Event> {
                                                     .tr()),
                                           ),
                                         ),
-                                      )
+                                      ),
+                                      Visibility(
+                                        // modify here
+                                        visible: widget.event.user_creator
+                                                    .toString() ==
+                                                api.getCurrentUser() &&
+                                            widget.event.date_end!
+                                                .isAfter(DateTime.now()) &&
+                                            widget.event.date_started!
+                                                .isAfter(DateTime.now()),
+                                        child: Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () async {
+                                                _socket = IO.io(
+                                                  baseLocalUrl,
+                                                  IO.OptionBuilder()
+                                                      .setTransports(
+                                                          ['websocket'])
+                                                      // .disableAutoConnect()
+                                                      .build(),
+                                                );
+                                                _connectSocket();
+                                                await scanQR();
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          10.0),
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary
+                                                          .withOpacity(0.5),
+                                                      spreadRadius: 5,
+                                                      blurRadius: 7,
+                                                      offset: const Offset(0,
+                                                          3), // changes position of shadow
+                                                    ),
+                                                  ],
+                                                ),
+                                                width: 100,
+                                                height: 40,
+                                                child: Center(
+                                                    child: Text('ScanCode',
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .background,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold))
+                                                        .tr()),
+                                              ),
+                                            ),
+                                            SizedBox(width: 40),
+                                          ],
+                                        ),
+                                      ),
                                     ],
                                   )
                                 : InkWell(

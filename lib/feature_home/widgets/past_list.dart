@@ -91,7 +91,7 @@ class _PastEventsListState extends State<PastEventsList> {
                                           Radius.circular(10)),
                                       child: FittedBox(
                                           child: Image.network(_joined[index]
-                                              ["event_image_uri"]),
+                                              ["event_image_uris"][0]),
                                           fit: BoxFit.fitWidth))),
                               if (!_joined[index]["is_event_free"]) // 如果不是免费活动
                                 Positioned(

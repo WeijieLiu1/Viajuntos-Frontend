@@ -14,9 +14,15 @@ import 'package:viajuntos/utils/globals.dart';
 import 'package:viajuntos/utils/share.dart';
 import 'package:http/http.dart' as http;
 
-class UserEventScreen extends StatelessWidget {
+class UserEventScreen extends StatefulWidget {
   final String id;
   const UserEventScreen({Key? key, required this.id}) : super(key: key);
+
+  @override
+  State<UserEventScreen> createState() => UserEventScreenState();
+}
+
+class UserEventScreenState extends State<UserEventScreen> {
   Future<http.Response> getEventItem(
       String endpoint, List<String> pathParams) async {
     final uri = APICalls().buildUri(endpoint, pathParams, null);
@@ -32,7 +38,7 @@ class UserEventScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     EventModel event;
     return FutureBuilder(
-        future: getEventItem('/v3/events/:0', [id]),
+        future: getEventItem('/v3/events/:0', [widget.id]),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             event = EventModel.fromJson(json.decode(snapshot.data.body));
@@ -53,10 +59,11 @@ class UserEventScreen extends StatelessWidget {
                           icon: const Icon(Icons.create_sharp),
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditEventScreen(id: id)));
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditEventScreen(id: widget.id)))
+                                .then((value) => setState(() {}));
                           }),
                       PopupMenuButton<String>(
                         offset: const Offset(0, 50),
@@ -97,13 +104,14 @@ class UserEventScreen extends StatelessWidget {
                         onSelected: (String value) {
                           if (value == 'share') {
                             showShareMenu(
-                                baseLocalUrl + '/v3/events/' + id, context);
+                                baseLocalUrl + '/v3/events/' + widget.id,
+                                context);
                           } else if (value == 'information_wall') {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => InformationWallScreen(
-                                          id: id,
+                                          id: widget.id,
                                         )));
                           }
                         },

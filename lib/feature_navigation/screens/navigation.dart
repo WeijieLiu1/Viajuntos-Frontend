@@ -350,16 +350,13 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
                 onTap: () {
                   // print('click');
                   // _socket.emit('connect', 'msgtest');
-                  var res = Navigator.push(
+                  Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProfileScreen(
                           id: getCurrentUser(),
                         ),
                       ));
-                  res.then((value) => setState(() {
-                        user = value;
-                      }));
                 },
                 child: SizedBox(
                   width: 36,

@@ -22,6 +22,7 @@ class EventWidget extends StatefulWidget {
 }
 
 class _EventWidgetState extends State<EventWidget> {
+  bool found = false;
   var dateStyle = const TextStyle(
       color: Color.fromARGB(255, 18, 111, 187),
       decorationStyle: TextDecorationStyle.wavy,
@@ -73,6 +74,28 @@ class _EventWidgetState extends State<EventWidget> {
   }
 
   final ExternServicePhoto es = ExternServicePhoto();
+
+  void LeaveEvent() async {
+    final bodyData = {"user_id": api.getCurrentUser()};
+    var response = await leaveEvent(_event[0]["id"], bodyData);
+
+    SnackBar snackBar;
+    if (response.statusCode == 200) {
+      snackBar = SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+        content: Text('Youleft').tr(),
+      );
+      setState(() {
+        found = false;
+      });
+    } else {
+      snackBar = SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.error,
+        content: Text('Somethingbadhappened').tr(),
+      );
+    }
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +221,7 @@ class _EventWidgetState extends State<EventWidget> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   var participants = json.decode(snapshot.data.body);
-                  var found = false;
+                  found = false;
                   int i = 0;
                   while (!found && i < participants.length) {
                     if (participants[i] == api.getCurrentUser()) {
@@ -263,27 +286,25 @@ class _EventWidgetState extends State<EventWidget> {
                   } else {
                     return InkWell(
                       onTap: () async {
-                        final bodyData = {"user_id": api.getCurrentUser()};
-                        var response =
-                            await leaveEvent(_event[0]["id"], bodyData);
-                        setState(() {
-                          found = false;
-                        });
-                        SnackBar snackBar;
-                        if (response.statusCode == 200) {
-                          snackBar = SnackBar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                            content: Text('Youleft').tr(),
-                          );
-                        } else {
-                          snackBar = SnackBar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.error,
-                            content: Text('Somethingbadhappened').tr(),
-                          );
-                        }
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                    title: Text("LeaveEventConfirmTitle").tr(),
+                                    content:
+                                        Text("LeaveEventConfirmContent").tr(),
+                                    actions: [
+                                      TextButton(
+                                        child: Text('Ok').tr(),
+                                        onPressed: () {
+                                          LeaveEvent();
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text('Cancel').tr(),
+                                        onPressed: () => Navigator.pop(context),
+                                      )
+                                    ]));
                       },
                       child: Container(
                         decoration: BoxDecoration(

@@ -8,6 +8,8 @@ import 'package:viajuntos/feature_event/models/post_model.dart';
 import 'package:viajuntos/feature_event/screens/create_post.dart';
 import 'package:viajuntos/feature_event/widgets/edit_event_form.dart';
 import 'package:viajuntos/feature_event/widgets/image_card.dart';
+import 'package:viajuntos/feature_navigation/screens/profile.dart';
+import 'package:viajuntos/feature_user/models/user_model.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 
 class InformationWallScreen extends StatefulWidget {
@@ -21,6 +23,7 @@ class InformationWallScreen extends StatefulWidget {
 class _InformationWallScreenState extends State<InformationWallScreen> {
   late int selectedPage;
   late final PageController _pageController;
+  final APICalls api = APICalls();
   Future<List<Post>> getAllPostOfEvent() async {
     final response = await APICalls()
         .getCollection('/v3/events/:0/post/', [widget.id], null);
@@ -94,16 +97,60 @@ class _InformationWallScreenState extends State<InformationWallScreen> {
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.all(12.0),
-                                      child: Text(
-                                        posts[index].user_id.toString(),
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16.0,
-                                        ),
-                                      ),
-                                    ),
+                                    FutureBuilder(
+                                        future: api.getItem("/v2/users/:0",
+                                            [posts[index].user_id.toString()]),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
+                                            User user = User.fromJson(
+                                                jsonDecode(snapshot.data.body));
+                                            return InkWell(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ProfileScreen(
+                                                                id: user.id
+                                                                    .toString())));
+                                              },
+                                              child: Row(children: [
+                                                SizedBox(
+                                                  width: 12,
+                                                ),
+                                                Text(
+                                                  user.username.toString(),
+                                                  style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary,
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: 10,
+                                                ),
+                                                Image(
+                                                    width: 40,
+                                                    height: 40,
+                                                    image: (user.image_url !=
+                                                                null ||
+                                                            user.image_url !=
+                                                                "")
+                                                        ? AssetImage(
+                                                            'assets/noProfileImage.png')
+                                                        : NetworkImage(user
+                                                                .image_url
+                                                                .toString())
+                                                            as ImageProvider),
+                                              ]),
+                                            );
+                                          } else
+                                            return CircularProgressIndicator();
+                                        }),
+
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 12.0),

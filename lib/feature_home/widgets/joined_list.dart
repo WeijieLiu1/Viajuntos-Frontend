@@ -142,8 +142,8 @@ class _JoinedListState extends State<JoinedList> {
                                     borderRadius: const BorderRadius.all(
                                         Radius.circular(10)),
                                     child: FittedBox(
-                                      child: Image.network(
-                                          _joined[index]["event_image_uri"]),
+                                      child: Image.network(_joined[index]
+                                          ["event_image_uris"][0]),
                                       fit: BoxFit.fitWidth,
                                     ),
                                   ),
