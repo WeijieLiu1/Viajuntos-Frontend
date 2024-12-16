@@ -1,17 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
-import 'package:http/http.dart';
 import 'package:viajuntos/feature_chat/models/chat_model.dart';
 import 'package:viajuntos/feature_chat/models/message_model.dart';
 
 import 'package:viajuntos/feature_chat/widgets/chat_body.dart';
 import 'package:viajuntos/feature_chat/services/chat_service.dart';
-import 'package:viajuntos/feature_chat/widgets/chat_widget.dart';
-import 'package:viajuntos/feature_user/services/login_signUp.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
 import 'package:viajuntos/feature_user/models/user_model.dart';
@@ -44,17 +39,6 @@ class _ChatScreen extends State<ChatScreen> {
   late ScrollController _scrollController;
   List<Message> chatMessage = [];
   Map<String, dynamic> userImages = {};
-
-  Future<http.Response> getEventItem(
-      String endpoint, List<String> pathParams) async {
-    final uri = api.buildUri(endpoint, pathParams, null);
-    final response = await http.get(uri, headers: {
-      'Authorization': 'Bearer ' + APICalls().getCurrentAccess(),
-      'Content-Type': 'application/json'
-    });
-
-    return response;
-  }
 
   void initializeMembers(String chatId) async {
     await InitMembers(chatId);

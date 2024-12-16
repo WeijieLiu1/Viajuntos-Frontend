@@ -66,7 +66,7 @@ class _ImageSelectorState extends State<ImageSelector> {
       // 如果上传成功，获取下载链接
       image_url = await storageRef
           .child("viajuntos-397806-images/EventImages/" +
-              APICalls().getCurrentUser() +
+              widget.path +
               "/" +
               fileId +
               "." +

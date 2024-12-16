@@ -10,7 +10,6 @@ import 'package:skeletons/skeletons.dart';
 import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'package:viajuntos/feature_event/widgets/image_card.dart';
-import 'package:viajuntos/feature_map/models/event.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:viajuntos/utils/globals.dart';

@@ -2,13 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
-import 'package:http/http.dart';
 import 'package:viajuntos/feature_event/screens/create_event.dart';
 import 'package:viajuntos/feature_explore/screens/home.dart';
 import 'package:viajuntos/feature_home/screens/home.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
-import 'package:viajuntos/utils/go_to.dart';
 import 'package:uni_links/uni_links.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:async';
@@ -16,7 +14,6 @@ import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'dart:convert';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import '../../feature_chat/screens/listChat_screen.dart';
-import '../../utils/globals.dart';
 
 class NavigationBottomBar extends StatefulWidget {
   const NavigationBottomBar({Key? key}) : super(key: key);

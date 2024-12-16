@@ -1,21 +1,16 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:http/http.dart';
-import 'package:viajuntos/feature_chat/services/chat_service.dart';
 import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_event/widgets/event_map.dart';
 import 'package:viajuntos/feature_event/widgets/image_card.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
-import 'package:viajuntos/utils/air_tag.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 import 'package:skeletons/skeletons.dart';

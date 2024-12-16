@@ -243,5 +243,7 @@
     "SelectOnMap": "Select on map",
     "Pick": "Pick",
     "ConfirmPositionTitle": "Confirm Position",
-    "ConfirmPositionContent": "Are you sure you want to Select this position?"
+    "ConfirmPositionContent": "Are you sure you want to Select this position?",
+    "ReportComment": "Comment of report",
+    "ReportEvent": "report event"
 }

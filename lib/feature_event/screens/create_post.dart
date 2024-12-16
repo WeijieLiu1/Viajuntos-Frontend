@@ -1,11 +1,5 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:viajuntos/feature_event/widgets/create_form.dart';
-import 'package:viajuntos/feature_event/widgets/create_post_form.dart';
 import 'package:viajuntos/feature_event/widgets/image_selector.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 
@@ -103,7 +97,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           ),
           SizedBox(height: 10),
           ImageSelector(
-              path: "PostImages",
+              path: "PostImages/" + widget.id,
               uploadImages: uploadImages,
               onImagesChanged: _handleImagesChanged)
         ],

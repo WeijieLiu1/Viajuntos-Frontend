@@ -243,5 +243,7 @@
     "SelectOnMap": "Selecciona al mapa",
     "Pick": "Selectiona",
     "ConfirmPositionTitle": "Confirmar posició",
-    "ConfirmPositionContent": "Vols seleccionar la posició?"
+    "ConfirmPositionContent": "Vols seleccionar la posició?",
+    "ReportComment": "Commentari del Denuncia",
+    "ReportEvent": "Denuncia esdeveniment"
 }

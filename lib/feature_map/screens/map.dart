@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:viajuntos/feature_map/widgets/map_widget.dart';
 import 'package:viajuntos/feature_map/services/geolocation.dart';
 
 class MapScreen extends StatefulWidget {

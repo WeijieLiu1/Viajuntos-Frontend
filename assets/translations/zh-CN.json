@@ -243,5 +243,7 @@
     "SelectOnMap": "在地图上选择",
     "Pick": "选择",
     "ConfirmPositionTitle": "确认位置",
-    "ConfirmPositionContent": "您确定想要选择这个位置吗?"
+    "ConfirmPositionContent": "您确定想要选择这个位置吗?",
+    "ReportComment": "举报评论",
+    "ReportEvent": "举报活动"
 }

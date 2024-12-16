@@ -88,6 +88,9 @@ class APICalls {
       return _refresh(
           () => getItem(endpoint, pathParams), () => _redirectToLogin());
     }
+    // if (response.statusCode == 409) {
+    //   Navigator.pushReplacementNamed(context, '/banned_user_screen');
+    // }
     return response;
   }
 

@@ -7,7 +7,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
-import 'package:viajuntos/feature_user/screens/change_image_profile.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:image_picker/image_picker.dart';
@@ -28,6 +27,7 @@ class _EditarProfileState extends State<EditarProfile> {
   late String hobbies;
   late String idUsuar;
   late String image_url;
+  late bool premium;
   List<dynamic> idiomas = [];
   bool colorInit = false;
   bool colorInit2 = false;
@@ -51,6 +51,29 @@ class _EditarProfileState extends State<EditarProfile> {
     final response =
         await ac.putItem('/v1/users/:0', [ac.getCurrentUser()], body);
     return response.statusCode;
+  }
+
+  Future<void> isPremium() async {
+    final response =
+        await ac.getItem('/v1/users/:0/get_premium', [ac.getCurrentUser()]);
+    bool activated = false;
+    if (response.body.contains('"User is Premium"')) activated = true;
+
+    setState(() {
+      premium = activated;
+    });
+  }
+
+  Future<void> purchasePremium() async {
+    final response = await ac.postItem(
+        '/v1/users/:0/update_premium', [ac.getCurrentUser()], null);
+    bool activated = false;
+    if (response.body.contains('"Premuim actived"')) activated = true;
+
+    print("purchasePremium body: " + response.body);
+    setState(() {
+      premium = activated;
+    });
   }
 
   Future<void> getUser() async {
@@ -81,6 +104,7 @@ class _EditarProfileState extends State<EditarProfile> {
     super.initState();
     idProfile = getCurrentUser();
     getUser();
+    isPremium();
   }
 
   Widget builWidgetText(String labelText2, String placeHolder) {
@@ -499,7 +523,8 @@ class _EditarProfileState extends State<EditarProfile> {
                               "languages": idiomas,
                               "description": description,
                               "hobbies": hobbies,
-                              "image_url": image_url
+                              "image_url": image_url,
+                              "isPremium": hobbies,
                             };
                             var ap = await updateUser(bodyAux);
                             if (ap == 200) {
@@ -522,6 +547,15 @@ class _EditarProfileState extends State<EditarProfile> {
                       ),
                     ],
                   ),
+                ),
+                Switch(
+                  value: premium,
+                  activeColor: Colors.blue,
+                  onChanged: (bool value) {
+                    // This is called when the user toggles the switch.
+                    print("purchasePremium: " + premium.toString());
+                    purchasePremium();
+                  },
                 )
               ],
             ),

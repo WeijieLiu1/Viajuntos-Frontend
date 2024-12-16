@@ -2,15 +2,15 @@ import 'dart:convert';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:viajuntos/feature_event/models/post_model.dart';
 import 'package:viajuntos/feature_event/screens/create_post.dart';
-import 'package:viajuntos/feature_event/widgets/edit_event_form.dart';
 import 'package:viajuntos/feature_event/widgets/image_card.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/models/user_model.dart';
 import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/utils/like_button.dart';
+import 'package:viajuntos/utils/like_button_post.dart';
 
 class InformationWallScreen extends StatefulWidget {
   final String id; //id of the event
@@ -230,7 +230,10 @@ class _InformationWallScreenState extends State<InformationWallScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
-                                          Icon(Icons.thumb_up),
+                                          LikeButtonPost(
+                                              eventId: widget.id,
+                                              postId:
+                                                  posts[index].id.toString()),
                                           Icon(Icons.comment),
                                           // Icon(Icons.share),
                                         ],

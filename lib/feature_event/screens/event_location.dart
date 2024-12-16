@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:viajuntos/feature_event/models/event_model.dart';
+// ignore: unused_import
 import 'package:viajuntos/feature_map/widgets/map_widget.dart';
 
 class EventLocationScreen extends StatelessWidget {

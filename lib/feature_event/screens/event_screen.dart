@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:viajuntos/feature_chat/screens/chat_screen.dart';
-import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
 import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_event/screens/information_wall_screen.dart';
 import 'package:viajuntos/feature_event/widgets/event.dart';
@@ -15,7 +13,6 @@ import 'package:viajuntos/utils/like_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:device_calendar/device_calendar.dart' as device_calendar;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:intl/intl.dart';
 
 class EventScreen extends StatefulWidget {
   final String id;
@@ -27,8 +24,9 @@ class EventScreen extends StatefulWidget {
 
 class _EventScreenState extends State<EventScreen> {
   APICalls api = APICalls();
+  late Future<http.Response> _eventFuture;
   late EventModel event;
-
+  final TextEditingController reportContent = TextEditingController(text: '');
   Future<http.Response> getEventItem(
       String endpoint, List<String> pathParams) async {
     final uri = api.buildUri(endpoint, pathParams, null);
@@ -41,14 +39,21 @@ class _EventScreenState extends State<EventScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _eventFuture = getEventItem('/v3/events/:0', [widget.id]);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getEventItem('/v3/events/:0', [widget.id]),
+        future: _eventFuture, // 使用存储在 state 中的 Future
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             EventModel event =
                 EventModel.fromJson(json.decode(snapshot.data.body));
             return Scaffold(
+                resizeToAvoidBottomInset: false,
                 appBar: AppBar(
                     centerTitle: true,
                     title: Text(event.name!,
@@ -95,9 +100,20 @@ class _EventScreenState extends State<EventScreen> {
                               ],
                             ),
                           ),
+                          PopupMenuItem<String>(
+                            value: 'report_event',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.report_problem),
+                                const SizedBox(width: 8),
+                                Text('ReportEvent').tr(),
+                              ],
+                            ),
+                          ),
                         ],
                         onSelected: (String value) {
                           if (value == 'share') {
+                            print("baseLocalUrl + '/v3/events/' + widget.id");
                             showShareMenu(
                                 baseLocalUrl + '/v3/events/' + widget.id,
                                 context);
@@ -222,6 +238,30 @@ class _EventScreenState extends State<EventScreen> {
                                                           ));
                                                 }
                                               })
+                                        ]));
+                          } else if (value == 'report_event') {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                        title: Text('ReportEvent').tr(),
+                                        content: TextFormField(
+                                          controller: reportContent,
+                                          decoration: InputDecoration(
+                                              hintText: 'ReportComment'.tr()),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                              child: Text('Cancel').tr(),
+                                              onPressed: () => {
+                                                    Navigator.pop(context),
+                                                  }),
+                                          TextButton(
+                                            child: Text('Yes').tr(),
+                                            onPressed:
+                                                reportContent.text.isNotEmpty
+                                                    ? () => APICalls().logOut()
+                                                    : null,
+                                          )
                                         ]));
                           }
                         },

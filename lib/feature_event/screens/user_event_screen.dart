@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
 import 'package:viajuntos/feature_event/models/event_model.dart';
 import 'package:viajuntos/feature_event/screens/information_wall_screen.dart';
 import 'package:viajuntos/feature_event/widgets/event.dart';
-import 'package:viajuntos/feature_event/widgets/user_event.dart';
 import 'package:viajuntos/feature_event/screens/edit_event_screen.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:viajuntos/utils/globals.dart';
@@ -23,6 +21,7 @@ class UserEventScreen extends StatefulWidget {
 }
 
 class UserEventScreenState extends State<UserEventScreen> {
+  late Future<http.Response> _eventFuture;
   Future<http.Response> getEventItem(
       String endpoint, List<String> pathParams) async {
     final uri = APICalls().buildUri(endpoint, pathParams, null);
@@ -35,10 +34,16 @@ class UserEventScreenState extends State<UserEventScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _eventFuture = getEventItem('/v3/events/:0', [widget.id]);
+  }
+
+  @override
   Widget build(BuildContext context) {
     EventModel event;
     return FutureBuilder(
-        future: getEventItem('/v3/events/:0', [widget.id]),
+        future: _eventFuture,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             event = EventModel.fromJson(json.decode(snapshot.data.body));

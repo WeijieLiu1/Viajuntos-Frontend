@@ -1,12 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:viajuntos/feature_chat/services/chat_service.dart';
 import 'package:viajuntos/utils/api_controller.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SendWidget extends StatelessWidget {
   final String eventId;
@@ -42,17 +39,11 @@ class SendWidget extends StatelessWidget {
             ),
             FloatingActionButton(
               onPressed: () async {
-                APICalls api = APICalls();
-
-                String currentUserId = APICalls().getCurrentUser();
                 String accessToken = APICalls().getCurrentAccess();
 
                 print("accessToken:" + accessToken);
                 print(messageTextController.text);
 
-                Response resp = await cAPI.createMessage(
-                    eventId, //"23fa941a-9bee-4788-8b3d-3ebaa886bfe7",
-                    messageTextController.text);
                 messageTextController.clear();
 
                 /*
@@ -77,7 +68,6 @@ class SendWidget extends StatelessWidget {
                 /*
                 cAPI.getListChat("fee03319-2742-4ef5-8317-677cb6445eda");
                 */
-                String a = '0';
               },
               child: Icon(
                 Icons.send,

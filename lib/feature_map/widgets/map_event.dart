@@ -3,7 +3,6 @@ import 'package:viajuntos/feature_user/services/externalService.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:viajuntos/utils/air_tag.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:viajuntos/utils/globals.dart';
 import 'dart:convert';

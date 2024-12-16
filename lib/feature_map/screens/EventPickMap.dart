@@ -1,20 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:skeletons/skeletons.dart';
-import 'package:viajuntos/feature_event/models/event_model.dart';
-import 'package:viajuntos/feature_event/screens/event_screen.dart';
-import 'package:viajuntos/feature_map/models/event.dart';
-import 'package:viajuntos/feature_navigation/screens/profile.dart';
-import 'package:viajuntos/utils/api_controller.dart';
-import 'package:viajuntos/utils/globals.dart';
-import 'package:viajuntos/utils/like_button.dart';
-import 'package:viajuntos/utils/share.dart';
 
 class EventPickMap extends StatefulWidget {
   final LatLng? initialPosition;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:viajuntos/feature_event/models/event_model.dart';
+// ignore: unused_import
 import 'package:viajuntos/feature_event/screens/event_location.dart';
 import 'package:viajuntos/feature_map/screens/EventPositionMap.dart';
 

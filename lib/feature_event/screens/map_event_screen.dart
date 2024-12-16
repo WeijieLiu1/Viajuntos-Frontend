@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:viajuntos/feature_map/widgets/map_widget.dart';
 
 class MapEventScreen extends StatelessWidget {
   final double lat, lng;

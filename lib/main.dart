@@ -1,30 +1,26 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:viajuntos/feature_chat/screens/chat_screen.dart';
-import 'package:viajuntos/feature_chat/screens/listChat_screen.dart';
-import 'package:viajuntos/feature_chat/screens/test_screen.dart';
-import 'package:viajuntos/feature_map/screens/map.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:viajuntos/feature_map/screens/EventSearchMap.dart';
 import 'package:viajuntos/feature_navigation/screens/navigation.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
+import 'package:viajuntos/feature_user/screens/banned_user_page.dart';
+import 'package:viajuntos/feature_user/screens/change_password.dart';
 import 'package:viajuntos/feature_user/screens/edit_profile.dart';
 import 'package:viajuntos/feature_user/screens/loading_page.dart';
 import 'package:viajuntos/feature_user/screens/login_screen.dart';
 import 'package:viajuntos/feature_user/screens/register_viajuntos.dart';
-import 'package:viajuntos/feature_user/screens/welcome_screen.dart';
 import 'package:viajuntos/feature_user/screens/signup_screen.dart';
-import 'package:viajuntos/feature_user/screens/change_password.dart';
+import 'package:viajuntos/feature_user/screens/welcome_screen.dart';
 import 'package:viajuntos/firebase_options.dart';
 import 'package:viajuntos/utils/api_controller.dart';
-import 'package:flutter/services.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:viajuntos/utils/custum_error_screen.dart';
+
 import 'feature_user/screens/languages.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
@@ -127,6 +123,7 @@ class MyApp extends StatelessWidget {
               '/edit_profile': (_) => const EditarProfile(),
               '/change_password': (_) => const ChangePassword(),
               '/languages': (_) => const LanguagesOptions(),
+              '/banned_user_page': (_) => BannedUserPage(),
               // '/testScreen': (_) => const TestScreen(),
             },
           );

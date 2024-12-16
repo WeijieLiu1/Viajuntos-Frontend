@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
 import 'package:viajuntos/feature_chat/models/chat_model.dart';
 import 'package:viajuntos/feature_chat/models/message_model.dart';
 import 'package:viajuntos/feature_user/models/user_model.dart';
@@ -66,7 +64,6 @@ class ChatBody extends StatelessWidget {
       print("message: " + data.toString());
     });
     _socket.on('ChatMessage', (data) {
-      Map<String, dynamic> jsonMap = jsonDecode(data);
       print("message: " + data.toString());
       // receiveMessage(jsonMap);
     });

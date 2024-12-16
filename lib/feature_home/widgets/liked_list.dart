@@ -10,7 +10,6 @@ import 'package:viajuntos/utils/like_button.dart';
 import 'dart:convert';
 import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'package:viajuntos/utils/share.dart';
-import 'package:viajuntos/utils/air_tag.dart';
 import 'package:skeletons/skeletons.dart';
 
 class LikedList extends StatefulWidget {
