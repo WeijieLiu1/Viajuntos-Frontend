@@ -9,7 +9,7 @@
 	<key>ANDROID_CLIENT_ID</key>
 	<string>19640108832-r6foed3s5t032e4vo5re7avpakkvsesb.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCNFsH0_hF7KMg3jKWcpEno1bfJAdMhr8w</string>
+	<string>AIzaSyDU0pjgF7Cnc2LVMgU4nhjssIyTZ2h6Dhs</string>
 	<key>GCM_SENDER_ID</key>
 	<string>19640108832</string>
 	<key>PLIST_VERSION</key>
@@ -17,9 +17,9 @@
 	<key>BUNDLE_ID</key>
 	<string>com.example.viajuntos</string>
 	<key>PROJECT_ID</key>
-	<string>viajuntos-397806</string>
+	<string>viajuntos-48ca9</string>
 	<key>STORAGE_BUCKET</key>
-	<string>viajuntos-397806.appspot.com</string>
+	<string>viajuntos-48ca9.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>

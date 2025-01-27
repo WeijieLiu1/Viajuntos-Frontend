@@ -2,21 +2,23 @@
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/utils/friend_request_notifier.dart';
 import 'package:viajuntos/utils/share.dart';
 import 'dart:convert';
 
 class Settings extends StatefulWidget {
   final String id;
-  const Settings({Key? key, required this.id}) : super(key: key);
+  final bool hasNewMessage;
+  const Settings({Key? key, required this.id, required this.hasNewMessage})
+      : super(key: key);
 
   @override
   State<Settings> createState() => _SettingsState();
 }
 
 class _SettingsState extends State<Settings> {
-  APICalls ac = APICalls();
-
   Map url = {};
   Map user = {};
   String idProfile = '0';
@@ -30,7 +32,7 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: ac.getItem('v2/users/:0', [idProfile]),
+        future: APICalls().getItem('v2/users/:0', [idProfile]),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             user = json.decode(snapshot.data.body);
@@ -61,13 +63,37 @@ class _SettingsState extends State<Settings> {
                     thickness: 0.2,
                   ),
                   ListTile(
-                    leading: const Icon(Icons.share),
-                    title: Text('Addfriend').tr(),
+                    leading: Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        const Icon(Icons.person_add_sharp, size: 24),
+                        Consumer<RedDotNotifier>(
+                          builder: (context, notifier, child) {
+                            return notifier.hasFriendRequest
+                                ? Positioned(
+                                    right: 0, // 红点位置
+                                    top: 0,
+                                    child: Container(
+                                      width: 8, // 红点宽度
+                                      height: 8, // 红点高度
+                                      decoration: BoxDecoration(
+                                        color: Colors.red, // 红点颜色
+                                        shape: BoxShape.circle, // 红点形状
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox(); // 没有红点时为空
+                          },
+                        ),
+                      ],
+                    ),
+                    title: Text('FriendRequest').tr(),
                     onTap: () async {
-                      final response =
-                          await ac.getItem('v2/users/friend_link', []);
-                      url = json.decode(response.body);
-                      showShareMenuFriend(url['invite_link'], context);
+                      final result = await Navigator.of(context)
+                          .pushNamed('/friend_request');
+                      if (result != null && result is bool && result) {
+                        setState(() {});
+                      }
                     },
                   ),
                   Divider(
@@ -94,7 +120,7 @@ class _SettingsState extends State<Settings> {
                                           TextButton(
                                             child: Text('Ok').tr(),
                                             onPressed: () =>
-                                                Navigator.pop(context),
+                                                Navigator.pop(context, true),
                                           ),
                                         ]))
                           },

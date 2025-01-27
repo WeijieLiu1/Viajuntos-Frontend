@@ -23,13 +23,14 @@ class EventScreen extends StatefulWidget {
 }
 
 class _EventScreenState extends State<EventScreen> {
-  APICalls api = APICalls();
+  APICalls ac = APICalls();
   late Future<http.Response> _eventFuture;
   late EventModel event;
   final TextEditingController reportContent = TextEditingController(text: '');
+
   Future<http.Response> getEventItem(
       String endpoint, List<String> pathParams) async {
-    final uri = api.buildUri(endpoint, pathParams, null);
+    final uri = ac.buildUri(endpoint, pathParams, null);
     final response = await http.get(uri, headers: {
       'Authorization': 'Bearer ' + APICalls().getCurrentAccess(),
       'Content-Type': 'application/json'
@@ -42,6 +43,13 @@ class _EventScreenState extends State<EventScreen> {
   void initState() {
     super.initState();
     _eventFuture = getEventItem('/v3/events/:0', [widget.id]);
+  }
+
+  Future<void> reportEvent(String comment) async {
+    final response = await ac.postItem(
+        '/v3/events/:0/report/', [this.widget.id], {"comment": comment});
+    if (response == null) return;
+    print("reportEvent:" + response.statusCode + " " + response.body);
   }
 
   @override
@@ -80,16 +88,18 @@ class _EventScreenState extends State<EventScreen> {
                               ],
                             ),
                           ),
-                          PopupMenuItem<String>(
-                            value: 'calendar',
-                            child: Row(
-                              children: [
-                                const Icon(CupertinoIcons.calendar_badge_plus),
-                                const SizedBox(width: 8),
-                                Text('AddToCalendar').tr(),
-                              ],
+                          if (APICalls().getIsPremium())
+                            PopupMenuItem<String>(
+                              value: 'calendar',
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                      CupertinoIcons.calendar_badge_plus),
+                                  const SizedBox(width: 8),
+                                  Text('AddToCalendar').tr(),
+                                ],
+                              ),
                             ),
-                          ),
                           PopupMenuItem<String>(
                             value: 'information_wall',
                             child: Row(
@@ -104,7 +114,10 @@ class _EventScreenState extends State<EventScreen> {
                             value: 'report_event',
                             child: Row(
                               children: [
-                                const Icon(Icons.report_problem),
+                                const Icon(
+                                  Icons.report_problem,
+                                  color: Colors.red,
+                                ),
                                 const SizedBox(width: 8),
                                 Text('ReportEvent').tr(),
                               ],
@@ -113,7 +126,6 @@ class _EventScreenState extends State<EventScreen> {
                         ],
                         onSelected: (String value) {
                           if (value == 'share') {
-                            print("baseLocalUrl + '/v3/events/' + widget.id");
                             showShareMenu(
                                 baseLocalUrl + '/v3/events/' + widget.id,
                                 context);
@@ -122,7 +134,7 @@ class _EventScreenState extends State<EventScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => InformationWallScreen(
-                                          id: widget.id,
+                                          event: event,
                                         )));
                           } else if (value == 'calendar') {
                             showDialog(
@@ -241,28 +253,48 @@ class _EventScreenState extends State<EventScreen> {
                                         ]));
                           } else if (value == 'report_event') {
                             showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                        title: Text('ReportEvent').tr(),
-                                        content: TextFormField(
-                                          controller: reportContent,
-                                          decoration: InputDecoration(
-                                              hintText: 'ReportComment'.tr()),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                              child: Text('Cancel').tr(),
-                                              onPressed: () => {
-                                                    Navigator.pop(context),
-                                                  }),
-                                          TextButton(
-                                            child: Text('Yes').tr(),
-                                            onPressed:
-                                                reportContent.text.isNotEmpty
-                                                    ? () => APICalls().logOut()
-                                                    : null,
-                                          )
-                                        ]));
+                              context: context,
+                              builder: (context) {
+                                bool isButtonEnabled = false;
+
+                                return StatefulBuilder(
+                                  builder: (context, setState) => AlertDialog(
+                                    title: Text('ReportEvent').tr(),
+                                    content: TextFormField(
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isButtonEnabled =
+                                              value.isNotEmpty; // 根据输入文本更新按钮状态
+                                        });
+                                      },
+                                      controller: reportContent,
+                                      decoration: InputDecoration(
+                                        hintText: 'ReportComment'.tr(),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        child: Text('Cancel').tr(),
+                                        onPressed: () => {
+                                          reportContent.text = '',
+                                          Navigator.pop(context)
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text('Yes').tr(),
+                                        onPressed: isButtonEnabled
+                                            ? () {
+                                                reportEvent(reportContent.text);
+                                                reportContent.text = '';
+                                                Navigator.pop(context); // 关闭对话框
+                                              }
+                                            : null,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
                           }
                         },
                       ),

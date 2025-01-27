@@ -1,3 +1,4 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "cmake.sourceDirectory": "G:/upc/tfg/Viajuntos/Viajuntos-Frontend/linux"
 }

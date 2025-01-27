@@ -53,6 +53,17 @@ class userAPI {
     return response;
   }
 
+  Future<http.Response> checkUserGithub(gtoken) async {
+    String _path = 'register/check?type=github&token=';
+    print(gtoken);
+    final response = await http.get(Uri.parse(basicUrl + _path + gtoken));
+
+    if (response.statusCode != 200) {
+      // return error
+    }
+    return response;
+  }
+
   /* Get profile of a user given a access token */
   Future<List> getDataAcessTokenGoogle(gtoken) async {
     String googleProfileGetter =

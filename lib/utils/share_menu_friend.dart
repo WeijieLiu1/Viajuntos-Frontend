@@ -16,6 +16,7 @@ class ShareMenuFriend extends StatefulWidget {
 class _ShareMenuState extends State<ShareMenuFriend> {
   @override
   Widget build(BuildContext context) {
+    print("QrImageView data: widget.url: " + widget.url);
     return Container(
         color: Theme.of(context).colorScheme.background,
         width: MediaQuery.of(context).size.width,

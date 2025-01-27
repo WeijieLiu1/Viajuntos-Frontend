@@ -24,6 +24,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       "text": textEditingController.text,
       "post_image_uris": uploadImages
     });
+
+    if (response == null) return;
     if (response.statusCode == 200) {
       showDialog(
           context: context,
@@ -35,18 +37,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       child: Text('Ok').tr(),
                       onPressed: () =>
                           {Navigator.pop(context), Navigator.pop(context)},
-                    )
-                  ]));
-    } else {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                  title: Text("PublishErrorTitle").tr(),
-                  content: Text("PublishErrorContent").tr(),
-                  actions: [
-                    TextButton(
-                      child: Text('Ok').tr(),
-                      onPressed: () => Navigator.pop(context),
                     )
                   ]));
     }
@@ -62,6 +52,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
         title: Text('NewPost').tr(),
         actions: <Widget>[
           IconButton(
@@ -79,7 +70,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               return Container(
-                color: Colors.blue,
+                color: Colors.grey[300],
                 constraints: BoxConstraints(
                   minHeight: 100,
                   maxHeight: constraints.maxHeight,

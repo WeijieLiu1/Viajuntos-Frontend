@@ -165,44 +165,52 @@ class EventPickMapState extends State<EventPickMap> {
         title: Text('EventMap').tr(),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.background,
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              if (_lastMapPosition != null) {
+                print(
+                    '经度: ${_lastMapPosition!.latitude}, 纬度: ${_lastMapPosition!.longitude}');
+              } else {
+                print('未选择位置');
+              }
+              if (_cameraPosition != null) {
+                print(
+                    '当前经度: ${_cameraPosition!.target.latitude}, 纬度: ${_cameraPosition!.target.longitude}');
+              } else {
+                print('未找到用户位置');
+              }
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text("ConfirmPositionTitle").tr(),
+                  content: Text("ConfirmPositionContent").tr(),
+                  actions: [
+                    TextButton(
+                      child: Text('Ok').tr(),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context, _lastMapPosition); // 返回选择的经纬度信息
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Cancel').tr(),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+              );
+            },
+            icon: Icon(Icons.map,
+                color: Theme.of(context).colorScheme.onBackground),
+            label: Text('Pick',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onBackground))
+                .tr(),
+          ),
+        ],
       ),
       body: _buildGoogleMap(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          if (_lastMapPosition != null) {
-            print(
-                '经度: ${_lastMapPosition!.latitude}, 纬度: ${_lastMapPosition!.longitude}');
-          } else {
-            print('未选择位置');
-          }
-          if (_cameraPosition != null) {
-            print(
-                '当前经度: ${_cameraPosition!.target.latitude}, 纬度: ${_cameraPosition!.target.longitude}');
-          } else {
-            print('未找到用户位置');
-          }
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                      title: Text("ConfirmPositionTitle").tr(),
-                      content: Text("ConfirmPositionContent").tr(),
-                      actions: [
-                        TextButton(
-                            child: Text('Ok').tr(),
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pop(
-                                  context, _lastMapPosition); // 返回选择的经纬度信息
-                            }),
-                        TextButton(
-                          child: Text('Cancel').tr(),
-                          onPressed: () => Navigator.pop(context),
-                        )
-                      ]));
-        },
-        label: Text('Pick').tr(),
-        // icon: Icon(Icons.map),
-      ),
     );
   }
 

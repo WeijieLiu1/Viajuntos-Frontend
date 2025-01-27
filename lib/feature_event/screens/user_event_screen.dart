@@ -116,7 +116,7 @@ class UserEventScreenState extends State<UserEventScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => InformationWallScreen(
-                                          id: widget.id,
+                                          event: event,
                                         )));
                           }
                         },

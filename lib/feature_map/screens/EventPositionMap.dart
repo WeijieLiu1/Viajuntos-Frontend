@@ -4,9 +4,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:viajuntos/utils/api_controller.dart';
 
 class EventPositionMap extends StatefulWidget {
-  final LatLng initialPosition;
+  final LatLng? initialPosition;
   const EventPositionMap({super.key, required this.initialPosition});
 
   @override
@@ -145,6 +147,28 @@ class EventPositionMapState extends State<EventPositionMap> {
         title: Text('EventMap').tr(),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.background,
+        actions: <Widget>[
+          if (APICalls().getIsPremium())
+            IconButton(
+                iconSize: 24,
+                color: Theme.of(context).colorScheme.onSurface,
+                icon: const Icon(
+                  Icons.directions,
+                ),
+                onPressed: () async {
+                  final Uri uri = Uri(
+                    scheme: 'https',
+                    host: 'www.google.com',
+                    path: 'maps',
+                    queryParameters: {
+                      'q':
+                          '${_cameraPosition!.target.latitude},${_cameraPosition!.target.longitude}'
+                    },
+                  );
+                  print("uri: " + uri.toString());
+                  await launchUrl(uri);
+                }),
+        ],
       ),
       body: _buildGoogleMap(),
     );

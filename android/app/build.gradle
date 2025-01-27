@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -34,21 +37,18 @@ android {
     signingConfigs{
         debug{
             keyAlias 'androiddebugkey'
-            keyPassword 'androiddebugkey'
-            storeFile file('viajuntos-key.jks')
-            storePassword 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('C:/Users/92196/.android/debug.keystore')
+            storePassword 'android'
+        }
+        release {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('C:/Users/92196/.android/debug.keystore')
+            storePassword 'android'
         }
     }
     
-    //forma release
-    signingConfigs {
-        release {
-            keyAlias 'androiddebugkey'
-            keyPassword 'androiddebugkey'
-            storeFile file('viajuntos-key.jks')
-            storePassword 'androiddebugkey'
-        }
-    }
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.viajuntos"
@@ -61,10 +61,17 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+        }
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
         }
     }
 }

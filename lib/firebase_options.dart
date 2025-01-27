@@ -26,11 +26,8 @@ class DefaultFirebaseOptions {
         return ios;
       case TargetPlatform.macOS:
         return macos;
-      case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -44,42 +41,53 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBDwCvAG9cafs3anOr72m8KJfjM7_HS_3Y',
-    appId: '1:19640108832:web:888756d8ae37dc4f5cb945',
-    messagingSenderId: '19640108832',
-    projectId: 'viajuntos-397806',
-    authDomain: 'viajuntos-397806.firebaseapp.com',
-    storageBucket: 'viajuntos-397806.appspot.com',
-    measurementId: 'G-9CJZ5BZCBM',
+    apiKey: 'AIzaSyDkySvCAt9utSO8Tp5BW_b3Xng15e0yeMg',
+    appId: '1:679923866619:web:35a9bc404518553b99495e',
+    messagingSenderId: '679923866619',
+    projectId: 'viajuntos-48ca9',
+    authDomain: 'viajuntos-48ca9.firebaseapp.com',
+    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
+    measurementId: 'G-197CZ6CVWD',
   );
 
+// AIzaSyAUli97gD0OPhAkDl8wKgHirVkPbwzw5EI
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCojDgmyDQzrb7YJ-4HE4pWSWPdjymHQLg',
-    appId: '1:19640108832:android:5208c60ec17e12765cb945',
-    messagingSenderId: '19640108832',
-    projectId: 'viajuntos-397806',
-    storageBucket: 'viajuntos-397806.appspot.com',
+    apiKey: 'AIzaSyAFzoC9dnXUWCZzamYB93Q42LVPVUeGV1c',
+    appId: '1:679923866619:android:659def22ef73c2dd99495e',
+    messagingSenderId: '679923866619',
+    projectId: 'viajuntos-48ca9',
+    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCNFsH0_hF7KMg3jKWcpEno1bfJAdMhr8w',
-    appId: '1:19640108832:ios:56443834fe73ceb65cb945',
-    messagingSenderId: '19640108832',
-    projectId: 'viajuntos-397806',
-    storageBucket: 'viajuntos-397806.appspot.com',
-    androidClientId: '19640108832-r6foed3s5t032e4vo5re7avpakkvsesb.apps.googleusercontent.com',
-    iosClientId: '19640108832-shq877iqpeoj189q6tedlfgvikjfbbdm.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDU0pjgF7Cnc2LVMgU4nhjssIyTZ2h6Dhs',
+    appId: '1:679923866619:ios:14e2598571cad33699495e',
+    messagingSenderId: '679923866619',
+    projectId: 'viajuntos-48ca9',
+    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
+    iosClientId: '679923866619-fbr88df1rk1jll72p95pgp9egm26js87.apps.googleusercontent.com',
     iosBundleId: 'com.example.viajuntos',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCNFsH0_hF7KMg3jKWcpEno1bfJAdMhr8w',
-    appId: '1:19640108832:ios:0a6635a22a4bd57f5cb945',
-    messagingSenderId: '19640108832',
-    projectId: 'viajuntos-397806',
-    storageBucket: 'viajuntos-397806.appspot.com',
-    androidClientId: '19640108832-r6foed3s5t032e4vo5re7avpakkvsesb.apps.googleusercontent.com',
-    iosClientId: '19640108832-thor23s62gbbbjcp50e9kjdtrr1pknjc.apps.googleusercontent.com',
-    iosBundleId: 'com.example.viajuntos.RunnerTests',
+    apiKey: 'AIzaSyDU0pjgF7Cnc2LVMgU4nhjssIyTZ2h6Dhs',
+    appId: '1:679923866619:ios:14e2598571cad33699495e',
+    messagingSenderId: '679923866619',
+    projectId: 'viajuntos-48ca9',
+    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
+    iosClientId: '679923866619-fbr88df1rk1jll72p95pgp9egm26js87.apps.googleusercontent.com',
+    iosBundleId: 'com.example.viajuntos',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDkySvCAt9utSO8Tp5BW_b3Xng15e0yeMg',
+    appId: '1:679923866619:web:cfffbad6e6ff613799495e',
+    messagingSenderId: '679923866619',
+    projectId: 'viajuntos-48ca9',
+    authDomain: 'viajuntos-48ca9.firebaseapp.com',
+    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
+    measurementId: 'G-JG9469D5ZH',
+  );
+
 }

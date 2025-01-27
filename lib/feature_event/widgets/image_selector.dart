@@ -42,116 +42,92 @@ class _ImageSelectorState extends State<ImageSelector> {
   }
 
   Future<String> uploadImages(String path) async {
-    String image_url = "";
+    String imageUrl = "";
     final file = File(path);
-
     List<String> parts = path.split('/');
     String fileId = parts[parts.length - 2];
     String fileType = parts[parts.length - 1].split('.')[1];
+
     final storageRef = FirebaseStorage.instance.ref();
-    // Create the file metadata
     final metadata = SettableMetadata(contentType: "image/jpeg");
-    // Upload file and metadata to the path 'images/mountains.jpg'
     final uploadTask = storageRef
-        .child("viajuntos-397806-images/EventImages/" +
+        .child("viajuntos-48ca9-images/EventImages/" +
             widget.path +
             "/" +
             fileId +
             "." +
             fileType)
         .putFile(file, metadata);
+
+    bool isUploadCanceled = false; // 标记是否取消上传
+
+    // 显示上传进度对话框
+    showDialog(
+      context: context,
+      barrierDismissible: false, // 禁止点击对话框外部关闭
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text("Uploading..."),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 10),
+              Text("Please wait while the image is uploading."),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                isUploadCanceled = true; // 设置取消标记
+                uploadTask.cancel(); // 取消上传任务
+                Navigator.pop(context); // 关闭对话框
+              },
+              child: Text("Cancel"),
+            ),
+          ],
+        ),
+      ),
+    );
+
     try {
-      // 使用 await 等待上传完成
+      // 使用 snapshotEvents 监听上传进度
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        if (snapshot.state == TaskState.running) {
+          double progress =
+              100.0 * (snapshot.bytesTransferred / snapshot.totalBytes);
+          print("Upload progress: $progress%");
+        }
+      });
+
+      // 等待上传完成
       await uploadTask;
-      // 如果上传成功，获取下载链接
-      image_url = await storageRef
-          .child("viajuntos-397806-images/EventImages/" +
-              widget.path +
-              "/" +
-              fileId +
-              "." +
-              fileType)
-          .getDownloadURL();
-      // 这里可以执行上传成功后的其他操作
-    } catch (error) {
-      // 处理上传失败的情况
-      print("Error uploading image: $error");
+
+      if (!isUploadCanceled) {
+        // 获取下载链接
+        imageUrl = await storageRef
+            .child("viajuntos-48ca9-images/EventImages/" +
+                widget.path +
+                "/" +
+                fileId +
+                "." +
+                fileType)
+            .getDownloadURL();
+      }
+    } on FirebaseException catch (e) {
+      if (e.code == 'canceled') {
+        print("Upload canceled by user.");
+      } else {
+        print("Error uploading image: $e");
+      }
+    } finally {
+      // 确保对话框关闭
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
     }
-    // // Listen for state changes, errors, and completion of the upload.
-    // uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
-    //   switch (taskSnapshot.state) {
-    //     case TaskState.running:
-    //       final progress =
-    //           100.0 * (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes);
-    //       print("Upload is $progress% complete.");
-    //       break;
-    //     case TaskState.paused:
-    //       showDialog(
-    //           context: context,
-    //           builder: (context) => AlertDialog(
-    //                   title: Text("UploadPausedTitle").tr(),
-    //                   content: Text("UploadPausedContent").tr(),
-    //                   actions: [
-    //                     TextButton(
-    //                       child: Text('Ok').tr(),
-    //                       onPressed: () => Navigator.pop(context),
-    //                     )
-    //                   ]));
-    //       break;
-    //     case TaskState.canceled:
-    //       showDialog(
-    //           context: context,
-    //           builder: (context) => AlertDialog(
-    //                   title: Text("UploadCanceledTitle").tr(),
-    //                   content: Text("UploadCanceledContent").tr(),
-    //                   actions: [
-    //                     TextButton(
-    //                       child: Text('Ok').tr(),
-    //                       onPressed: () => Navigator.pop(context),
-    //                     )
-    //                   ]));
-    //       break;
-    //     case TaskState.error:
-    //       // Handle unsuccessful uploads
-    //       showDialog(
-    //           context: context,
-    //           builder: (context) => AlertDialog(
-    //                   title: Text("UploadErrorTitle").tr(),
-    //                   content: Text("UploadErrorContent").tr(),
-    //                   actions: [
-    //                     TextButton(
-    //                       child: Text('Ok').tr(),
-    //                       onPressed: () => Navigator.pop(context),
-    //                     )
-    //                   ]));
-    //       break;
-    //     case TaskState.success:
-    //       showDialog(
-    //           context: context,
-    //           builder: (context) => AlertDialog(
-    //                   title: Text("UploadSuccessTitle").tr(),
-    //                   content: Text("UploadSuccessContent").tr(),
-    //                   actions: [
-    //                     TextButton(
-    //                       child: Text('Ok').tr(),
-    //                       onPressed: () => Navigator.pop(context),
-    //                     )
-    //                   ]));
-    //       var a = taskSnapshot.ref.getDownloadURL();
-    //       // 管理调试令牌
-    //       // viajuntos-token1: 74DAE15D-F943-40F6-8034-F0B280917599
-    //       taskSnapshot.ref.getDownloadURL().then((value) => {
-    //             // widget.uploadImages.add(value.toString())
-    //             image_url = value.toString()
-    //             // setState(() {
-    //             //   images.add(value.toString());
-    //             //   // image_url = value.toString();
-    //             // })
-    //           });
-    //       break;
-    //   }
-    // });
-    return image_url;
+
+    return imageUrl; // 返回上传结果
   }
 
   Future<void> deleteImageFromStorage(String downloadUrl) async {

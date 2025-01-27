@@ -44,41 +44,58 @@ class SignUpScreen extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: ListView(children: <Widget>[
                 const SizedBox(height: 60),
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  child: SignInButton(
-                    Buttons.Google,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(borderradius)),
-                    text: "ContinuewithGoogle".tr(),
-                    onPressed: () => _handleSignInGoogle(
-                        context), //{print("object"); FacebookSignInApi.logout2();}
-                    // onPressed: () =>
-                    //     signInWithGoogle(), //{print("object"); FacebookSignInApi.logout2();}
-                  ),
+                // Container(
+                //   alignment: Alignment.center,
+                //   padding: const EdgeInsets.all(10),
+                //   child: SignInButton(
+                //     Buttons.Google,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(borderradius)),
+                //     text: "ContinuewithGoogle".tr(),
+                //     onPressed: () => _handleSignInGoogle(
+                //         context), //{print("object"); FacebookSignInApi.logout2();}
+                //     // onPressed: () =>
+                //     //     signInWithGoogle(), //{print("object"); FacebookSignInApi.logout2();}
+                //   ),
+                // ),
+                // Container(
+                //   alignment: Alignment.center,
+                //   padding: const EdgeInsets.all(10),
+                //   child: SignInButton(
+                //     Buttons.Facebook,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(borderradius)),
+                //     text: "ContinuewithFacebook".tr(),
+                //     onPressed: () => _handleSignInFacebook(context),
+                //   ),
+                // ),
+                // Container(
+                //   alignment: Alignment.center,
+                //   padding: const EdgeInsets.all(10),
+                //   child: SignInButton(
+                //     Buttons.GitHub,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(borderradius)),
+                //     text: "ContinuewithGithub".tr(),
+                //     onPressed: () => _handleSignInGithub(context),
+                //   ),
+                // ),
+                // const SizedBox(height: 10),
+                // Container(
+                //   alignment: Alignment.center,
+                //   padding: const EdgeInsets.all(10),
+                //   child: const Text(
+                //     "or",
+                //     style: TextStyle(color: Colors.black45, fontSize: 16),
+                //   ).tr(),
+                // ),
+                const SizedBox(height: 50),
+                Image.asset(
+                  "assets/Banner.png",
+                  height: MediaQuery.of(context).size.height / 10,
+                  width: MediaQuery.of(context).size.width / 1.5,
                 ),
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  child: SignInButton(
-                    Buttons.Facebook,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(borderradius)),
-                    text: "ContinuewithFacebook".tr(),
-                    onPressed: () => _handleSignInFacebook(context),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  child: const Text(
-                    "or",
-                    style: TextStyle(color: Colors.black45, fontSize: 16),
-                  ).tr(),
-                ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 100),
                 Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.all(10),
@@ -109,15 +126,14 @@ class SignUpScreen extends StatelessWidget {
                           text: "login".tr(),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.pushReplacementNamed(
-                                  context, '/new_route',
+                              Navigator.pushReplacementNamed(context, '/login',
                                   arguments: GoTo(() =>
                                       Navigator.pushNamed(context, '/home')));
                             }),
                     ]),
                   ),
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 100),
                 Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.all(10),
@@ -421,6 +437,49 @@ class SignUpScreen extends StatelessWidget {
             ],
           ),
         );
+      }
+    } catch (error) {
+      //print(error);
+    }
+  }
+
+  Future<void> _handleSignInGithub(BuildContext context) async {
+    try {
+      print("signInWithGithub1");
+      // 3edd3eac6d4f310cc67856cfaea8ee4587dfae0e
+      GithubAuthProvider githubAuthProvider = GithubAuthProvider();
+      UserCredential uc =
+          await FirebaseAuth.instance.signInWithProvider(githubAuthProvider);
+      // Trigger the authentication flow
+
+      // final user = await GoogleSignInApi.login();
+      print("signInWithGithub2");
+      if (uc == null) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: Text('SignupFailed').tr(),
+            content: Text("tryAgain").tr(),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text("Ok").tr()),
+            ],
+          ),
+        );
+      } else {
+        // Obtain the auth details from the request
+        String email = uc.user!.email!;
+        String token = uc.user!.refreshToken!.toString();
+        print("email+token: " + email + " " + token);
+
+        // Response response =
+        //     await uapi.checkUserGithub(googleAuth.accessToken);
+        // _handleSignUpGoogle(context, response, googleAuth);
+        // Response response =
+        //     await uapi.checkUserGithub(googleAuth.accessToken);
+        // _handleSignUpGoogle(context, response, googleAuth);
       }
     } catch (error) {
       //print(error);

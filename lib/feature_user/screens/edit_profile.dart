@@ -25,9 +25,9 @@ class _EditarProfileState extends State<EditarProfile> {
   late String username;
   late String description;
   late String hobbies;
-  late String idUsuar;
+  late String idUser;
   late String image_url;
-  late bool premium;
+  late bool isPremium;
   List<dynamic> idiomas = [];
   bool colorInit = false;
   bool colorInit2 = false;
@@ -53,28 +53,17 @@ class _EditarProfileState extends State<EditarProfile> {
     return response.statusCode;
   }
 
-  Future<void> isPremium() async {
-    final response =
-        await ac.getItem('/v1/users/:0/get_premium', [ac.getCurrentUser()]);
-    bool activated = false;
-    if (response.body.contains('"User is Premium"')) activated = true;
+  // Future<void> purchasePremium() async {
+  //   final response = await ac.postItem(
+  //       '/v1/users/:0/update_premium', [ac.getCurrentUser()], null);
+  //   bool activated = false;
+  //   if (response == null) return;
+  //   if (response.body.contains('"Premuim actived"')) activated = true;
 
-    setState(() {
-      premium = activated;
-    });
-  }
-
-  Future<void> purchasePremium() async {
-    final response = await ac.postItem(
-        '/v1/users/:0/update_premium', [ac.getCurrentUser()], null);
-    bool activated = false;
-    if (response.body.contains('"Premuim actived"')) activated = true;
-
-    print("purchasePremium body: " + response.body);
-    setState(() {
-      premium = activated;
-    });
-  }
+  //   print("purchasePremium body: " + response.body);
+  //   APICalls().setIsPremium(activated);
+  //   setState(() {});
+  // }
 
   Future<void> getUser() async {
     final response = await ac.getItem("/v2/users/:0", [idProfile]);
@@ -84,14 +73,16 @@ class _EditarProfileState extends State<EditarProfile> {
       username = user["username"];
       description = user["description"];
       hobbies = user["hobbies"];
-      idUsuar = user["id"];
+      idUser = user["id"];
       image_url = user["image_url"];
+      isPremium = user["isPremium"];
+      APICalls().setIsPremium(isPremium);
     });
-    // getProfilePhoto(idUsuar);
+    // getProfilePhoto(idUser);
   }
 
-  // Future<void> getProfilePhoto(String idUsuar) async {
-  //   final response = await es.getAPhoto(idUsuar);
+  // Future<void> getProfilePhoto(String idUser) async {
+  //   final response = await es.getAPhoto(idUser);
   //   if (response != 'Fail') {
   //     setState(() {
   //       urlProfilePhoto = response;
@@ -104,7 +95,6 @@ class _EditarProfileState extends State<EditarProfile> {
     super.initState();
     idProfile = getCurrentUser();
     getUser();
-    isPremium();
   }
 
   Widget builWidgetText(String labelText2, String placeHolder) {
@@ -298,9 +288,9 @@ class _EditarProfileState extends State<EditarProfile> {
 
       if (croppedImage != null) {
         // 裁剪成功，可以在这里进行操作，例如将图片显示在界面上
-        //gs://viajuntos-397806.appspot.com/viajuntos-397806-images/ProfileImages
+        //gs://viajuntos-48ca9.firebasestorage.app/viajuntos-48ca9-images/ProfileImages
         // final path =
-        //     'gs://viajuntos-397806.appspot.com/viajuntos-397806-images/ProfileImages/' +
+        //     'gs://viajuntos-48ca9.firebasestorage.app/viajuntos-48ca9-images/ProfileImages/' +
         //         APICalls().getCurrentUser();
 
         final file = File(croppedImage.path);
@@ -310,10 +300,39 @@ class _EditarProfileState extends State<EditarProfile> {
         final metadata = SettableMetadata(contentType: "image/jpeg");
         // Upload file and metadata to the path 'images/mountains.jpg'
         final uploadTask = storageRef
-            .child("viajuntos-397806-images/ProfileImages/" +
+            .child("viajuntos-48ca9-images/ProfileImages/" +
                 APICalls().getCurrentUser())
             .putFile(file, metadata);
         // Listen for state changes, errors, and completion of the upload.
+        bool isCanceledDialogShown = false;
+        bool isUploadCanceled = false;
+        showDialog(
+          context: context,
+          barrierDismissible: false, // Prevent dismissal by tapping outside
+          builder: (context) => StatefulBuilder(
+            builder: (context, setState) => AlertDialog(
+              title: Text("Uploading..."),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text("Please wait while the image is uploading."),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    isUploadCanceled = true; // Mark upload as canceled
+                    Navigator.pop(context); // Close the dialog
+                    uploadTask.cancel(); // Cancel the upload
+                  },
+                  child: Text("Cancel"),
+                ),
+              ],
+            ),
+          ),
+        );
         uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
           switch (taskSnapshot.state) {
             case TaskState.running:
@@ -335,17 +354,26 @@ class _EditarProfileState extends State<EditarProfile> {
                           ]));
               break;
             case TaskState.canceled:
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                          title: Text("UploadCanceledTitle").tr(),
-                          content: Text("UploadCanceledContent").tr(),
-                          actions: [
-                            TextButton(
-                              child: Text('Ok').tr(),
-                              onPressed: () => Navigator.pop(context),
-                            )
-                          ]));
+              if (!isCanceledDialogShown) {
+                isCanceledDialogShown = true;
+                if (isUploadCanceled) {
+                  print("User canceled the upload.");
+                } else {
+                  print("Upload was canceled due to other reasons.");
+                }
+                ;
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                            title: Text("UploadCanceledTitle").tr(),
+                            content: Text("UploadCanceledContent").tr(),
+                            actions: [
+                              TextButton(
+                                child: Text('Ok').tr(),
+                                onPressed: () => Navigator.pop(context),
+                              )
+                            ]));
+              }
               break;
             case TaskState.error:
               // Handle unsuccessful uploads
@@ -362,6 +390,7 @@ class _EditarProfileState extends State<EditarProfile> {
                           ]));
               break;
             case TaskState.success:
+              Navigator.pop(context);
               showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -425,11 +454,12 @@ class _EditarProfileState extends State<EditarProfile> {
             color: Theme.of(context).colorScheme.onSurface,
             icon: const Icon(Icons.arrow_back_ios_new_sharp),
             onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ProfileScreen(id: idUsuar)),
-                  (route) => false);
+              Navigator.pop(context);
+              // Navigator.pushAndRemoveUntil(
+              //     context,
+              //     MaterialPageRoute(
+              //         builder: (context) => ProfileScreen(id: idUser)),
+              //     (route) => false);
             },
           ),
         ),
@@ -501,6 +531,28 @@ class _EditarProfileState extends State<EditarProfile> {
                 ).tr(),
                 const SizedBox(height: 15),
                 _buildLanguages(),
+                const SizedBox(height: 15),
+                Text(
+                  "premium",
+                  textAlign: TextAlign.center,
+                ).tr(),
+                Switch(
+                  value: isPremium,
+                  inactiveTrackColor: Theme.of(context).colorScheme.background,
+                  activeTrackColor: Theme.of(context).colorScheme.secondary,
+                  inactiveThumbColor: Theme.of(context).colorScheme.primary,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  onChanged: (bool value) {
+                    // This is called when the user toggles the switch.
+                    // print("purchasePremium: " +
+                    //     APICalls().getIsPremium().toString());
+
+                    setState(() {
+                      isPremium = value;
+                    });
+                    // purchasePremium();
+                  },
+                ),
                 const SizedBox(height: 55),
                 Center(
                   child: Row(
@@ -524,18 +576,22 @@ class _EditarProfileState extends State<EditarProfile> {
                               "description": description,
                               "hobbies": hobbies,
                               "image_url": image_url,
-                              "isPremium": hobbies,
+                              "isPremium": isPremium,
                             };
                             var ap = await updateUser(bodyAux);
                             if (ap == 200) {
-                              getUser();
+                              // getUser();
                               ScaffoldMessenger.of(context).showSnackBar(
                                   mensajeMuestra("updateddata".tr()));
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  '/home', (route) => false);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   mensajeMuestra("updateerror".tr()));
                             }
                           }
+                          // Navigator.of(context).pushNamedAndRemoveUntil(
+                          //     '/home', (route) => false);
                         },
                         child: Text(
                           'Update'.tr(),
@@ -548,15 +604,6 @@ class _EditarProfileState extends State<EditarProfile> {
                     ],
                   ),
                 ),
-                Switch(
-                  value: premium,
-                  activeColor: Colors.blue,
-                  onChanged: (bool value) {
-                    // This is called when the user toggles the switch.
-                    print("purchasePremium: " + premium.toString());
-                    purchasePremium();
-                  },
-                )
               ],
             ),
           ),

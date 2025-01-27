@@ -6,6 +6,7 @@ import 'package:viajuntos/feature_chat/screens/chat_screen.dart';
 import 'package:viajuntos/feature_chat/services/chat_service.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'package:viajuntos/feature_user/services/externalService.dart';
+import 'package:viajuntos/utils/default_image.dart';
 
 class ListChatScreen extends StatefulWidget {
   const ListChatScreen({Key? key}) : super(key: key);
@@ -127,13 +128,18 @@ class _ListChatScreen extends State<ListChatScreen> {
                                               Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          ChatScreen(
-                                                              chat: listChats[
-                                                                  index],
-                                                              chat_image_url:
-                                                                  chat_image_url[
-                                                                      "image_url"])));
+                                                      builder: (context) => ChatScreen(
+                                                          chatId:
+                                                              listChats[index]
+                                                                  .id
+                                                                  .toString(),
+                                                          chatName:
+                                                              listChats[index]
+                                                                  .name
+                                                                  .toString(),
+                                                          chatImageUrl:
+                                                              chat_image_url[
+                                                                  "image_url"])));
                                             },
                                             child: Ink(
                                               height: 80,
@@ -148,30 +154,39 @@ class _ListChatScreen extends State<ListChatScreen> {
                                               child: Row(
                                                 children: [
                                                   Padding(
-                                                    padding: EdgeInsets.only(
-                                                        right: 8),
-                                                    child: (chat_image_url !=
-                                                                null &&
+                                                      padding: EdgeInsets.only(
+                                                          right: 8),
+                                                      child: DefaultImage(
+                                                        imageUrl:
                                                             chat_image_url[
-                                                                    "image_url"] !=
-                                                                null &&
-                                                            chat_image_url[
-                                                                    "image_url"] !=
-                                                                "")
-                                                        ? Image.network(
-                                                            chat_image_url[
-                                                                "image_url"], // 您的图像路径
-                                                            width: 40,
-                                                            height: 40,
-                                                            // 其他图像属性
-                                                          )
-                                                        : Image.asset(
-                                                            'assets/noProfileImage.png', // 占位图像路径
-                                                            width: 40,
-                                                            height: 40,
-                                                            // 其他图像属性
-                                                          ),
-                                                  ),
+                                                                "image_url"],
+                                                        placeholderPath:
+                                                            "assets/noProfileImage.png",
+                                                        width: 40,
+                                                        height: 40,
+                                                      )
+                                                      // (chat_image_url !=
+                                                      //             null &&
+                                                      //         chat_image_url[
+                                                      //                 "image_url"] !=
+                                                      //             null &&
+                                                      //         chat_image_url[
+                                                      //                 "image_url"] !=
+                                                      //             "")
+                                                      //     ? Image.network(
+                                                      //         chat_image_url[
+                                                      //             "image_url"], // 您的图像路径
+                                                      //         width: 40,
+                                                      //         height: 40,
+                                                      //         // 其他图像属性
+                                                      //       )
+                                                      //     : Image.asset(
+                                                      //         'assets/noProfileImage.png', // 占位图像路径
+                                                      //         width: 40,
+                                                      //         height: 40,
+                                                      //         // 其他图像属性
+                                                      //       ),
+                                                      ),
                                                   Text(
                                                     listChats[index]
                                                         .name

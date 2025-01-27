@@ -29,14 +29,14 @@ class _ConfirmationMessageState extends State<ConfirmationMessage> {
                     color: Theme.of(context).colorScheme.secondary,
                     fontWeight: FontWeight.bold,
                     fontSize: 24)),
-            const SizedBox(height: 200),
+            const SizedBox(height: 50),
             Text('createdeventsuccessfully',
                     style: TextStyle(
                         color: Colors.grey,
                         fontWeight: FontWeight.w600,
                         fontSize: 18))
                 .tr(),
-            const SizedBox(height: 200),
+            const SizedBox(height: 50),
             SizedBox(
               height: MediaQuery.of(context).size.height / 3,
               child: ClipRRect(

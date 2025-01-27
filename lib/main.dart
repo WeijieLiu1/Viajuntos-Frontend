@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:provider/provider.dart';
 import 'package:viajuntos/feature_map/screens/EventSearchMap.dart';
 import 'package:viajuntos/feature_navigation/screens/navigation.dart';
 import 'package:viajuntos/feature_navigation/screens/profile.dart';
 import 'package:viajuntos/feature_user/screens/banned_user_page.dart';
 import 'package:viajuntos/feature_user/screens/change_password.dart';
 import 'package:viajuntos/feature_user/screens/edit_profile.dart';
+import 'package:viajuntos/feature_user/screens/friend_request.dart';
 import 'package:viajuntos/feature_user/screens/loading_page.dart';
 import 'package:viajuntos/feature_user/screens/login_screen.dart';
 import 'package:viajuntos/feature_user/screens/register_viajuntos.dart';
@@ -19,15 +21,20 @@ import 'package:viajuntos/feature_user/screens/signup_screen.dart';
 import 'package:viajuntos/feature_user/screens/welcome_screen.dart';
 import 'package:viajuntos/firebase_options.dart';
 import 'package:viajuntos/utils/api_controller.dart';
+import 'package:viajuntos/utils/friend_request_notifier.dart';
 
 import 'feature_user/screens/languages.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+    // default D8:48:B0:ED:60:2B:9E:C6:5C:39:63:28:96:A1:13:22:E1:8E:67:18:CB:B3:EB:0B:1B:1A:07:40:58:A9:F8:DC
+    // this app b5:ea:4c:ea:3d:b5:c8:d4:8e:16:df:07:0f:5d:07:39:f6:8d:af:ef:12:e8:78:f4:05:eb:53:ee:e7:d5:65:87
   );
 
   await EasyLocalization.ensureInitialized();
@@ -44,13 +51,16 @@ Future<void> main() async {
       path: 'assets/translations',
       fallbackLocale: Locale('en'),
       saveLocale: true,
-      child: MyApp(),
+      child: ChangeNotifierProvider(
+        create: (_) => RedDotNotifier(), // 初始化全局状态管理器
+        child: MyApp(),
+      ),
     ),
   );
   // 确保 navigatorKey.currentState 不为 null
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    APICalls().tryInitializeFromPreferences();
-  });
+  // WidgetsBinding.instance.addPostFrameCallback((_) {
+  //   APICalls().tryInitializeFromPreferences();
+  // });
 }
 
 class MyApp extends StatelessWidget {
@@ -110,6 +120,7 @@ class MyApp extends StatelessWidget {
                   onSurface: HexColor('767676'),
                 )),
             initialRoute: '/welcome',
+            scaffoldMessengerKey: scaffoldMessengerKey,
             home: const WelcomeScreen(),
             routes: {
               '/loading_Page': (_) => const LoadingScreen(),
@@ -124,6 +135,7 @@ class MyApp extends StatelessWidget {
               '/change_password': (_) => const ChangePassword(),
               '/languages': (_) => const LanguagesOptions(),
               '/banned_user_page': (_) => BannedUserPage(),
+              '/friend_request': (_) => FriendRequest(),
               // '/testScreen': (_) => const TestScreen(),
             },
           );

@@ -39,9 +39,10 @@ class _LikeButtonState extends State<LikeButton> {
                     ], {
                       "user_id": api.getCurrentUser()
                     }).then((value) => {
-                          setState(() {
-                            _liked = false;
-                          })
+                          if (value != null)
+                            setState(() {
+                              _liked = false;
+                            })
                         });
                   } else {
                     api.postItem('/v3/events/:0/:1', [
@@ -50,9 +51,10 @@ class _LikeButtonState extends State<LikeButton> {
                     ], {
                       "user_id": api.getCurrentUser()
                     }).then((value) => {
-                          setState(() {
-                            _liked = true;
-                          })
+                          if (value != null)
+                            setState(() {
+                              _liked = true;
+                            })
                         });
                   }
                 });

@@ -229,7 +229,8 @@ class EditEventFormState extends State<EditEventForm> {
                                 );
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(snackBar);
-                                Navigator.pop(context);
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                    '/home', (route) => false);
                               } else {
                                 snackBar = SnackBar(
                                   backgroundColor:
@@ -238,8 +239,6 @@ class EditEventFormState extends State<EditEventForm> {
                                       json.decode(
                                           response.body)["error_message"]),
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
                               }
                             },
                             child: Container(

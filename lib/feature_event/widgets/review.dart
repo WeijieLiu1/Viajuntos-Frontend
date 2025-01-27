@@ -87,19 +87,14 @@ class _ReviewMenuState extends State<ReviewMenu> {
               };
               var response =
                   await api.postItem('/v3/events/:0', ["review"], bodyData);
-              SnackBar snackBar;
-              if (response.statusCode == 201) {
+              if (response != null) {
+                SnackBar snackBar;
                 snackBar = SnackBar(
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   content: Text('eventcreated').tr(),
                 );
-              } else {
-                snackBar = SnackBar(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  content: Text('Somethingbadhappened').tr(),
-                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               }
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
               Navigator.pop(context);
             },
             child: Container(

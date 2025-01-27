@@ -21,13 +21,23 @@ class APICalls {
   final String _REFRESH_ENDPOINT = '/v1/users/refresh';
   final int _UNAUTHORIZED = 401;
 
+  dynamic friendRequests;
+
   String _USER_ID = '';
   String _ACCESS_TOKEN = '';
   String _REFRESH_TOKEN = '';
-
+  bool premium = false;
   String getCurrentUser() {
     //print("userID: "+_USER_ID);
     return _USER_ID;
+  }
+
+  bool getIsPremium() {
+    return premium;
+  }
+
+  void setIsPremium(bool isPremium) {
+    premium = isPremium;
   }
 
   String getCurrentRefresh() {
@@ -43,7 +53,6 @@ class APICalls {
     _USER_ID = userId;
     _ACCESS_TOKEN = accessToken;
     _REFRESH_TOKEN = refreshToken;
-
     if (keepLoginInPreferences) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_REFRESH_TOKEN_PREFS, _REFRESH_TOKEN);
@@ -78,6 +87,32 @@ class APICalls {
     return false;
   }
 
+  Future<dynamic> getItemNullable(
+      String endpoint, List<String> pathParams) async {
+    final uri = buildUri(endpoint, pathParams, null);
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $_ACCESS_TOKEN',
+      'Content-Type': 'application/json'
+    });
+    if (response.statusCode == _UNAUTHORIZED) {
+      return _refresh(
+          () => getItem(endpoint, pathParams), () => _redirectToLogin());
+    }
+    // if (response.statusCode == 409) {
+    //   Navigator.pushReplacementNamed(context, '/banned_user_screen');
+    // }
+    if (response.statusCode ~/ 100 == 2) {
+      return response;
+    } else {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(json.decode(response.body)["error_message"]),
+        ),
+      );
+      return null;
+    }
+  }
+
   Future<dynamic> getItem(String endpoint, List<String> pathParams) async {
     final uri = buildUri(endpoint, pathParams, null);
     final response = await http.get(uri, headers: {
@@ -99,7 +134,8 @@ class APICalls {
     // print("uri96: ");
     final uri = buildUri(endpoint, pathParams, queryParams);
     // print("uri98: " + uri.toString());
-    // print("uri: " + uri.toString());
+    print("uri: " + uri.toString());
+    print("accesstoken: " + _ACCESS_TOKEN);
     // print("uri2: ");
     final response = await http.get(uri, headers: {
       'Authorization': 'Bearer $_ACCESS_TOKEN',
@@ -114,6 +150,36 @@ class APICalls {
     return response;
   }
 
+  Future<dynamic> getCollectionNullable(String endpoint,
+      List<String> pathParams, Map<String, String>? queryParams) async {
+    // print("uri96: ");
+    final uri = buildUri(endpoint, pathParams, queryParams);
+    // print("uri98: " + uri.toString());
+    print("uri: " + uri.toString());
+    print("accesstoken: " + _ACCESS_TOKEN);
+    // print("uri2: ");
+    final response = await http.get(uri, headers: {
+      'Authorization': 'Bearer $_ACCESS_TOKEN',
+      'Content-Type': 'application/json'
+    });
+    if (response.statusCode == _UNAUTHORIZED) {
+      return _refresh(() => getCollection(endpoint, pathParams, queryParams),
+          () => _redirectToLogin());
+    }
+    print("response: " + response.toString());
+    print("response: " + response.body.toString());
+    if (response.statusCode ~/ 100 == 2) {
+      return response;
+    } else {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(json.decode(response.body)["error_message"]),
+        ),
+      );
+      return null;
+    }
+  }
+
   Future<dynamic> postItem(String endpoint, List<String> pathParams,
       Map<String, dynamic>? bodyData) async {
     final uri = buildUri(endpoint, pathParams, {});
@@ -121,11 +187,40 @@ class APICalls {
       'Authorization': 'Bearer $_ACCESS_TOKEN',
       'Content-Type': 'application/json'
     });
+    print("accesstoken: " + _ACCESS_TOKEN);
     if (response.statusCode == _UNAUTHORIZED) {
       return _refresh(() => postItem(endpoint, pathParams, bodyData),
           () => _redirectToLogin());
     }
+    print("response: " + response.toString());
+    print("response: " + response.body.toString());
     return response;
+  }
+
+  Future<dynamic> postItemNullable(String endpoint, List<String> pathParams,
+      Map<String, dynamic>? bodyData) async {
+    final uri = buildUri(endpoint, pathParams, {});
+    final response = await http.post(uri, body: jsonEncode(bodyData), headers: {
+      'Authorization': 'Bearer $_ACCESS_TOKEN',
+      'Content-Type': 'application/json'
+    });
+    print("accesstoken: " + _ACCESS_TOKEN);
+    if (response.statusCode == _UNAUTHORIZED) {
+      return _refresh(() => postItem(endpoint, pathParams, bodyData),
+          () => _redirectToLogin());
+    }
+    print("response: " + response.toString());
+    print("response: " + response.body.toString());
+    if (response.statusCode ~/ 100 == 2) {
+      return response;
+    } else {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(json.decode(response.body)["error_message"]),
+        ),
+      );
+      return null;
+    }
   }
 
   Future<dynamic> putItem(String endpoint, List<String> pathParams,
@@ -142,6 +237,29 @@ class APICalls {
     return response;
   }
 
+  Future<dynamic> putItemNullable(String endpoint, List<String> pathParams,
+      Map<String, dynamic>? bodyData) async {
+    final uri = buildUri(endpoint, pathParams, {});
+    final response = await http.put(uri, body: json.encode(bodyData), headers: {
+      'Authorization': 'Bearer $_ACCESS_TOKEN',
+      'Content-Type': 'application/json'
+    });
+    if (response.statusCode == _UNAUTHORIZED) {
+      return _refresh(() => putItem(endpoint, pathParams, bodyData),
+          () => _redirectToLogin());
+    }
+    if (response.statusCode ~/ 100 == 2) {
+      return response;
+    } else {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(json.decode(response.body)["error_message"]),
+        ),
+      );
+      return null;
+    }
+  }
+
   Future<dynamic> deleteItem(String endpoint, List<String> pathParams) async {
     final uri = buildUri(endpoint, pathParams, null);
     print("uri: " + uri.toString());
@@ -155,6 +273,31 @@ class APICalls {
     }
     print(response.body.toString());
     return response;
+  }
+
+  Future<dynamic> deleteItemNullable(
+      String endpoint, List<String> pathParams) async {
+    final uri = buildUri(endpoint, pathParams, null);
+    print("uri: " + uri.toString());
+    final response = await http.delete(uri, headers: {
+      'Authorization': 'Bearer $_ACCESS_TOKEN',
+      'Content-Type': 'application/json'
+    });
+    if (response.statusCode == _UNAUTHORIZED) {
+      return _refresh(
+          () => deleteItem(endpoint, pathParams), () => _redirectToLogin());
+    }
+    print(response.body.toString());
+    if (response.statusCode ~/ 100 == 2) {
+      return response;
+    } else {
+      scaffoldMessengerKey.currentState?.showSnackBar(
+        SnackBar(
+          content: Text(json.decode(response.body)["error_message"]),
+        ),
+      );
+      return null;
+    }
   }
 
   void logOut() async {
@@ -204,12 +347,22 @@ class APICalls {
     pathParams.forEachIndexed((idx, param) =>
         formattedEndpoint = formattedEndpoint.replaceAll(":$idx", param));
 
-    return Uri(
+    if (queryParams == null || queryParams.isEmpty) {
+      return Uri(
         scheme: 'http',
         host: hostUrl,
         port: 5000,
         path: formattedEndpoint,
-        queryParameters: queryParams?.cast<String, dynamic>());
+      );
+    } else {
+      return Uri(
+        scheme: 'http',
+        host: hostUrl,
+        port: 5000,
+        path: formattedEndpoint,
+        queryParameters: queryParams,
+      );
+    }
   }
 
   void _redirectToLogin() {
@@ -243,6 +396,12 @@ class APICalls {
 
   factory APICalls() {
     return _instance;
+  }
+
+  Future<String> getUserImage(String idProfile) async {
+    final response = await this.getItem("/v2/users/:0", [idProfile]);
+    return json.decode(response.body)["image_url"];
+    // getProfilePhoto(idUsuar);
   }
 
   APICalls._internal();

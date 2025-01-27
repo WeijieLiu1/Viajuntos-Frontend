@@ -16,10 +16,12 @@ class ShareMenu extends StatefulWidget {
 class _ShareMenuState extends State<ShareMenu> {
   @override
   Widget build(BuildContext context) {
+    print("QrImageView data: widget.url: " + widget.url);
     return Container(
+        color: Theme.of(context).colorScheme.background,
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        margin: const EdgeInsets.all(8.0),
+        // margin: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

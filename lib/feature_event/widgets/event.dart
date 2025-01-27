@@ -39,6 +39,7 @@ class _EventState extends State<Event> {
   @override
   void initState() {
     super.initState();
+    checkTimeConflict();
     getPaymentStatus(widget.event.id.toString());
   }
 
@@ -50,22 +51,17 @@ class _EventState extends State<Event> {
     final bodyData = {"user_id": api.getCurrentUser()};
     var response = await leaveEvent(widget.event.id.toString(), bodyData);
 
-    SnackBar snackBar;
-    if (response.statusCode == 200) {
+    if (response != null) {
+      SnackBar snackBar;
       snackBar = SnackBar(
         backgroundColor: Theme.of(context).colorScheme.secondary,
         content: Text('Youleft').tr(),
       );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
       setState(() {
         found = false;
       });
-    } else {
-      snackBar = SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.error,
-        content: Text('Somethingbadhappened').tr(),
-      );
     }
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void PayEvent(EventModel event) async {
@@ -74,9 +70,11 @@ class _EventState extends State<Event> {
       builder: (BuildContext context) => PaypalCheckoutView(
         sandboxMode: true,
         clientId:
-            "AYQPBYQ6U-hyIKBERgEN_qjO4fSIFvjljwKaYaCgU00NEKXB76Uxsba29zRPHp6AO1HBV7-VMFNyDhYt",
+            // "AYQPBYQ6U-hyIKBERgEN_qjO4fSIFvjljwKaYaCgU00NEKXB76Uxsba29zRPHp6AO1HBV7-VMFNyDhYt",
+            "AXHMcwYupckK_UUb8KkxDQrRyHvGh0_Il9hyQa07GQ1DZnIQHYEYAr4XcK2Y2E2o-Xp5pwmQQio5vvRG",
         secretKey:
-            "EMfnOAW3h4UuOjrQJnnDBAf7s-ro7RLguWanGlXjYJxpF_OCH7-wZD4HKw45wIq1jXKkYlSMXUcsoSg_",
+            // "EMfnOAW3h4UuOjrQJnnDBAf7s-ro7RLguWanGlXjYJxpF_OCH7-wZD4HKw45wIq1jXKkYlSMXUcsoSg_",
+            "EEmXD8B5bghWYcTrY1PgZqPnhVy4kC-bCD6mhNb5DllTD_MZi3brp0ZDkqx0F57lKrBkFS5mbMqNwcnG",
         transactions: [
           {
             "amount": {
@@ -119,6 +117,8 @@ class _EventState extends State<Event> {
 
           final response =
               await api.postItem('/v3/events/:0', ["add_payment"], bodyData);
+
+          if (response == null) return;
           print(response.statusCode);
           setState(() {
             paid = true;
@@ -166,12 +166,6 @@ class _EventState extends State<Event> {
     final response = await api.postItem(
         '/v3/events/:0/:1', [widget.event.id.toString(), 'leave'], bodyData);
     return response;
-  }
-
-  Future<String> getUserImage(String idProfile) async {
-    final response = await api.getItem("/v2/users/:0", [idProfile]);
-    return json.decode(response.body)["image_url"];
-    // getProfilePhoto(idUsuar);
   }
 
   void CallLink(String link) async {
@@ -356,15 +350,34 @@ class _EventState extends State<Event> {
         .getCollection('/v3/events/participants', [], {"eventid": idEvent});
     var attendes = json.decode(response.body);
     List aux = [];
-
+    bool amParticipant = false;
     for (var v in attendes) {
-      final response2 = await getUserImage(v);
+      if (v == APICalls().getCurrentUser()) amParticipant = true;
+      final response2 = await APICalls().getUserImage(v);
       if (response2 != 'Fail') {
         aux.add({"user_id": v, "image": response2});
       } else {
         aux.add({"user_id": v, "image": ''});
       }
     }
+    if (!amParticipant) {
+      bool timeConflict = false;
+      timeConflict = await checkTimeConflict();
+      if (timeConflict) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                    title: Text('TimeConflict').tr(),
+                    content: Text('EventTimeConflict').tr(),
+                    actions: [
+                      TextButton(
+                        child: Text('Ok').tr(),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ]));
+      }
+    }
+
     return aux;
   }
 
@@ -1175,7 +1188,7 @@ class _EventState extends State<Event> {
                                                     title: Text('TimeConflict')
                                                         .tr(),
                                                     content: Text(
-                                                            'EventTimeConflict')
+                                                            'EventTimeConflictJoin')
                                                         .tr(),
                                                     actions: [
                                                       TextButton(
@@ -1193,10 +1206,9 @@ class _EventState extends State<Event> {
                                                           var response =
                                                               await joinEvent(
                                                                   bodyData);
-                                                          SnackBar snackBar;
-                                                          if (response
-                                                                  .statusCode ==
-                                                              200) {
+                                                          if (response !=
+                                                              null) {
+                                                            SnackBar snackBar;
                                                             snackBar = SnackBar(
                                                               backgroundColor:
                                                                   Theme.of(
@@ -1207,61 +1219,41 @@ class _EventState extends State<Event> {
                                                                       'Youarein')
                                                                   .tr(),
                                                             );
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                                    snackBar);
                                                             getPaymentStatus(
                                                                 widget.event.id
                                                                     .toString());
-                                                          } else {
-                                                            snackBar = SnackBar(
-                                                              backgroundColor:
-                                                                  Theme.of(
-                                                                          context)
-                                                                      .colorScheme
-                                                                      .error,
-                                                              content: Text(
-                                                                      'Somethingbadhappened')
-                                                                  .tr(),
-                                                            );
                                                           }
                                                           setState(() {
                                                             found = response
                                                                     .statusCode ==
                                                                 200;
                                                           });
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                                  snackBar);
                                                         },
                                                       ),
                                                     ]));
                                       } else {
                                         var response =
                                             await joinEvent(bodyData);
-                                        SnackBar snackBar;
-                                        if (response.statusCode == 200) {
+                                        if (response != null) {
+                                          SnackBar snackBar;
                                           snackBar = SnackBar(
                                             backgroundColor: Theme.of(context)
                                                 .colorScheme
                                                 .secondary,
                                             content: Text('Youarein').tr(),
                                           );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(snackBar);
                                           getPaymentStatus(
                                               widget.event.id.toString());
-                                        } else {
-                                          snackBar = SnackBar(
-                                            backgroundColor: Theme.of(context)
-                                                .colorScheme
-                                                .error,
-                                            content:
-                                                Text('Somethingbadhappened')
-                                                    .tr(),
-                                          );
                                         }
                                         setState(() {
                                           found = response.statusCode == 200;
                                         });
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(snackBar);
                                       }
                                     },
                                     child: Container(
@@ -1389,7 +1381,7 @@ class _EventState extends State<Event> {
                       //                               title:
                       //                                   Text('TimeConflict').tr(),
                       //                               content:
-                      //                                   Text('EventTimeConflict')
+                      //                                   Text('EventTimeConflictJoin')
                       //                                       .tr(),
                       //                               actions: [
                       //                                 TextButton(

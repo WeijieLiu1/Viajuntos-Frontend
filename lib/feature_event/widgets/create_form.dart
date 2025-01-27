@@ -12,6 +12,7 @@ import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart'
     as picker;
 import 'package:viajuntos/feature_event/widgets/image_selector.dart';
 import 'package:viajuntos/feature_map/screens/EventPickMap.dart';
+import 'package:viajuntos/main.dart';
 import 'package:viajuntos/utils/api_controller.dart';
 import 'dart:convert';
 
@@ -50,6 +51,11 @@ class _CreateEventFormState extends State<CreateEventForm> {
   bool _isMapSelected = false;
 
   List<String> uploadImages = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   void _toggleInputMode() {
     if (_latitude.text.isEmpty || _longitude.text.isEmpty) {
@@ -179,35 +185,37 @@ class _CreateEventFormState extends State<CreateEventForm> {
                 decoration: InputDecoration(hintText: 'Whatcreating'.tr()),
               ),
               const SizedBox(height: 20),
-              Text('EventType',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16))
-                  .tr(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  DropdownButtonFormField<String>(
-                    value: event_type,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        event_type = newValue!;
-                      });
-                    },
-                    items: <String>[
-                      'PUBLIC'.tr(),
-                      'FRIENDS'.tr(),
-                      'PRIVATE'.tr()
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
+              if (APICalls().getIsPremium())
+                Text('EventType',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16))
+                    .tr(),
+              if (APICalls().getIsPremium())
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    DropdownButtonFormField<String>(
+                      value: event_type,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          event_type = newValue!;
+                        });
+                      },
+                      items: <String>[
+                        'PUBLIC'.tr(),
+                        'FRIENDS'.tr(),
+                        'PRIVATE'.tr()
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               const SizedBox(height: 20),
               Text('Datetimeeventstarts',
                       style: TextStyle(
@@ -225,10 +233,12 @@ class _CreateEventFormState extends State<CreateEventForm> {
                           onChanged: (date) {}, onConfirm: (date) {
                         setState(() {
                           _selectedStartedTime = date;
-                          _selectedEndTime = date;
+                          if (_selectedStartedTime.isAfter(_selectedEndTime)) {
+                            _selectedEndTime = _selectedStartedTime;
+                          }
                         });
                       },
-                          currentTime: DateTime.now(),
+                          currentTime: _selectedStartedTime,
                           locale: picker.LocaleType.en);
                     },
                     child: Text(
@@ -381,23 +391,26 @@ class _CreateEventFormState extends State<CreateEventForm> {
                     InputDecoration(hintText: 'Letattendeesexpect'.tr()),
               ),
               const SizedBox(height: 20),
-              Text('IsPaidEvent?',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16))
-                  .tr(),
-              Switch(
-                  inactiveTrackColor: Theme.of(context).colorScheme.background,
-                  activeTrackColor: Theme.of(context).colorScheme.secondary,
-                  inactiveThumbColor: Theme.of(context).colorScheme.primary,
-                  activeColor: Theme.of(context).colorScheme.primary,
-                  value: is_event_pee,
-                  onChanged: (value) {
-                    setState(() {
-                      is_event_pee = value;
-                    });
-                  }),
+              if (api.getIsPremium())
+                Text('IsPaidEvent?',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16))
+                    .tr(),
+              if (api.getIsPremium())
+                Switch(
+                    inactiveTrackColor:
+                        Theme.of(context).colorScheme.background,
+                    activeTrackColor: Theme.of(context).colorScheme.secondary,
+                    inactiveThumbColor: Theme.of(context).colorScheme.primary,
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    value: is_event_pee,
+                    onChanged: (value) {
+                      setState(() {
+                        is_event_pee = value;
+                      });
+                    }),
               Visibility(
                 visible: is_event_pee,
                 child: Column(
@@ -494,17 +507,19 @@ class _CreateEventFormState extends State<CreateEventForm> {
             "latitude": double.parse(_latitude.text),
             "max_participants": int.parse(_max_participants.text),
             "event_image_uris": uploadImages,
-            "event_free": is_event_pee,
+            "event_free": !is_event_pee,
             "amount_event":
                 is_event_pee ? 0.0 : double.parse(_amount_event.text),
           };
 
           var response = await api.postItem('/v3/events/', [], body);
-          SnackBar snackBar;
+
+          if (response == null) return;
           if (response.statusCode == 201) {
-            snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              content: Text('eventcreated').tr(),
+            scaffoldMessengerKey.currentState?.showSnackBar(
+              SnackBar(
+                content: Text('eventcreated').tr(),
+              ),
             );
             Navigator.push(
                 context,
@@ -513,22 +528,7 @@ class _CreateEventFormState extends State<CreateEventForm> {
                         //todo: editar aqui
                         // CreationSucess(image: _imageContent.toString())));
                         CreationSucess(image: uploadImages[0])));
-          } else if (response.statusCode == 400) {
-            snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text('BadRequest'.tr() +
-                  json.decode(response.body)["error_message"]),
-            );
-          } else {
-            snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text('Somethingwrong').tr(),
-            );
           }
-
-          // // Find the ScaffoldMessenger in the widget tree
-          // // and use it to show a SnackBar.
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
         },
         child: Text('Create').tr(),
       ),

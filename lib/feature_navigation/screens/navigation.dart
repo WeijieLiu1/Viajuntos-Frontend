@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
+import 'package:provider/provider.dart';
 import 'package:viajuntos/feature_event/screens/create_event.dart';
 import 'package:viajuntos/feature_explore/screens/home.dart';
 import 'package:viajuntos/feature_home/screens/home.dart';
@@ -13,6 +14,7 @@ import 'dart:async';
 import 'package:viajuntos/feature_event/screens/event_screen.dart';
 import 'dart:convert';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:viajuntos/utils/friend_request_notifier.dart';
 import '../../feature_chat/screens/listChat_screen.dart';
 
 class NavigationBottomBar extends StatefulWidget {
@@ -26,6 +28,7 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
   int _index = 0;
   String clipboardText = '';
   String _scanResult = 'Unknown';
+  final TextEditingController linkContent = TextEditingController(text: '');
   static const List<Widget> _widgetOptions = <Widget>[
     MainHomeScreen(),
     HomeScreen(),
@@ -34,10 +37,9 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
   ];
 
   Map user = {};
-  APICalls ac = APICalls();
 
   String getCurrentUser() {
-    return ac.getCurrentUser();
+    return APICalls().getCurrentUser();
   }
 
   final ExternServicePhoto es = ExternServicePhoto();
@@ -49,7 +51,6 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
           '#ff6666', 'Cancel', true, ScanMode.QR);
       print(barcodeScanRes);
-      CallLink(barcodeScanRes);
     } on PlatformException {
       barcodeScanRes = 'Failed to get platform version.';
     }
@@ -66,165 +67,30 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
 
   StreamSubscription? _sub;
 
-  void CallLink(String link) async {
-    var uri = Uri.parse(link);
-    var type = uri.pathSegments[1];
-    switch (type) {
-      case "events":
-        var id = uri.pathSegments[2];
-        if (id != '') {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => EventScreen(id: id)));
-        }
-        break;
-      case "users":
-        var response = await APICalls().getCollection(
-            '/v2/users/new_friend', [], {"code": uri.queryParameters["code"]!});
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    ProfileScreen(id: json.decode(response.body)["id"])));
-        break;
-      default:
-      // http://localhost:5000/v2/users/new_friend?code=bmWecsrvil7UTVT
-    }
-  }
-
-  Future<void> getClipboardData() async {
-    try {
-      // 调用Clipboard的方法获取剪贴板内容
-      ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
-
-      if (data != null && data.text != null) {
-        // 剪贴板中有文本内容
-        clipboardText = data.text!;
-        print('Clipboard Text: $clipboardText');
-        tryResolveClipboardData();
-      } else {
-        print('Clipboard is empty or does not contain text');
-      }
-    } catch (e) {
-      // 处理异常
-      print('Failed to get clipboard data: $e');
-    }
-  }
-
-  Future<void> tryResolveClipboardData() async {
-    try {
-      var uri = Uri.parse(clipboardText);
-      var type = uri.pathSegments[1];
-      switch (type) {
-        case "events": // join event
-          var id = uri.pathSegments[2];
-          if (id != '') {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => EventScreen(id: id)));
-          }
-          break;
-        case "users": // add friend
-          var response = await APICalls().getCollection('/v2/users/new_friend',
-              [], {"code": uri.queryParameters["code"]!});
-          // http://localhost:5000/v2/users/new_friend?code=bmWecsrvil7UTVT
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      ProfileScreen(id: json.decode(response.body)["id"])));
-          break;
-        default:
-      }
-    } catch (e) {
-      // 处理异常
-      print('Failed to set clipboard data: $e');
-    }
-  }
-
-  Future<void> initUniLinks() async {
-    // ... check initialLink
-
-    // Attach a listener to the stream
-    _sub = linkStream.listen((String? link) async {
-      // Parse the link and warn the user, if it is not correct
-
-      if (link != null) {
-        // baseLocalUrl+/v3/events/i
-        // baseLocalUrl+/v2/users/new_friend?code=xxx
-        var uri = Uri.parse(link);
-        var type = uri.pathSegments[1];
-        switch (type) {
-          case "events":
-            var id = uri.pathSegments[2];
-            if (id != '') {
-              Navigator.of(context).pushNamed('/home');
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => EventScreen(id: id)));
-            }
-            break;
-          case "users":
-            var response = await APICalls().getCollection(
-                '/v2/users/new_friend',
-                [],
-                {"code": uri.queryParameters["code"]!});
-            Navigator.of(context).pushNamed('/home');
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ProfileScreen(id: json.decode(response.body)["id"])));
-            break;
-          default:
-        }
-      }
-    }, onError: (err) {
-      // Handle exception by warning the user their action did not succeed
-    });
-
-    // NOTE: Don't forget to call _sub.cancel() in dispose()
-  }
-
   void _onItemTapped(int index) {
     setState(() {
       _index = index;
     });
   }
 
-  // void initUser() async {
-  //   final response =
-  //       await APICalls().getItem('v2/users/:0', [getCurrentUser()]);
-  //   user = json.decode(response.body);
-  //   print("user[image_url]" + user["image_url"]);
-  // }
+  void initUser() async {
+    var response =
+        await APICalls().getItem('v2/users/:0', [APICalls().getCurrentUser()]);
+
+    var aux = await APICalls().getItem('v2/users/get_friend_request', []);
+    APICalls().friendRequests = json.decode(aux.body);
+    Provider.of<RedDotNotifier>(context, listen: false)
+        .updateFriendRequests(APICalls().friendRequests);
+    setState(() {
+      user = json.decode(response.body);
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    initUniLinks();
-    getClipboardData();
-    // initUser();
-    // print('initState1');
-    // _socket = IO.io(
-    //   baseLocalUrl,
-    //   IO.OptionBuilder().setTransports(['websocket'])
-    //       // .disableAutoConnect()
-    //       .build(),
-    // );
-    // _connectSocket();
-    // print('initState2');
+    initUser();
   }
-
-  // Future<void> _scanQR() async {
-  //   try {
-  //     var result = await BarcodeScanner.scan();
-  //     setState(() {
-  //       _scanResult = result.rawContent;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _scanResult = 'Error: $e';
-  //     });
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -256,79 +122,7 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) => PaypalCheckoutView(
-                      sandboxMode: true,
-                      clientId:
-                          "AYQPBYQ6U-hyIKBERgEN_qjO4fSIFvjljwKaYaCgU00NEKXB76Uxsba29zRPHp6AO1HBV7-VMFNyDhYt",
-                      secretKey:
-                          "EMfnOAW3h4UuOjrQJnnDBAf7s-ro7RLguWanGlXjYJxpF_OCH7-wZD4HKw45wIq1jXKkYlSMXUcsoSg_",
-                      transactions: const [
-                        {
-                          "amount": {
-                            "total": '100',
-                            "currency": "USD",
-                            "details": {
-                              "subtotal": '100',
-                              "shipping": '0',
-                              "shipping_discount": 0
-                            }
-                          },
-                          "description": "The payment transaction description.",
-                          // "payment_options": {
-                          //   "allowed_payment_method":
-                          //       "INSTANT_FUNDING_SOURCE"
-                          // },
-                          "item_list": {
-                            "items": [
-                              {
-                                "name": "Apple",
-                                "quantity": 4,
-                                "price": '10',
-                                "currency": "USD"
-                              },
-                              {
-                                "name": "Pineapple",
-                                "quantity": 5,
-                                "price": '12',
-                                "currency": "USD"
-                              }
-                            ],
-
-                            // Optional
-                            //   "shipping_address": {
-                            //     "recipient_name": "Tharwat samy",
-                            //     "line1": "tharwat",
-                            //     "line2": "",
-                            //     "city": "tharwat",
-                            //     "country_code": "EG",
-                            //     "postal_code": "25025",
-                            //     "phone": "+00000000",
-                            //     "state": "ALex"
-                            //  },
-                          }
-                        }
-                      ],
-                      note: "Contact us for any questions on your order.",
-                      onSuccess: (Map params) async {
-                        print('onSuccess');
-                        print(params);
-                        Navigator.pop(context);
-                      },
-                      onError: (error) {
-                        print('onError');
-                        Navigator.pop(context);
-                      },
-                      onCancel: () {
-                        print('cancelled:');
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ));
-
-                  // scanQR();
-                },
+                onTap: () {},
                 child: SizedBox(
                   width: 36,
                   height: 36,
@@ -344,31 +138,58 @@ class _NavigationBottomBarState extends State<NavigationBottomBar> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: InkWell(
-                onTap: () {
-                  // print('click');
-                  // _socket.emit('connect', 'msgtest');
-                  Navigator.push(
+                  onTap: () async {
+                    // print('click');
+                    // _socket.emit('connect', 'msgtest');
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProfileScreen(
-                          id: getCurrentUser(),
+                          id: APICalls().getCurrentUser(),
                         ),
-                      ));
-                },
-                child: SizedBox(
-                  width: 36,
-                  height: 36,
-                  child: ClipRRect(
-                      child: FittedBox(
-                          child: Image.asset('assets/noProfileImage.png'),
-                          fit: BoxFit.fitHeight),
-                      borderRadius: BorderRadius.circular(100)),
-                ),
-              ),
+                      ),
+                    );
+
+// 根据返回值判断是否需要更新红点
+                    if (result != null && result is bool && result) {
+                      setState(() {}); // 更新界面
+                    }
+                  },
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 18, // 半径大小可以根据需要调整
+                        backgroundImage: (user["image_url"] == null ||
+                                user["image_url"].isEmpty)
+                            ? const AssetImage('assets/noProfileImage.png')
+                                as ImageProvider
+                            : NetworkImage(user["image_url"]),
+                      ),
+                      Consumer<RedDotNotifier>(
+                        builder: (context, notifier, child) {
+                          return Positioned(
+                            top: 0,
+                            right: 0,
+                            child: notifier.hasFriendRequest // 判断是否有红点
+                                ? Container(
+                                    width: 10, // 红点大小
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red, // 红点颜色
+                                      shape: BoxShape.circle, // 圆形
+                                    ),
+                                  )
+                                : SizedBox(), // 没有红点时为空
+                          );
+                        },
+                      ),
+                    ],
+                  )),
             )
           ]),
       body: Center(child: _widgetOptions.elementAt(_index)),
       bottomNavigationBar: BottomNavigationBar(
+          // iconSize: 50,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: const Icon(Icons.home),

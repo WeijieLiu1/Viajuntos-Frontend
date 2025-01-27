@@ -14,8 +14,8 @@ final metadata = SettableMetadata(contentType: "image/jpeg");
 Future<String> UploadProfileImage(BuildContext context, File image) async {
   final completerImageUrl = Completer<String>();
   final uploadTask = storageRef
-      .child("viajuntos-397806-images/ProfileImages/" +
-          APICalls().getCurrentUser())
+      .child(
+          "viajuntos-48ca9-images/ProfileImages/" + APICalls().getCurrentUser())
       .putFile(image, metadata);
   // Listen for state changes, errors, and completion of the upload.
   uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
@@ -102,8 +102,8 @@ Future<String> UploadEventImage(
     BuildContext context, String idEvent, File image) async {
   String url = "";
   final uploadTask = storageRef
-      .child("viajuntos-397806-images/ProfileImages/" +
-          APICalls().getCurrentUser())
+      .child(
+          "viajuntos-48ca9-images/ProfileImages/" + APICalls().getCurrentUser())
       .putFile(image, metadata);
   // Listen for state changes, errors, and completion of the upload.
   uploadTask.snapshotEvents.listen((TaskSnapshot taskSnapshot) {
@@ -184,8 +184,8 @@ Future<String?> uploadFileAndGetUrl(File file) async {
   final metadata = SettableMetadata(contentType: "image/jpeg");
 
   final uploadTask = storageRef
-      .child("viajuntos-397806-images/ProfileImages/" +
-          APICalls().getCurrentUser())
+      .child(
+          "viajuntos-48ca9-images/ProfileImages/" + APICalls().getCurrentUser())
       .putFile(file, metadata);
 
   try {

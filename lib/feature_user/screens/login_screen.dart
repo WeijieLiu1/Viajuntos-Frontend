@@ -73,30 +73,49 @@ class LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(20),
               child: ListView(children: <Widget>[
                 // LOGIN WITH GOOGLE
-                Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(20),
-                  child: SignInButton(
-                    Buttons.Google,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(borderradius)),
-                    text: "LoginwithGoogle".tr(),
-                    onPressed: () => _handleLoginGoogle(context, goto),
-                  ),
-                ),
-                // LOGIN WITH FACEBOOK
-                Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.all(10),
-                  child: SignInButton(
-                    Buttons.Facebook,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(borderradius)),
-                    text: "LoginwithFacebook".tr(),
-                    onPressed: () => _handleLoginFacebook(context, goto),
-                  ),
-                ),
+                // Container(
+                //   alignment: Alignment.center,
+                //   padding: EdgeInsets.all(20),
+                //   child: SignInButton(
+                //     Buttons.Google,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(borderradius)),
+                //     text: "LoginwithGoogle".tr(),
+                //     onPressed: () => _handleLoginGoogle(context, goto),
+                //   ),
+                // ),
+                // // LOGIN WITH FACEBOOK
+                // Container(
+                //   alignment: Alignment.center,
+                //   padding: EdgeInsets.all(10),
+                //   child: SignInButton(
+                //     Buttons.Facebook,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(borderradius)),
+                //     text: "LoginwithFacebook".tr(),
+                //     onPressed: () => _handleLoginFacebook(context, goto),
+                //   ),
+                // ),
+                // // LOGIN WITH GITHUB
+                // Container(
+                //   alignment: Alignment.center,
+                //   padding: EdgeInsets.all(10),
+                //   child: SignInButton(
+                //     Buttons.GitHub,
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(borderradius)),
+                //     text: "LoginwithGithub".tr(),
+                //     onPressed: () => _handleLoginGithub(context, goto),
+                //   ),
+                // ),
                 // EMAIL
+                const SizedBox(height: 50),
+                Image.asset(
+                  "assets/Banner.png",
+                  height: MediaQuery.of(context).size.height / 10,
+                  width: MediaQuery.of(context).size.width / 1.5,
+                ),
+                const SizedBox(height: 50),
                 Container(
                   alignment: Alignment.center,
                   padding: const EdgeInsets.all(10),
@@ -524,6 +543,25 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLoginFacebook(BuildContext context, GoTo goto) async {
+    try {
+      final LoginResult result =
+          await FacebookAuth.i.login(permissions: ['public_profile', 'email']);
+
+      if (result.status == LoginStatus.success) {
+        final accessTokenFacebook = result.accessToken?.token.toString();
+        Response response =
+            await uapi.logInFacebook(accessTokenFacebook.toString());
+        _handleLogIn(context, response, accessTokenFacebook.toString(),
+            "facebook", goto);
+        FacebookSignInApi.logout();
+      } else {}
+      FacebookSignInApi.logout();
+    } catch (error) {
+      //print(error);
+    }
+  }
+
+  Future<void> _handleLoginGithub(BuildContext context, GoTo goto) async {
     try {
       final LoginResult result =
           await FacebookAuth.i.login(permissions: ['public_profile', 'email']);
