@@ -31,9 +31,10 @@
     android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+             <!-- google map api key: AIzaSyAcQgxwmIeyFpj7cWUOPPqzAwpRwn8f6iA -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" /><meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyDRvLwa2zZfKb-YgVQWJ8GefpzBRtg_-fQ"/>
+               android:value="AIzaSyAcQgxwmIeyFpj7cWUOPPqzAwpRwn8f6iA"/>
     </application>
 </manifest>
