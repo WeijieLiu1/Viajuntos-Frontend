@@ -323,7 +323,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ]),
                     const Divider(indent: 5, endIndent: 5),
                     Text(
-                      "${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}${user["description"]}",
+                      "${user["description"]}",
                       style: explainStyle,
                       textAlign: TextAlign.center,
                     ),
