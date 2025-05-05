@@ -121,7 +121,7 @@ class MyApp extends StatelessWidget {
                 )),
             initialRoute: '/welcome',
             scaffoldMessengerKey: scaffoldMessengerKey,
-            home: const WelcomeScreen(),
+            home: BannedUserPage(),
             routes: {
               '/loading_Page': (_) => const LoadingScreen(),
               '/welcome': (_) => const WelcomeScreen(),

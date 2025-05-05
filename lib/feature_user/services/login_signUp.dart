@@ -7,8 +7,8 @@ import 'package:viajuntos/utils/api_controller.dart';
 import '../../utils/globals.dart';
 
 class userAPI {
-  final String basicUrl = baseLocalUrl + "/v1/users/";
-  final String basicUrl2 = baseLocalUrl + "/v2/users/";
+  final String basicUrl = baseUrl + "/v1/users/";
+  final String basicUrl2 = baseUrl + "/v2/users/";
 
   /* Comprobar que un email viajuntos existe o no en la BD */
   Future<Map<String, dynamic>> checkUserEmail(email) async {

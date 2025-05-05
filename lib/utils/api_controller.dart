@@ -17,7 +17,7 @@ class APICalls {
   final String _REFRESH_TOKEN_PREFS = 'viajuntos_refresh_token';
 
   // final String API_URL = 'viajuntos-production.herokuapp.com';
-  final String API_URL = baseLocalUrl;
+  final String API_URL = baseUrl;
   final String _REFRESH_ENDPOINT = '/v1/users/refresh';
   final int _UNAUTHORIZED = 401;
 

@@ -5,7 +5,7 @@ import 'package:viajuntos/utils/api_controller.dart';
 import '../../utils/globals.dart';
 
 class chatAPI {
-  final String basicUrl = baseLocalUrl + "/";
+  final String basicUrl = baseUrl + "/";
 
   /* Crear el chat */
   Future<http.Response> createChat(
@@ -55,7 +55,7 @@ class chatAPI {
     String chat_id,
   ) async {
     String _path = '/v1/chat/Message/';
-    String aux = baseLocalUrl;
+    String aux = baseUrl;
 
     final queryParameters = {
       'chat_id': chat_id,

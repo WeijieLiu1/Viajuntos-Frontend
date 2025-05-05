@@ -127,8 +127,7 @@ class _EventScreenState extends State<EventScreen> {
                         onSelected: (String value) {
                           if (value == 'share') {
                             showShareMenu(
-                                baseLocalUrl + '/v3/events/' + widget.id,
-                                context);
+                                baseUrl + '/v3/events/' + widget.id, context);
                           } else if (value == 'information_wall') {
                             Navigator.push(
                                 context,

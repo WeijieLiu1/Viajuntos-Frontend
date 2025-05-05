@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_print
+
 import 'dart:io';
 import 'dart:math';
 
@@ -51,20 +53,17 @@ class _ImageSelectorState extends State<ImageSelector> {
     final storageRef = FirebaseStorage.instance.ref();
     final metadata = SettableMetadata(contentType: "image/jpeg");
     final uploadTask = storageRef
-        .child("viajuntos-48ca9-images/EventImages/" +
+        .child("viajuntos-images.firebasestorage.app/EventImages/" +
             widget.path +
             "/" +
             fileId +
             "." +
             fileType)
         .putFile(file, metadata);
-
-    bool isUploadCanceled = false; // 标记是否取消上传
-
-    // 显示上传进度对话框
+    bool isUploadCanceled = false;
     showDialog(
       context: context,
-      barrierDismissible: false, // 禁止点击对话框外部关闭
+      barrierDismissible: false,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text("Uploading..."),
@@ -79,9 +78,9 @@ class _ImageSelectorState extends State<ImageSelector> {
           actions: [
             TextButton(
               onPressed: () {
-                isUploadCanceled = true; // 设置取消标记
-                uploadTask.cancel(); // 取消上传任务
-                Navigator.pop(context); // 关闭对话框
+                isUploadCanceled = true;
+                uploadTask.cancel();
+                Navigator.pop(context);
               },
               child: Text("Cancel"),
             ),
@@ -89,9 +88,7 @@ class _ImageSelectorState extends State<ImageSelector> {
         ),
       ),
     );
-
     try {
-      // 使用 snapshotEvents 监听上传进度
       uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
         if (snapshot.state == TaskState.running) {
           double progress =
@@ -99,14 +96,11 @@ class _ImageSelectorState extends State<ImageSelector> {
           print("Upload progress: $progress%");
         }
       });
-
-      // 等待上传完成
       await uploadTask;
-
       if (!isUploadCanceled) {
-        // 获取下载链接
+        // get imageUrl
         imageUrl = await storageRef
-            .child("viajuntos-48ca9-images/EventImages/" +
+            .child("viajuntos-images.firebasestorage.app/EventImages/" +
                 widget.path +
                 "/" +
                 fileId +
@@ -115,19 +109,13 @@ class _ImageSelectorState extends State<ImageSelector> {
             .getDownloadURL();
       }
     } on FirebaseException catch (e) {
-      if (e.code == 'canceled') {
-        print("Upload canceled by user.");
-      } else {
-        print("Error uploading image: $e");
-      }
+      print("Error uploading image: $e");
     } finally {
-      // 确保对话框关闭
       if (Navigator.canPop(context)) {
         Navigator.pop(context);
       }
     }
-
-    return imageUrl; // 返回上传结果
+    return imageUrl;
   }
 
   Future<void> deleteImageFromStorage(String downloadUrl) async {
@@ -158,7 +146,7 @@ class _ImageSelectorState extends State<ImageSelector> {
               widget.uploadImages.length < 9) {
             return GestureDetector(
               onTap: () {
-                _pickImage();
+                _pickImage(); // pick and upload image
               },
               child: Container(
                 color: Colors.grey[300],

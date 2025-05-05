@@ -24,11 +24,8 @@ class AirPrediction extends StatefulWidget {
 class _AirPredictionState extends State<AirPrediction> {
   Future<dynamic> getPredictionByLocation(String longitud, String latitude,
       String day, String month, String year, String hour) async {
-    var response = await http.get(Uri.parse(baseLocalUrl +
-        "/v1/air/location?long=" +
-        longitud +
-        "&lat=" +
-        latitude));
+    var response = await http.get(Uri.parse(
+        baseUrl + "/v1/air/location?long=" + longitud + "&lat=" + latitude));
     var body = json.decode(response.body);
     List<String> stations = [];
     for (int i = 0; i < body["surrounding_measuring_stations"].length; ++i) {
@@ -37,13 +34,13 @@ class _AirPredictionState extends State<AirPrediction> {
     List<int> pollutants = [];
     for (int i = 0; i < stations.length; ++i) {
       var tmp = await http
-          .get(Uri.parse(baseLocalUrl + "/v1/air/stations/" + stations[i]));
+          .get(Uri.parse(baseUrl + "/v1/air/stations/" + stations[i]));
       pollutants.add(json.decode(tmp.body)["pollutants"].length);
     }
-    //baseLocalUrl + /v1/air/ml?codi_eoi1=43013002&contaminante1=7&dia=11&mes=2&year=2019&hora=12&codi_eoi2=43004005&contaminante2=4&codi_eoi3=43148022&contaminante3=8&longitud=0.2884&latitud=40.64299
+    //baseUrl + /v1/air/ml?codi_eoi1=43013002&contaminante1=7&dia=11&mes=2&year=2019&hora=12&codi_eoi2=43004005&contaminante2=4&codi_eoi3=43148022&contaminante3=8&longitud=0.2884&latitud=40.64299
     var predictionResponse;
     if (stations.length == 2) {
-      predictionResponse = await http.get(Uri.parse(baseLocalUrl +
+      predictionResponse = await http.get(Uri.parse(baseUrl +
           "/v1/air/ml?codi_eoi1=" +
           stations[0] +
           "&contaminante1=" +
@@ -65,7 +62,7 @@ class _AirPredictionState extends State<AirPrediction> {
           "&latitud=" +
           latitude));
     } else {
-      predictionResponse = await http.get(Uri.parse(baseLocalUrl +
+      predictionResponse = await http.get(Uri.parse(baseUrl +
           "/v1/air/ml?codi_eoi1=" +
           stations[0] +
           "&contaminante1=" +

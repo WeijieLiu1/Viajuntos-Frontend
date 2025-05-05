@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:viajuntos/utils/globals.dart';
 
 class DeleteEventAPI {
-  final String url = baseLocalUrl + '/v3/events/';
+  final String url = baseUrl + '/v3/events/';
 
   Future<List> deleteEventById(String eventId) async {
     final response = await http.delete(Uri.parse(url + eventId));

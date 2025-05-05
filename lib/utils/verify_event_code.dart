@@ -89,7 +89,7 @@ class _VerifyEventCodeState extends State<VerifyEventCode> {
     super.initState();
 
     _socket = IO.io(
-      baseLocalUrl,
+      baseUrl,
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .disableAutoConnect()

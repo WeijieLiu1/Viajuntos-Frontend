@@ -72,7 +72,7 @@
 //           if (snapshot.connectionState == ConnectionState.done) {
 //             var events = json.decode(snapshot.data.body);
 //             return FutureBuilder(
-//                 future: http.get(Uri.parse(baseLocalUrl + "/v1/air/stations")),
+//                 future: http.get(Uri.parse(baseUrl + "/v1/air/stations")),
 //                 builder: (BuildContext context, AsyncSnapshot snapshot) {
 //                   if (snapshot.connectionState == ConnectionState.done) {
 //                     var stations = json.decode(snapshot.data.body);
@@ -111,7 +111,7 @@
 //                                   point: LatLng(events[i]["latitude"],
 //                                       events[i]["longitud"]),
 //                                   builder: (context) => FutureBuilder(
-//                                       future: http.get(Uri.parse(baseLocalUrl +
+//                                       future: http.get(Uri.parse(baseUrl +
 //                                           "/v1/air/location?long=" +
 //                                           events[i]["longitud"].toString() +
 //                                           "&lat=" +

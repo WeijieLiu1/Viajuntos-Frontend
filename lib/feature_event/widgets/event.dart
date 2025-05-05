@@ -18,6 +18,7 @@ import 'package:viajuntos/utils/globals.dart';
 import 'package:viajuntos/utils/share.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:viajuntos/utils/snackbar_helper.dart';
 
 class Event extends StatefulWidget {
   final EventModel event;
@@ -64,76 +65,124 @@ class _EventState extends State<Event> {
     }
   }
 
+  // void PayEvent(EventModel event) async {
+  //   var amount = event.amountevent.toString();
+  //   Navigator.of(context).push(MaterialPageRoute(
+  //     builder: (BuildContext context) => PaypalCheckoutView(
+  //       sandboxMode: true,
+  //       clientId:
+  //           // "AYQPBYQ6U-hyIKBERgEN_qjO4fSIFvjljwKaYaCgU00NEKXB76Uxsba29zRPHp6AO1HBV7-VMFNyDhYt",
+  //           "AXHMcwYupckK_UUb8KkxDQrRyHvGh0_Il9hyQa07GQ1DZnIQHYEYAr4XcK2Y2E2o-Xp5pwmQQio5vvRG",
+  //       secretKey:
+  //           // "EMfnOAW3h4UuOjrQJnnDBAf7s-ro7RLguWanGlXjYJxpF_OCH7-wZD4HKw45wIq1jXKkYlSMXUcsoSg_",
+  //           "EEmXD8B5bghWYcTrY1PgZqPnhVy4kC-bCD6mhNb5DllTD_MZi3brp0ZDkqx0F57lKrBkFS5mbMqNwcnG",
+  //       transactions: [
+  //         {
+  //           "amount": {
+  //             "total": event.amountevent,
+  //             "currency": "USD",
+  //             "details": {
+  //               "subtotal": event.amountevent,
+  //               "shipping": '0',
+  //               "shipping_discount": 0
+  //             }
+  //           },
+  //           "description": "Viajuntos Fee Event",
+  //           // "payment_options": {
+  //           //   "allowed_payment_method":
+  //           //       "INSTANT_FUNDING_SOURCE"
+  //           // },
+  //           "item_list": {
+  //             "items": [
+  //               {
+  //                 "name": event.name.toString(),
+  //                 "quantity": 1,
+  //                 "price": event.amountevent,
+  //                 "currency": "USD"
+  //               }
+  //             ],
+  //           }
+  //         }
+  //       ],
+  //       note: "Contact us for any questions on your order.",
+  //       onSuccess: (Map params) async {
+  //         print('onSuccess');
+  //         print(params);
+  //         Navigator.pop(context);
+  //         final bodyData = {
+  //           "event_id": event.id.toString(),
+  //           "amount": amount,
+  //           "payment_type": "Paypal",
+  //           "payment_id": params["data"]["id"]
+  //         };
+
+  //         final response =
+  //             await api.postItem('/v3/events/:0', ["add_payment"], bodyData);
+
+  //         if (response == null) return;
+  //         print(response.statusCode);
+  //         setState(() {
+  //           paid = true;
+  //         });
+  //       },
+  //       onError: (error) {
+  //         print('onError');
+  //         Navigator.pop(context);
+  //       },
+  //       onCancel: () {
+  //         print('cancelled:');
+  //         Navigator.pop(context);
+  //       },
+  //     ),
+  //   ));
+  // }
   void PayEvent(EventModel event) async {
     var amount = event.amountevent.toString();
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (BuildContext context) => PaypalCheckoutView(
-        sandboxMode: true,
-        clientId:
-            // "AYQPBYQ6U-hyIKBERgEN_qjO4fSIFvjljwKaYaCgU00NEKXB76Uxsba29zRPHp6AO1HBV7-VMFNyDhYt",
-            "AXHMcwYupckK_UUb8KkxDQrRyHvGh0_Il9hyQa07GQ1DZnIQHYEYAr4XcK2Y2E2o-Xp5pwmQQio5vvRG",
-        secretKey:
-            // "EMfnOAW3h4UuOjrQJnnDBAf7s-ro7RLguWanGlXjYJxpF_OCH7-wZD4HKw45wIq1jXKkYlSMXUcsoSg_",
-            "EEmXD8B5bghWYcTrY1PgZqPnhVy4kC-bCD6mhNb5DllTD_MZi3brp0ZDkqx0F57lKrBkFS5mbMqNwcnG",
-        transactions: [
-          {
-            "amount": {
-              "total": event.amountevent,
-              "currency": "USD",
-              "details": {
-                "subtotal": event.amountevent,
-                "shipping": '0',
-                "shipping_discount": 0
-              }
-            },
-            "description": "Viajuntos Fee Event",
-            // "payment_options": {
-            //   "allowed_payment_method":
-            //       "INSTANT_FUNDING_SOURCE"
-            // },
-            "item_list": {
-              "items": [
-                {
-                  "name": event.name.toString(),
-                  "quantity": 1,
-                  "price": event.amountevent,
-                  "currency": "USD"
-                }
-              ],
-            }
-          }
-        ],
-        note: "Contact us for any questions on your order.",
-        onSuccess: (Map params) async {
-          print('onSuccess');
-          print(params);
-          Navigator.pop(context);
-          final bodyData = {
-            "event_id": event.id.toString(),
-            "amount": amount,
-            "payment_type": "Paypal",
-            "payment_id": params["data"]["id"]
-          };
-
-          final response =
-              await api.postItem('/v3/events/:0', ["add_payment"], bodyData);
-
-          if (response == null) return;
-          print(response.statusCode);
-          setState(() {
-            paid = true;
-          });
-        },
-        onError: (error) {
-          print('onError');
-          Navigator.pop(context);
-        },
-        onCancel: () {
-          print('cancelled:');
-          Navigator.pop(context);
-        },
-      ),
-    ));
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+                title: Text("PaymentTitle").tr(),
+                content: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(text: "${"PaymentContent".tr()} "), // 普通文本
+                      TextSpan(
+                        text: "$amount euros", // 需要加粗的部分
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    child: Text('Ok').tr(),
+                    onPressed: () async {
+                      final bodyData = {
+                        "event_id": event.id.toString(),
+                        "amount": amount,
+                        "payment_type": "Paypal",
+                        "payment_id":
+                            "${event.id}_${APICalls().getCurrentUser()}"
+                      };
+                      final response = await api.postItem(
+                          '/v3/events/:0', ["add_payment"], bodyData);
+                      SnackbarHelper.showSnackbarFromResponse(
+                          context, response);
+                      Navigator.pop(context);
+                      if (response.statusCode == 201) {
+                        setState(() {
+                          paid = true;
+                        });
+                      }
+                    },
+                  ),
+                  TextButton(
+                    child: Text('Cancel').tr(),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ]));
   }
 
   Future<void> getPaymentStatus(String idEvent) async {
@@ -141,7 +190,7 @@ class _EventState extends State<Event> {
       final Response response =
           await api.getItem('/v3/events/:0/get_payment', [idEvent]);
       var data = json.decode(response.body);
-      print("data: " + data.toString());
+      print("data: $data");
       if (response.statusCode == 200) {
         if (data["status"] == "PAID")
           setState(() {
@@ -186,51 +235,8 @@ class _EventState extends State<Event> {
           "username": uri.queryParameters["username"]!
         });
 
-        var data = json.decode(response.body);
-        print("auxdata: " + data.toString());
-        if (response.statusCode == 200) {
-          if (data["message"] == "Successful verification") {
-            SnackBar snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              content: Text('SuccessfulVerificationContent').tr(),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } else if (data["message"] == "User already verified") {
-            SnackBar snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              content: Text('UserAlreadyVerified').tr(),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
-        } else if (response.statusCode == 400) {
-          if (data["error_message"] == "Event doesn't exist") {
-            SnackBar snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text('EventNotExist').tr(),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } else if (data["error_message"] ==
-              "You are not the creator of this event") {
-            SnackBar snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text('NotCreatorScaning').tr(),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } else if (data["error_message"] == "Code is not in the url") {
-            SnackBar snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text('CodeNotinUrl').tr(),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } else if (data["error_message"] ==
-              "User or Code is not correct for this event") {
-            SnackBar snackBar = SnackBar(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text('IncorrentCode').tr(),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
-        }
+        SnackbarHelper.showSnackbarFromResponse(context, response);
+
         break;
       default:
       // http://localhost:5000/v2/users/new_friend?code=bmWecsrvil7UTVT
@@ -1122,7 +1128,7 @@ class _EventState extends State<Event> {
                                             InkWell(
                                               onTap: () async {
                                                 _socket = IO.io(
-                                                  baseLocalUrl,
+                                                  baseUrl,
                                                   IO.OptionBuilder()
                                                       .setTransports(
                                                           ['websocket'])
@@ -1316,332 +1322,6 @@ class _EventState extends State<Event> {
                           }
                         },
                       ),
-                      //   FutureBuilder(
-                      //       future: api.getCollection('/v3/events/participants',
-                      //           [], {"eventid": widget.event.id.toString()}),
-                      //       builder:
-                      //           (BuildContext context, AsyncSnapshot snapshot) {
-                      //         if (snapshot.connectionState ==
-                      //             ConnectionState.done) {
-                      //           var participants =
-                      //               json.decode(snapshot.data.body);
-                      //           return Text(
-                      //               participants.length.toString() +
-                      //                   "/" +
-                      //                   widget.event.max_participants
-                      //                       .toString()
-                      //                       .toString(),
-                      //               style: TextStyle(
-                      //                   color: Theme.of(context)
-                      //                       .colorScheme
-                      //                       .secondary,
-                      //                   fontWeight: FontWeight.w500,
-                      //                   fontSize: 16));
-                      //         } else {
-                      //           return SkeletonItem(
-                      //               child: SkeletonParagraph(
-                      //                   style: SkeletonParagraphStyle(
-                      //                       lines: 1,
-                      //                       lineStyle: SkeletonLineStyle(
-                      //                           width: 20,
-                      //                           height: 20,
-                      //                           borderRadius:
-                      //                               BorderRadius.circular(10)))));
-                      //         }
-                      //       }),
-                      //   const SizedBox(width: 30),
-                      //   FutureBuilder(
-                      //       future: api.getCollection('/v3/events/participants',
-                      //           [], {"eventid": widget.event.id.toString()}),
-                      //       builder:
-                      //           (BuildContext context, AsyncSnapshot snapshot) {
-                      //         if (snapshot.connectionState ==
-                      //             ConnectionState.done) {
-                      //           var participants =
-                      //               json.decode(snapshot.data.body);
-                      //           found = false;
-                      //           int i = 0;
-                      //           while (!found && i < participants.length) {
-                      //             if (participants[i] == api.getCurrentUser()) {
-                      //               found = true;
-                      //             }
-                      //             ++i;
-                      //           }
-                      //           if (!found) {
-                      //             return InkWell(
-                      //               onTap: () async {
-                      //                 final bodyData = {
-                      //                   "user_id": api.getCurrentUser()
-                      //                 };
-                      //                 var hasConflict = await checkTimeConflict();
-                      //                 if (hasConflict) {
-                      //                   showDialog(
-                      //                       context: context,
-                      //                       builder: (context) => AlertDialog(
-                      //                               title:
-                      //                                   Text('TimeConflict').tr(),
-                      //                               content:
-                      //                                   Text('EventTimeConflictJoin')
-                      //                                       .tr(),
-                      //                               actions: [
-                      //                                 TextButton(
-                      //                                   child:
-                      //                                       Text('Cancel').tr(),
-                      //                                   onPressed: () =>
-                      //                                       Navigator.pop(
-                      //                                           context),
-                      //                                 ),
-                      //                                 TextButton(
-                      //                                   child: Text('Yes').tr(),
-                      //                                   onPressed: () async {
-                      //                                     Navigator.pop(context);
-                      //                                     var response =
-                      //                                         await joinEvent(
-                      //                                             bodyData);
-                      //                                     SnackBar snackBar;
-                      //                                     if (response
-                      //                                             .statusCode ==
-                      //                                         200) {
-                      //                                       snackBar = SnackBar(
-                      //                                         backgroundColor:
-                      //                                             Theme.of(
-                      //                                                     context)
-                      //                                                 .colorScheme
-                      //                                                 .secondary,
-                      //                                         content:
-                      //                                             Text('Youarein')
-                      //                                                 .tr(),
-                      //                                       );
-                      //                                       getPaymentStatus(
-                      //                                           widget.event.id
-                      //                                               .toString());
-                      //                                     } else {
-                      //                                       snackBar = SnackBar(
-                      //                                         backgroundColor:
-                      //                                             Theme.of(
-                      //                                                     context)
-                      //                                                 .colorScheme
-                      //                                                 .error,
-                      //                                         content: Text(
-                      //                                                 'Somethingbadhappened')
-                      //                                             .tr(),
-                      //                                       );
-                      //                                     }
-                      //                                     setState(() {
-                      //                                       found = response
-                      //                                               .statusCode ==
-                      //                                           200;
-                      //                                     });
-                      //                                     ScaffoldMessenger.of(
-                      //                                             context)
-                      //                                         .showSnackBar(
-                      //                                             snackBar);
-                      //                                   },
-                      //                                 ),
-                      //                               ]));
-                      //                 } else {
-                      //                   var response = await joinEvent(bodyData);
-                      //                   SnackBar snackBar;
-                      //                   if (response.statusCode == 200) {
-                      //                     snackBar = SnackBar(
-                      //                       backgroundColor: Theme.of(context)
-                      //                           .colorScheme
-                      //                           .secondary,
-                      //                       content: Text('Youarein').tr(),
-                      //                     );
-                      //                     getPaymentStatus(
-                      //                         widget.event.id.toString());
-                      //                   } else {
-                      //                     snackBar = SnackBar(
-                      //                       backgroundColor: Theme.of(context)
-                      //                           .colorScheme
-                      //                           .error,
-                      //                       content:
-                      //                           Text('Somethingbadhappened').tr(),
-                      //                     );
-                      //                   }
-                      //                   setState(() {
-                      //                     found = response.statusCode == 200;
-                      //                   });
-                      //                   ScaffoldMessenger.of(context)
-                      //                       .showSnackBar(snackBar);
-                      //                 }
-                      //               },
-                      //               child: Container(
-                      //                 decoration: BoxDecoration(
-                      //                   borderRadius: BorderRadius.circular(10.0),
-                      //                   color: Theme.of(context)
-                      //                       .colorScheme
-                      //                       .secondary,
-                      //                   boxShadow: [
-                      //                     BoxShadow(
-                      //                       color: Theme.of(context)
-                      //                           .colorScheme
-                      //                           .secondary
-                      //                           .withOpacity(0.5),
-                      //                       spreadRadius: 5,
-                      //                       blurRadius: 7,
-                      //                       offset: const Offset(0,
-                      //                           3), // changes position of shadow
-                      //                     ),
-                      //                   ],
-                      //                 ),
-                      //                 width: 150,
-                      //                 height: 40,
-                      //                 child: Center(
-                      //                     child: Text('JOINNOW',
-                      //                             style: TextStyle(
-                      //                                 color: Theme.of(context)
-                      //                                     .colorScheme
-                      //                                     .background,
-                      //                                 fontWeight:
-                      //                                     FontWeight.bold))
-                      //                         .tr()),
-                      //               ),
-                      //             );
-                      //           } else {
-                      //             return Row(
-                      //               children: [
-                      //                 Visibility(
-                      //                   visible: !paid &&
-                      //                       widget.event.user_creator
-                      //                               .toString() !=
-                      //                           api.getCurrentUser(),
-                      //                   child: Row(
-                      //                     children: [
-                      //                       InkWell(
-                      //                         onTap: () async {
-                      //                           PayEvent(widget.event);
-                      //                         },
-                      //                         child: Container(
-                      //                           decoration: BoxDecoration(
-                      //                             borderRadius:
-                      //                                 BorderRadius.circular(10.0),
-                      //                             color: Theme.of(context)
-                      //                                 .colorScheme
-                      //                                 .error,
-                      //                             boxShadow: [
-                      //                               BoxShadow(
-                      //                                 color: Theme.of(context)
-                      //                                     .colorScheme
-                      //                                     .error
-                      //                                     .withOpacity(0.5),
-                      //                                 spreadRadius: 5,
-                      //                                 blurRadius: 7,
-                      //                                 offset: const Offset(0,
-                      //                                     3), // changes position of shadow
-                      //                               ),
-                      //                             ],
-                      //                           ),
-                      //                           width: 60,
-                      //                           height: 40,
-                      //                           child: Center(
-                      //                               child: Text('Pay',
-                      //                                       style: TextStyle(
-                      //                                           color: Theme.of(
-                      //                                                   context)
-                      //                                               .colorScheme
-                      //                                               .background,
-                      //                                           fontWeight:
-                      //                                               FontWeight
-                      //                                                   .bold))
-                      //                                   .tr()),
-                      //                         ),
-                      //                       ),
-                      //                       SizedBox(width: 40),
-                      //                     ],
-                      //                   ),
-                      //                 ),
-                      //                 Visibility(
-                      //                   visible: widget.event.user_creator
-                      //                           .toString() !=
-                      //                       api.getCurrentUser(),
-                      //                   child: InkWell(
-                      //                     onTap: () async {
-                      //                       final bodyData = {
-                      //                         "user_id": api.getCurrentUser()
-                      //                       };
-                      //                       var response = await leaveEvent(
-                      //                           widget.event.id.toString(),
-                      //                           bodyData);
-                      //                       setState(() {
-                      //                         found = false;
-                      //                       });
-                      //                       SnackBar snackBar;
-                      //                       if (response.statusCode == 200) {
-                      //                         snackBar = SnackBar(
-                      //                           backgroundColor: Theme.of(context)
-                      //                               .colorScheme
-                      //                               .secondary,
-                      //                           content: Text('Youleft').tr(),
-                      //                         );
-                      //                       } else {
-                      //                         snackBar = SnackBar(
-                      //                           backgroundColor: Theme.of(context)
-                      //                               .colorScheme
-                      //                               .error,
-                      //                           content:
-                      //                               Text('Somethingbadhappened')
-                      //                                   .tr(),
-                      //                         );
-                      //                       }
-                      //                       ScaffoldMessenger.of(context)
-                      //                           .showSnackBar(snackBar);
-                      //                     },
-                      //                     child: Container(
-                      //                       decoration: BoxDecoration(
-                      //                         borderRadius:
-                      //                             BorderRadius.circular(10.0),
-                      //                         color: Theme.of(context)
-                      //                             .colorScheme
-                      //                             .error,
-                      //                         boxShadow: [
-                      //                           BoxShadow(
-                      //                             color: Theme.of(context)
-                      //                                 .colorScheme
-                      //                                 .error
-                      //                                 .withOpacity(0.5),
-                      //                             spreadRadius: 5,
-                      //                             blurRadius: 7,
-                      //                             offset: const Offset(0,
-                      //                                 3), // changes position of shadow
-                      //                           ),
-                      //                         ],
-                      //                       ),
-                      //                       width: 60,
-                      //                       height: 40,
-                      //                       child: Center(
-                      //                           child: Text('LEAVE',
-                      //                                   style: TextStyle(
-                      //                                       color:
-                      //                                           Theme.of(context)
-                      //                                               .colorScheme
-                      //                                               .background,
-                      //                                       fontWeight:
-                      //                                           FontWeight.bold))
-                      //                               .tr()),
-                      //                     ),
-                      //                   ),
-                      //                 )
-                      //               ],
-                      //             );
-                      //           }
-                      //         } else {
-                      //           return Center(
-                      //             child: SkeletonItem(
-                      //                 child: SkeletonParagraph(
-                      //                     style: SkeletonParagraphStyle(
-                      //                         lines: 1,
-                      //                         spacing: 2,
-                      //                         lineStyle: SkeletonLineStyle(
-                      //                             width: 150,
-                      //                             height: 40,
-                      //                             borderRadius:
-                      //                                 BorderRadius.circular(
-                      //                                     10))))),
-                      //           );
-                      //         }
-                      //       })
                     ],
                   )),
             )

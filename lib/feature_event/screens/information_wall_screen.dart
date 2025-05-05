@@ -376,7 +376,7 @@ class _InformationWallScreenState extends State<InformationWallScreen> {
             ),
             const Spacer(),
             Text(
-              'Created by '.tr() + widget.event.creator_name!,
+              widget.event.creator_name!,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.primary,
                 fontSize: 14,

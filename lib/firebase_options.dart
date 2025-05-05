@@ -16,18 +16,9 @@ import 'package:flutter/foundation.dart'
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (kIsWeb) {
-      return web;
-    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
-      case TargetPlatform.iOS:
-        return ios;
-      case TargetPlatform.macOS:
-        return macos;
-
-        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -40,54 +31,13 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDkySvCAt9utSO8Tp5BW_b3Xng15e0yeMg',
-    appId: '1:679923866619:web:35a9bc404518553b99495e',
-    messagingSenderId: '679923866619',
-    projectId: 'viajuntos-48ca9',
-    authDomain: 'viajuntos-48ca9.firebaseapp.com',
-    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
-    measurementId: 'G-197CZ6CVWD',
-  );
-
 // AIzaSyAUli97gD0OPhAkDl8wKgHirVkPbwzw5EI
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAFzoC9dnXUWCZzamYB93Q42LVPVUeGV1c',
-    appId: '1:679923866619:android:659def22ef73c2dd99495e',
-    messagingSenderId: '679923866619',
-    projectId: 'viajuntos-48ca9',
-    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
+    apiKey: 'AIzaSyD85w8xWulgy9SFjhzIZxgx2YLBnDBydng',
+    appId: '1:656500114912:android:903b8db7f398b1a7895785',
+    messagingSenderId: '656500114912',
+    projectId: 'viajuntos-images',
+    storageBucket: 'viajuntos-images.firebasestorage.app',
   );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDU0pjgF7Cnc2LVMgU4nhjssIyTZ2h6Dhs',
-    appId: '1:679923866619:ios:14e2598571cad33699495e',
-    messagingSenderId: '679923866619',
-    projectId: 'viajuntos-48ca9',
-    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
-    iosClientId: '679923866619-fbr88df1rk1jll72p95pgp9egm26js87.apps.googleusercontent.com',
-    iosBundleId: 'com.example.viajuntos',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDU0pjgF7Cnc2LVMgU4nhjssIyTZ2h6Dhs',
-    appId: '1:679923866619:ios:14e2598571cad33699495e',
-    messagingSenderId: '679923866619',
-    projectId: 'viajuntos-48ca9',
-    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
-    iosClientId: '679923866619-fbr88df1rk1jll72p95pgp9egm26js87.apps.googleusercontent.com',
-    iosBundleId: 'com.example.viajuntos',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDkySvCAt9utSO8Tp5BW_b3Xng15e0yeMg',
-    appId: '1:679923866619:web:cfffbad6e6ff613799495e',
-    messagingSenderId: '679923866619',
-    projectId: 'viajuntos-48ca9',
-    authDomain: 'viajuntos-48ca9.firebaseapp.com',
-    storageBucket: 'viajuntos-48ca9.firebasestorage.app',
-    measurementId: 'G-JG9469D5ZH',
-  );
-
 }

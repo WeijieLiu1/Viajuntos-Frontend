@@ -31,7 +31,7 @@ class UserAPI {
   }*/
 }
 
-final String url = baseLocalUrl + "/v1/users/";
+final String url = baseUrl + "/v1/users/";
 
 //API_URL/v1/users/:id/pw
 Future<http.Response> putPassword(

@@ -168,7 +168,7 @@ class _RecommendedListState extends State<RecommendedList> {
                                                         const Icon(Icons.share),
                                                     onPressed: () =>
                                                         showShareMenu(
-                                                            baseLocalUrl +
+                                                            baseUrl +
                                                                 '/v3/events/' +
                                                                 _recommendations[
                                                                         index]

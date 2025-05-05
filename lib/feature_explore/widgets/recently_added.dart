@@ -208,7 +208,7 @@ class _RecentlyAddedState extends State<RecentlyAdded> {
                                                           Icons.share),
                                                       onPressed: () =>
                                                           showShareMenu(
-                                                              baseLocalUrl +
+                                                              baseUrl +
                                                                   '/v3/events/' +
                                                                   recommendations[
                                                                           index]

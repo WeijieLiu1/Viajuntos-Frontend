@@ -157,7 +157,7 @@ class _EventWidgetState extends State<EventWidget> {
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FutureBuilder(
               future: http.get(Uri.parse(
-                  baseLocalUrl + '/v1/users/' + widget.event["user_creator"])),
+                  baseUrl + '/v1/users/' + widget.event["user_creator"])),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   var user = json.decode(snapshot.data.body);
@@ -212,7 +212,7 @@ class _EventWidgetState extends State<EventWidget> {
               icon: const Icon(Icons.share,
                   size: 30.0, color: Color.fromARGB(255, 110, 108, 108)),
               onPressed: () => showShareMenu(
-                  baseLocalUrl + '/v3/events/' + widget.event["id"], context)),
+                  baseUrl + '/v3/events/' + widget.event["id"], context)),
           const Divider(endIndent: 30),
           FutureBuilder(
               future: api.getCollection('/v3/events/participants', [],

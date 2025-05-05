@@ -571,7 +571,7 @@ class EventSearchMapState extends State<EventSearchMap> {
                                                         icon: const Icon(
                                                             Icons.share),
                                                         onPressed: () => showShareMenu(
-                                                            baseLocalUrl +
+                                                            baseUrl +
                                                                 '/v3/events/' +
                                                                 event.id
                                                                     .toString(),

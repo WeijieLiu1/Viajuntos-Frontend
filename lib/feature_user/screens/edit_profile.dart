@@ -288,11 +288,11 @@ class _EditarProfileState extends State<EditarProfile> {
 
       if (croppedImage != null) {
         // 裁剪成功，可以在这里进行操作，例如将图片显示在界面上
-        //gs://viajuntos-48ca9.firebasestorage.app/viajuntos-48ca9-images/ProfileImages
+        //gs://viajuntos-images.firebasestorage.app/viajuntos-images.firebasestorage.app/ProfileImages
         // final path =
-        //     'gs://viajuntos-48ca9.firebasestorage.app/viajuntos-48ca9-images/ProfileImages/' +
+        //     'gs://viajuntos-images.firebasestorage.app/viajuntos-images.firebasestorage.app/ProfileImages/' +
         //         APICalls().getCurrentUser();
-
+// gs://viajuntos-images.firebasestorage.app
         final file = File(croppedImage.path);
 
         final storageRef = FirebaseStorage.instance.ref();
@@ -300,7 +300,7 @@ class _EditarProfileState extends State<EditarProfile> {
         final metadata = SettableMetadata(contentType: "image/jpeg");
         // Upload file and metadata to the path 'images/mountains.jpg'
         final uploadTask = storageRef
-            .child("viajuntos-48ca9-images/ProfileImages/" +
+            .child("viajuntos-images.firebasestorage.app/ProfileImages/" +
                 APICalls().getCurrentUser())
             .putFile(file, metadata);
         // Listen for state changes, errors, and completion of the upload.

@@ -53,7 +53,7 @@ class EventModel {
     event_image_uris =
         (json['event_image_uris'] as List<dynamic>).cast<String>();
     chat_id = json['chat_id'];
-    amountevent = json['amountevent'];
+    amountevent = json['amount_event'];
     is_event_free = json['is_event_free'];
     creator_name = json['creator_name'];
     creator_image_url = json['creator_image_url'];
@@ -81,7 +81,7 @@ class EventModel {
     data['max_participants'] = max_participants;
     data['event_image_uris'] = event_image_uris;
     data['chat_id'] = chat_id;
-    data['amountevent'] = amountevent;
+    data['amount_event'] = amountevent;
     data['is_event_free'] = is_event_free;
     data['event_type'] = event_type;
     data['creator_name'] = creator_name;

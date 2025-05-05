@@ -25,8 +25,8 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
-  late IO.Socket _socket;
+class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
+  IO.Socket? _socket;
   final APICalls api = APICalls();
   final TextEditingController messageTextController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -37,43 +37,72 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initializeSocket();
     _initializeChatData();
+    // if (_scrollController.hasClients) {
+    //   _scrollController.jumpTo(
+    //     _scrollController.position.maxScrollExtent,
+    //   );
+    // }
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
   void dispose() {
-    _socket.disconnect();
+    WidgetsBinding.instance.removeObserver(this);
+    if (_socket != null) {
+      _socket!.off('ChatMessage'); // 解除事件监听
+      _socket!.emit('leave_room', {'room': widget.chatId});
+      _socket!.disconnect();
+    }
     _scrollController.dispose();
     messageTextController.dispose();
     super.dispose();
   }
 
   void _initializeSocket() {
+    if (_socket != null && _socket!.connected) return;
+
     _socket = IO.io(
-      baseLocalUrl,
+      baseUrl,
       IO.OptionBuilder().setTransports(['websocket']).build(),
     );
 
-    _socket.onConnect((_) {
-      _socket.emit('join_room', {
+    _socket!.onConnect((_) {
+      _socket!.emit('join_room', {
         'username': api.getCurrentUser(),
         'room': widget.chatId,
       });
     });
 
-    _socket.on('ChatMessage', (data) {
-      setState(() {
-        chatMessages.insert(0, Message.fromJson(jsonDecode(data)));
-      });
-      _scrollToBottom();
+    _socket!.on('ChatMessage', (data) {
+      if (mounted) {
+        setState(() {
+          chatMessages.add(Message.fromJson(jsonDecode(data)));
+        });
+        _scrollToBottom();
+      }
     });
 
-    _socket.onDisconnect((_) {
+    _socket!.onDisconnect((_) {
       print('Disconnected from server');
     });
 
-    _socket.connect();
+    _socket!.connect();
   }
 
   void _initializeChatData() async {
@@ -86,9 +115,11 @@ class _ChatScreenState extends State<ChatScreen> {
         json.decode(response.body).map((data) => Message.fromJson(data)),
       );
     }
-    setState(() {
-      chatMessages = msgs;
-    });
+    if (mounted) {
+      setState(() {
+        chatMessages = msgs;
+      });
+    }
 
     // Fetch members
     final membersResponse =
@@ -99,17 +130,24 @@ class _ChatScreenState extends State<ChatScreen> {
         json.decode(membersResponse.body).map((user) => User.fromJson(user)),
       );
     }
-    setState(() {
-      for (var member in members) {
-        mapMembers[member.id.toString()] = member;
-      }
-    });
+    if (mounted) {
+      setState(() {
+        for (var member in members) {
+          mapMembers[member.id.toString()] = member;
+        }
+      });
+    }
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(
+        _scrollController.position.maxScrollExtent - 30,
+      );
+    }
   }
 
   void _sendMessage(String messageText) {
     if (messageText.isEmpty) return;
 
-    _socket.emit('ChatMessage', {
+    _socket!.emit('ChatMessage', {
       'chat_id': widget.chatId,
       'text': messageText,
       'sender_id': api.getCurrentUser(),
@@ -119,9 +157,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
+      if (mounted && _scrollController.hasClients) {
         _scrollController.animateTo(
-          _scrollController.position.minScrollExtent,
+          _scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
@@ -150,8 +188,8 @@ class _ChatScreenState extends State<ChatScreen> {
         leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => {
+                  _socket!.disconnect(),
                   Navigator.pop(context),
-                  _socket.connect(),
                 }),
       ),
       body: Column(

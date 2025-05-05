@@ -180,7 +180,7 @@ class _LikedListState extends State<LikedList> {
                                           .onSurface,
                                       icon: const Icon(Icons.share),
                                       onPressed: () => showShareMenu(
-                                          baseLocalUrl +
+                                          baseUrl +
                                               '/v3/events/' +
                                               _joined[index]["id"],
                                           context)),

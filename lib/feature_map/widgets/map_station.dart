@@ -20,7 +20,7 @@ class _StationWidgetState extends State<StationWidget> {
   Map station = {};
   List pollutants = [];
 
-  final String url2 = baseLocalUrl + "/v1/air/stations/";
+  final String url2 = baseUrl + "/v1/air/stations/";
 
   var eventStyle = const TextStyle(
       color: Colors.black,

@@ -1,43 +1,26 @@
 {
   "project_info": {
-    "project_number": "679923866619",
-    "project_id": "viajuntos-48ca9",
-    "storage_bucket": "viajuntos-48ca9.firebasestorage.app"
+    "project_number": "656500114912",
+    "project_id": "viajuntos-images",
+    "storage_bucket": "viajuntos-images.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:679923866619:android:659def22ef73c2dd99495e",
+        "mobilesdk_app_id": "1:656500114912:android:903b8db7f398b1a7895785",
         "android_client_info": {
           "package_name": "com.example.viajuntos"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "679923866619-te9pb8i8drnot1a2rqs6uur89let9h42.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAFzoC9dnXUWCZzamYB93Q42LVPVUeGV1c"
+          "current_key": "AIzaSyD85w8xWulgy9SFjhzIZxgx2YLBnDBydng"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "679923866619-te9pb8i8drnot1a2rqs6uur89let9h42.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "679923866619-fbr88df1rk1jll72p95pgp9egm26js87.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.viajuntos"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

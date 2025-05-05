@@ -180,7 +180,7 @@ class _JoinedListState extends State<JoinedList> {
                                       Theme.of(context).colorScheme.onSurface,
                                   icon: const Icon(Icons.share),
                                   onPressed: () => showShareMenu(
-                                    baseLocalUrl +
+                                    baseUrl +
                                         '/v3/events/' +
                                         _joined[index]["id"],
                                     context,

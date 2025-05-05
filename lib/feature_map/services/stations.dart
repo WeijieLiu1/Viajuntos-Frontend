@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../utils/globals.dart';
 
 class StationsAPI {
-  final String url = baseLocalUrl + "/v1/air/stations";
+  final String url = baseUrl + "/v1/air/stations";
 
   Future<List> getAllStations() async {
     final response = await http.get(Uri.parse(url));

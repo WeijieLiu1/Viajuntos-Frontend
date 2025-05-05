@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../utils/globals.dart';
 
 class EventsAPI {
-  final String url = baseLocalUrl + "/v1/events/";
+  final String url = baseUrl + "/v1/events/";
 
   Future<List> getAllEvents() async {
     final response = await http.get(Uri.parse(url));

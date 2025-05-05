@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../../utils/globals.dart';
 
 class CreateEventsAPI {
-  final String url = baseLocalUrl + '/v3/events/';
+  final String url = baseUrl + '/v3/events/';
 
   Future<bool> postEvent(List event) async {
     final newEvent = jsonEncode(event[0]);
